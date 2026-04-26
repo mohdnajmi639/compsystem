@@ -1,0 +1,26 @@
+{
+  "name": "compsystem",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "chart.js": "^4.5.1",
+    "lucide-react": "^1.11.0",
+    "mongoose": "^7.6.3",
+    "next": "^13.5.6",
+    "next-auth": "^4.24.14",
+    "react": "^18.2.0",
+    "react-chartjs-2": "^5.3.1",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "eslint": "^9",
+    "eslint-config-next": "16.2.4"
+  }
+}

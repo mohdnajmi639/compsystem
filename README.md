@@ -41,3 +41,29 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 ### 4. Seed the Database (Optional)
 If you are using a fresh database, you can automatically generate demo users and complaints by visiting:
 [http://localhost:3000/api/seed](http://localhost:3000/api/seed)
+
+---
+
+## 🔑 Demo Login Credentials
+
+After seeding the database, you can log in using the following accounts:
+
+### Students
+
+| Name | Email | Password | Student ID | Department |
+|------|-------|----------|------------|------------|
+| Ahmad Student | student@university.edu | student123 | STU001 | Computer Science |
+| Siti Learner | student2@university.edu | student123 | STU002 | Engineering |
+
+### Staff
+
+| Name | Email | Password | Department |
+|------|-------|----------|------------|
+| Dr. Rahman Staff | staff@university.edu | staff123 | Student Affairs |
+| Pn. Aisha Handler | staff2@university.edu | staff123 | Facilities |
+
+### Admin
+
+| Name | Email | Password | Department |
+|------|-------|----------|------------|
+| Admin User | admin@university.edu | admin123 | Administration |

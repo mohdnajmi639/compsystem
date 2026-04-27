@@ -1,4 +1,11 @@
 import mongoose from 'mongoose';
+import dns from 'dns';
+
+// Fix for environments where Node.js c-ares DNS resolver picks the wrong server.
+// Set DNS_SERVER in .env.local to override (e.g. DNS_SERVER=192.168.64.1).
+if (process.env.DNS_SERVER) {
+  dns.setServers([process.env.DNS_SERVER]);
+}
 
 const MONGODB_URI = process.env.MONGODB_URI;
 

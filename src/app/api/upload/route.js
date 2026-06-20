@@ -7,8 +7,8 @@ export async function POST(request) {
     const formData = await request.formData();
     const file = formData.get('file');
 
-    if (!file) {
-      return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
+    if (!file || typeof file.arrayBuffer !== 'function') {
+      return NextResponse.json({ error: 'No valid file uploaded' }, { status: 400 });
     }
 
     const bytes = await file.arrayBuffer();
@@ -29,6 +29,7 @@ export async function POST(request) {
       name: file.name,
     });
   } catch (error) {
+    console.error('Upload API Error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

@@ -26,7 +26,7 @@ const ComplaintSchema = new mongoose.Schema({
   },
   category: {
     type: String,
-    enum: ['Academic', 'Facility', 'Financial', 'Administrative', 'Other'],
+    enum: ['Academic', 'Facility', 'Financial', 'Administrative', 'Other', 'General', 'ICT'],
     required: true,
   },
   priority: {

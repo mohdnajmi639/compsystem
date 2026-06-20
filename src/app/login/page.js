@@ -1,11 +1,15 @@
 'use client';
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { Suspense } from 'react';
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -16,37 +20,134 @@ export default function LoginPage() {
     setError('');
     const res = await signIn('credentials', { ...form, redirect: false });
     setLoading(false);
-    if (res?.error) setError(res.error);
-    else router.push('/dashboard');
+    if (res?.error) {
+      setError('E-mel atau kata laluan tidak sah. Sila cuba semula.');
+    } else {
+      router.push(callbackUrl);
+    }
   };
 
+  const registerUrl = `/register?callbackUrl=${encodeURIComponent(callbackUrl)}`;
+
   return (
-    <div className="auth-container">
-      <div className="card auth-card">
-        <h1>Welcome Back</h1>
-        <p className="subtitle">Sign in to your account</p>
-        {error && <div className="auth-error">{error}</div>}
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label className="form-label">Email</label>
-            <input className="form-input" type="email" required value={form.email} onChange={e => setForm({...form, email: e.target.value})} placeholder="you@university.edu" />
+    <div className="lp-auth-root">
+      {/* Navbar */}
+      <nav className="lp-nav">
+        <div className="lp-nav-inner">
+          <Link href="/" className="lp-logo" id="auth-logo">
+            <span className="lp-logo-circle">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="#fff" strokeWidth="2"/>
+                <circle cx="12" cy="12" r="4" fill="#fff"/>
+                <path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="#fff" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+            </span>
+            <span className="lp-logo-text">ADUAN</span>
+          </Link>
+          <div className="lp-nav-links">
+            <Link href="/" className="lp-nav-link" id="nav-anjung">Anjung</Link>
+            <Link href="#" className="lp-nav-link" id="nav-aduan">Aduan Baharu</Link>
+            <Link href="#" className="lp-nav-link" id="nav-semakan">Semakan</Link>
+            <Link href="#" className="lp-nav-link" id="nav-panduan">Panduan</Link>
+            <Link href="#" className="lp-nav-link" id="nav-faq">Soalan Lazim</Link>
           </div>
-          <div className="form-group">
-            <label className="form-label">Password</label>
-            <input className="form-input" type="password" required value={form.password} onChange={e => setForm({...form, password: e.target.value})} placeholder="••••••••" />
+          <div className="lp-nav-end">
+            <div className="lp-lang-group">
+              <button className="lp-lang-active" id="lang-my">🇲🇾</button>
+              <button className="lp-lang-btn" id="lang-en">🇬🇧</button>
+            </div>
+            <Link href={registerUrl} className="lp-login-btn" id="register-nav-btn">Daftar</Link>
           </div>
-          <button className="btn btn-primary btn-lg" style={{width:'100%'}} disabled={loading}>
-            {loading ? 'Signing in...' : 'Sign In'}
-          </button>
-        </form>
-        <p className="auth-footer">Don&apos;t have an account? <Link href="/register">Register</Link></p>
-        <div style={{marginTop:'20px',padding:'14px',background:'var(--bg-glass)',borderRadius:'var(--radius-sm)',fontSize:'0.8rem',color:'var(--text-muted)'}}>
-          <strong style={{color:'var(--text-secondary)'}}>Demo Accounts:</strong><br/>
-          Student: student@university.edu / student123<br/>
-          Staff: staff@university.edu / staff123<br/>
-          Admin: admin@university.edu / admin123
+        </div>
+      </nav>
+
+      {/* Auth Body */}
+      <div className="lp-auth-body">
+        <div className="lp-auth-card">
+          <div className="lp-auth-header">
+            <span className="lp-logo-circle" style={{width:48,height:48,marginBottom:16}}>
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="#fff" strokeWidth="2"/>
+                <circle cx="12" cy="12" r="4" fill="#fff"/>
+                <path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="#fff" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+            </span>
+            <h1 className="lp-auth-title">Log Masuk</h1>
+            <p className="lp-auth-subtitle">Sila log masuk dengan akaun pelajar anda</p>
+          </div>
+
+          {error && <div className="lp-auth-error">{error}</div>}
+
+          <form onSubmit={handleSubmit} className="lp-auth-form">
+            <div className="lp-auth-field">
+              <label className="lp-auth-label">E-mel Pelajar</label>
+              <input
+                id="login-email"
+                className="lp-auth-input"
+                type="email"
+                required
+                value={form.email}
+                onChange={e => setForm({...form, email: e.target.value})}
+                placeholder="example@student.uitm.edu.my"
+              />
+            </div>
+            <div className="lp-auth-field">
+              <label className="lp-auth-label">Kata Laluan</label>
+              <input
+                id="login-password"
+                className="lp-auth-input"
+                type="password"
+                required
+                value={form.password}
+                onChange={e => setForm({...form, password: e.target.value})}
+                placeholder="••••••••"
+              />
+            </div>
+            <button
+              id="login-submit"
+              className="lp-auth-btn"
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? 'Mengesahkan...' : 'Log Masuk'}
+            </button>
+          </form>
+
+          <div className="lp-auth-divider"><span>atau</span></div>
+
+          <div className="lp-auth-register-box">
+            <p className="lp-auth-register-text">Belum mempunyai akaun?</p>
+            <Link href={registerUrl} className="lp-auth-register-btn" id="go-register-btn">
+              Daftar Akaun Baharu
+            </Link>
+          </div>
+
+          <div className="lp-auth-demo">
+            <p className="lp-auth-demo-title">Akaun Demo:</p>
+            <p>Pelajar: student@university.edu / student123</p>
+            <p>Pentadbir: admin@university.edu / admin123</p>
+          </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="lp-footer">
+        <div className="lp-footer-inner">
+          <p className="lp-footer-text">
+            <strong>Penafian dan Notis Privasi:</strong>{' '}
+            Sistem ini disediakan untuk pengurusan aduan rasmi UiTM. Semua data yang dikemukakan adalah sulit dan hanya untuk kegunaan dalaman universiti.
+          </p>
+          <p className="lp-footer-copy">© Pejabat Komunikasi Strategik, UiTM 2025</p>
+        </div>
+      </footer>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="loading"><div className="spinner" /></div>}>
+      <LoginForm />
+    </Suspense>
   );
 }

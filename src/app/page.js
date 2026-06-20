@@ -1,57 +1,155 @@
 import Link from 'next/link';
+import Image from 'next/image';
+
+export const metadata = {
+  title: 'Sistem Aduan | Pengurusan Aduan Universiti',
+  description: 'Ada aduan? Salurkan aduan anda mengikut kategori yang sesuai di bawah.',
+};
 
 export default function Home() {
   return (
-    <div className="landing">
-      <nav className="landing-nav">
-        <div className="landing-logo">🎓 UniComplaint</div>
-        <div className="landing-nav-links">
-          <Link href="/login" className="btn btn-secondary btn-sm">Login</Link>
-          <Link href="/register" className="btn btn-primary btn-sm">Register</Link>
+    <div className="lp-root">
+
+      {/* ── NAVBAR ── */}
+      <nav className="lp-nav">
+        <div className="lp-nav-inner">
+          <Link href="/" className="lp-logo" id="site-logo">
+            <span className="lp-logo-circle">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="#fff" strokeWidth="2"/>
+                <circle cx="12" cy="12" r="4" fill="#fff"/>
+                <path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="#fff" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+            </span>
+            <span className="lp-logo-text">ADUAN</span>
+          </Link>
+
+          <div className="lp-nav-links">
+            <Link href="/" className="lp-nav-link lp-nav-active" id="nav-home">Anjung</Link>
+            <Link href="/dashboard/complaints/new" className="lp-nav-link" id="nav-new">Aduan Baharu</Link>
+            <Link href="/dashboard/complaints" className="lp-nav-link" id="nav-check">Semakan</Link>
+            <Link href="#help" className="lp-nav-link" id="nav-panduan">Panduan</Link>
+            <Link href="#faq" className="lp-nav-link" id="nav-faq">Soalan Lazim</Link>
+          </div>
+
+          <div className="lp-nav-end">
+            <div className="lp-lang-group">
+              <button className="lp-lang-active" id="lang-my">🇲🇾</button>
+              <button className="lp-lang-btn" id="lang-en">🇬🇧</button>
+            </div>
+            <Link href="/login" className="lp-login-btn" id="login-button">Log Masuk</Link>
+          </div>
         </div>
       </nav>
 
-      <section className="hero">
-        <h1>University <span>Complaint System</span></h1>
-        <p>Submit, track, and resolve complaints efficiently. Ensuring every student voice is heard and every issue is addressed promptly.</p>
-        <div className="hero-buttons">
-          <Link href="/register" className="btn btn-primary btn-lg">Get Started</Link>
-          <Link href="/login" className="btn btn-secondary btn-lg">Sign In</Link>
+      {/* ── HERO BANNER ── */}
+      <section className="lp-hero">
+        <Image
+          src="/uitm-banner.png"
+          alt="Universiti Teknologi MARA Banner"
+          fill
+          priority
+          style={{ objectFit: 'cover', objectPosition: 'center' }}
+          className="lp-hero-bg-img"
+        />
+        <div className="lp-hero-text">
+          <h1 className="lp-hero-title">Pengurusan Aduan Universiti</h1>
+          <p className="lp-hero-subtitle">Ada aduan? Salurkan aduan anda mengikut kategori yang sesuai di bawah:</p>
         </div>
       </section>
 
-      <section className="features">
-        <div className="card feature-card">
-          <div className="feature-icon">📝</div>
-          <h3>Easy Submission</h3>
-          <p>Submit complaints with detailed descriptions, categories, priorities, and file attachments.</p>
+      {/* ── MAIN PURPLE BODY ── */}
+      <main className="lp-body">
+
+        {/* Category Cards */}
+        <div className="lp-cards-row">
+          <Link href="/login?callbackUrl=/aduan/umum" className="lp-card" id="card-umum">
+            <div className="lp-card-top">
+              <div className="lp-card-diamond lp-diamond-1" />
+            </div>
+            <div className="lp-card-gradient lp-grad-1" />
+            <span className="lp-card-label">Aduan Umum</span>
+            <div className="lp-card-hover-overlay">
+              <span className="lp-card-hover-text">Sebarang aduan umum, pertanyaan, cadangan dan penghargaan</span>
+            </div>
+          </Link>
+
+          <Link href="/login?callbackUrl=/aduan/ict" className="lp-card" id="card-ict">
+            <div className="lp-card-top">
+              <div className="lp-card-diamond lp-diamond-2" />
+            </div>
+            <div className="lp-card-gradient lp-grad-2" />
+            <span className="lp-card-label">Aduan ICT</span>
+            <div className="lp-card-hover-overlay">
+              <span className="lp-card-hover-text">Sebarang masalah berkenaan dengan WIFI, internet, sistem teknologi maklumat dan komunikasi</span>
+            </div>
+          </Link>
+
+          <Link href="/login?callbackUrl=/aduan/fasiliti" className="lp-card" id="card-fasiliti">
+            <div className="lp-card-top">
+              <div className="lp-card-diamond lp-diamond-3" />
+            </div>
+            <div className="lp-card-gradient lp-grad-3" />
+            <span className="lp-card-label">Aduan Fasiliti</span>
+            <div className="lp-card-hover-overlay">
+              <span className="lp-card-hover-text">Sebarang kerosakan elektrikal, landskap, pengurusan majlis, sivil dan telekomunikasi</span>
+            </div>
+          </Link>
         </div>
-        <div className="card feature-card">
-          <div className="feature-icon">📡</div>
-          <h3>Real-Time Tracking</h3>
-          <p>Track the status of your complaints from submission to resolution with live updates.</p>
+
+
+        {/* Quick Action Buttons */}
+        <div className="lp-qa-row">
+          <Link href="/dashboard/complaints" className="lp-qa-btn" id="btn-semak">Semak Aduan</Link>
+          <Link href="/manual" className="lp-qa-btn" id="btn-manual">Manual Aduan Umum</Link>
+          <Link href="#faq" className="lp-qa-btn" id="btn-faq">Soalan Lazim</Link>
         </div>
-        <div className="card feature-card">
-          <div className="feature-icon">👥</div>
-          <h3>Role-Based Access</h3>
-          <p>Students submit, staff manage, and admins oversee — each with a tailored dashboard.</p>
+
+        {/* Perlukan Bantuan */}
+        <section className="lp-help" id="help">
+          <h2 className="lp-help-title">Perlukan Bantuan?</h2>
+          <p className="lp-help-desc">Jika anda berada dalam situasi kecemasan, berikut adalah talian penting yang boleh dihubungi:</p>
+
+          <div className="lp-help-cols">
+            <div className="lp-help-col">
+              <h3 className="lp-help-col-title">Kecemasan &amp; Keselamatan</h3>
+              <ul className="lp-help-ul">
+                <li><strong>Dalam kampus UiTM:</strong><br/>03-5544 3999 (Keselamatan UiTM)</li>
+                <li><strong>Luar kampus:</strong><br/>999 (Polis / Ambulan / Bomba)</li>
+              </ul>
+            </div>
+
+            <div className="lp-help-col">
+              <h3 className="lp-help-col-title">Rawatan Perubatan</h3>
+              <ul className="lp-help-ul">
+                <li><strong>Ambulan UiTM (Kampus Shah Alam):</strong><br/>03-5544 2999</li>
+                <li><strong>Klinik Kesihatan UiTM:</strong><br/>03-5544 2200</li>
+                <li><strong>Hospital berdekatan:</strong><br/>Sila hadir ke hospital berhampiran untuk rawatan segera.</li>
+              </ul>
+            </div>
+
+            <div className="lp-help-col">
+              <h3 className="lp-help-col-title">Lain-Lain Perkhidmatan Kecemasan UiTM</h3>
+              <ul className="lp-help-ul">
+                <li><strong>Pejabat Bendahari UiTM (Kecemasan Kewangan):</strong><br/>03-5544 2626</li>
+                <li><strong>Talian Umum UiTM (General Line):</strong><br/>03-5544 2000</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      {/* ── FOOTER ── */}
+      <footer className="lp-footer" id="faq">
+        <div className="lp-footer-inner">
+          <p className="lp-footer-text">
+            <strong>Penafian dan Notis Privasi:</strong>{' '}
+            Sistem ini disediakan untuk pengurusan aduan rasmi UiTM. Semua data yang dikemukakan adalah sulit dan hanya untuk kegunaan dalaman universiti. Sistem ini dipantau secara berterusan dan sebarang penyalahgunaan boleh dikenakan tindakan undang-undang atau tatatertib.
+          </p>
+          <p className="lp-footer-copy">© Pejabat Komunikasi Strategik, UiTM 2025</p>
         </div>
-        <div className="card feature-card">
-          <div className="feature-icon">📊</div>
-          <h3>Analytics Dashboard</h3>
-          <p>Administrators can view trends, resolution rates, and performance metrics at a glance.</p>
-        </div>
-        <div className="card feature-card">
-          <div className="feature-icon">🔔</div>
-          <h3>Notifications</h3>
-          <p>Stay informed with in-app notifications for status changes, responses, and assignments.</p>
-        </div>
-        <div className="card feature-card">
-          <div className="feature-icon">⭐</div>
-          <h3>Feedback System</h3>
-          <p>Rate and review complaint resolutions to help improve university services.</p>
-        </div>
-      </section>
+      </footer>
+
     </div>
   );
 }

@@ -207,7 +207,7 @@ function AduanFasilitiContent() {
 
       {/* ── Top-right action links ── */}
       <div className="ef2-toplinks">
-        <Link href="/dashboard/complaints" className="ef2-toplink" id="ef2-semak-aduan">Semak Aduan</Link>
+        <Link href="/aduan/fasiliti/semak" className="ef2-toplink" id="ef2-semak-aduan">Semak Aduan</Link>
         <span className="ef2-toplink-sep">|</span>
         <button
           className="ef2-toplink ef2-toplink-btn"
@@ -233,7 +233,7 @@ function AduanFasilitiContent() {
                 Hantar Aduan Baharu
               </button>
               <span style={{ margin:'0 10px', color:'#888' }}>|</span>
-              <Link href="/dashboard/complaints" className="ef2-link" id="ef2-semak-link">Semak Status Aduan</Link>
+              <Link href="/aduan/fasiliti/semak" className="ef2-link" id="ef2-semak-link">Semak Status Aduan</Link>
             </div>
           </div>
         ) : (

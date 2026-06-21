@@ -377,7 +377,7 @@ function AduanNav({ session }) {
         <div className="lp-nav-links">
           <Link href="/" className="lp-nav-link" id="anav-anjung">Anjung</Link>
           <Link href="/aduan/umum" className="lp-nav-link lp-nav-active" id="anav-new">Aduan Baharu</Link>
-          <Link href="/dashboard/complaints" className="lp-nav-link" id="anav-semak">Semakan</Link>
+          <Link href="/aduan/umum/semak" className="lp-nav-link" id="anav-semak">Semakan</Link>
           <Link href="/#help" className="lp-nav-link" id="anav-panduan">Panduan</Link>
           <Link href="/#faq" className="lp-nav-link" id="anav-faq">Soalan Lazim</Link>
         </div>

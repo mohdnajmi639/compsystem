@@ -11,85 +11,183 @@ export default function DashboardPage() {
   const role = session?.user?.role;
 
   useEffect(() => {
-    fetch('/api/complaints').then(r => r.json()).then(d => { setComplaints(Array.isArray(d) ? d : []); setLoading(false); }).catch(() => setLoading(false));
+    fetch('/api/complaints')
+      .then(r => r.json())
+      .then(d => { setComplaints(Array.isArray(d) ? d : []); setLoading(false); })
+      .catch(() => setLoading(false));
   }, []);
 
-  const pending = complaints.filter(c => c.status === 'Pending').length;
+  const pending    = complaints.filter(c => c.status === 'Pending').length;
   const inProgress = complaints.filter(c => c.status === 'In Progress').length;
-  const resolved = complaints.filter(c => c.status === 'Resolved').length;
-  const total = complaints.length;
+  const resolved   = complaints.filter(c => c.status === 'Resolved').length;
+  const total      = complaints.length;
 
-  const getTitle = () => {
-    if (role === 'admin') return 'Admin Dashboard';
-    if (role === 'staff') return 'Staff Dashboard';
-    return 'My Dashboard';
+  const statusBadge = (s) => {
+    const map = {
+      Pending:       'badge-pending',
+      'In Progress': 'badge-progress',
+      Resolved:      'badge-resolved',
+      Rejected:      'badge-rejected',
+    };
+    return <span className={`badge ${map[s] || ''}`}>{s}</span>;
   };
 
   return (
     <>
-      <Topbar title={getTitle()} />
+      <Topbar />
       <div className="page-content">
-        <div className="stats-grid">
-          <div className="card stat-card">
-            <div className="stat-icon purple">📋</div>
-            <div className="stat-info"><h3>{total}</h3><p>Total Complaints</p></div>
+        <h1 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#111827', marginBottom: '24px' }}>Dashboard Utama</h1>
+
+        {/* ── Welcome bar ── */}
+        <div style={{
+          background: 'linear-gradient(135deg, #3b0764 0%, #5b21b6 60%, #7c3aed 100%)',
+          borderRadius: 10, padding: '24px 28px', marginBottom: 24,
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12,
+        }}>
+          <div>
+            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'rgba(255,255,255,0.7)', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 4 }}>
+              Selamat datang
+            </div>
+            <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#fff' }}>
+              {session?.user?.name}
+            </div>
+            <div style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.7)', marginTop: 3 }}>
+              {role === 'admin' ? 'Pentadbir Sistem' : 'Staf'}
+            </div>
           </div>
-          <div className="card stat-card">
-            <div className="stat-icon orange">⏳</div>
-            <div className="stat-info"><h3>{pending}</h3><p>Pending</p></div>
-          </div>
-          <div className="card stat-card">
-            <div className="stat-icon blue">🔄</div>
-            <div className="stat-info"><h3>{inProgress}</h3><p>In Progress</p></div>
-          </div>
-          <div className="card stat-card">
-            <div className="stat-icon green">✅</div>
-            <div className="stat-info"><h3>{resolved}</h3><p>Resolved</p></div>
+          <div style={{ display: 'flex', gap: 10 }}>
+            <style>{`
+              .hero-btn-users {
+                background: rgba(255,255,255,0.15) !important;
+                color: #fff !important;
+                border: 1px solid rgba(255,255,255,0.3) !important;
+                transition: background 0.15s, border-color 0.15s !important;
+                border-radius: 0 !important;
+              }
+              .hero-btn-users:hover {
+                background: rgba(255,255,255,0.25) !important;
+                border-color: rgba(255,255,255,0.4) !important;
+              }
+              .hero-btn-analytics {
+                background: #fff !important;
+                color: #5b21b6 !important;
+                font-weight: 700 !important;
+                transition: background 0.15s, opacity 0.15s !important;
+                border-radius: 0 !important;
+                border: none !important;
+              }
+              .hero-btn-analytics:hover {
+                background: #f3f4f6 !important;
+              }
+            `}</style>
+            {role === 'admin' && (
+              <Link href="/dashboard/users" className="btn hero-btn-users" id="dash-manage-users">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                  <circle cx="9" cy="7" r="4"/>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                Pengguna
+              </Link>
+            )}
+            <Link href="/dashboard/analytics" className="btn hero-btn-analytics" id="dash-analytics">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
+                <line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/>
+              </svg>
+              Analitik
+            </Link>
           </div>
         </div>
 
-        <div className="card" style={{marginBottom:'24px'}}>
-          <h3 style={{marginBottom:'16px'}}>Recent Complaints</h3>
+        {/* ── Single Unified Stats Bar ── */}
+        <div className="card" style={{ display: 'flex', padding: 0, marginBottom: 24, overflow: 'hidden', flexWrap: 'wrap' }}>
+          {[
+            { label: 'Jumlah Aduan', value: total, color: '#7c3aed', bg: '#f5f3ff' },
+            { label: 'Menunggu', value: pending, color: '#ea580c', bg: '#fff7ed' },
+            { label: 'Dalam Proses', value: inProgress, color: '#2563eb', bg: '#eff6ff' },
+            { label: 'Selesai', value: resolved, color: '#16a34a', bg: '#f0fdf4' },
+          ].map((stat, i) => (
+            <div key={i} style={{ flex: '1 1 200px', padding: '24px', borderRight: i < 3 ? '1px solid #e5e7eb' : 'none', display: 'flex', alignItems: 'center', gap: '16px', minWidth: '200px' }}>
+              <div style={{ width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: stat.bg, color: stat.color, flexShrink: 0 }}>
+                {i === 0 && <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>}
+                {i === 1 && <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>}
+                {i === 2 && <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>}
+                {i === 3 && <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>}
+              </div>
+              <div>
+                <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#111827', lineHeight: 1 }}>{stat.value}</div>
+                <div style={{ fontSize: '0.78rem', color: '#6b7280', marginTop: '4px' }}>{stat.label}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* ── Recent Complaints Data Table ── */}
+        <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 24px', borderBottom: '1px solid #e5e7eb' }}>
+            <div>
+              <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#111827', margin: 0 }}>Aduan Terkini</h3>
+              <p style={{ fontSize: '0.78rem', color: '#9ca3af', margin: '4px 0 0 0' }}>5 aduan terkini dalam sistem</p>
+            </div>
+            <Link href="/dashboard/complaints" className="btn btn-secondary btn-sm" id="dash-view-all">
+              Lihat Semua →
+            </Link>
+          </div>
+
           {loading ? (
-            <div className="loading"><div className="spinner" /></div>
+            <div style={{ padding: '40px', textAlign: 'center' }}><div className="spinner" style={{ margin: '0 auto' }} /></div>
           ) : complaints.length === 0 ? (
-            <div className="empty-state">
-              <h3>No complaints yet</h3>
-              <p>{role === 'student' ? 'Submit your first complaint to get started.' : 'No complaints to display.'}</p>
-              {role === 'student' && <Link href="/dashboard/complaints/new" className="btn btn-primary" style={{marginTop:'12px'}}>New Complaint</Link>}
+            <div className="empty-state" style={{ padding: '40px' }}>
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ margin: '0 auto 12px', display: 'block' }}>
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+              <h3 style={{ color: '#6b7280', margin: '0 0 8px 0', fontSize: '1rem' }}>Tiada aduan</h3>
+              <p style={{ margin: 0, fontSize: '0.9rem' }}>Belum ada aduan dalam sistem.</p>
             </div>
           ) : (
-            <div className="complaint-list">
-              {complaints.slice(0, 5).map(c => (
-                <Link key={c._id} href={`/dashboard/complaints/${c._id}`} style={{textDecoration:'none',color:'inherit'}}>
-                  <div className="card complaint-card">
-                    <div>
-                      <div className="complaint-title">{c.title}</div>
-                      <div className="complaint-meta">
-                        <span className={`badge badge-${c.status === 'In Progress' ? 'progress' : c.status.toLowerCase()}`}>{c.status}</span>
-                        <span className={`badge badge-${c.priority.toLowerCase()}`}>{c.priority}</span>
-                        <span>{c.category}</span>
-                      </div>
-                    </div>
-                    <div className="complaint-right">
-                      <span className="complaint-date">{new Date(c.createdAt).toLocaleDateString()}</span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
+            <div className="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID / Tajuk</th>
+                    <th>Status</th>
+                    <th>Kategori</th>
+                    <th>Pengadu</th>
+                    <th style={{ textAlign: 'right' }}>Tarikh</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {complaints.slice(0, 5).map(c => (
+                    <tr key={c._id}>
+                      <td>
+                        <Link href={`/dashboard/complaints/${c._id}`} style={{ textDecoration: 'none', display: 'block' }}>
+                          <div style={{ color: '#111827', fontSize: '0.92rem', fontWeight: 700, marginBottom: '2px' }}>{c.title}</div>
+                          <div style={{ color: '#6b7280', fontSize: '0.75rem' }}>#{c._id.slice(-6).toUpperCase()}</div>
+                        </Link>
+                      </td>
+                      <td>
+                        {statusBadge(c.status)}
+                      </td>
+                      <td>
+                        <span style={{ color: '#374151', fontSize: '0.85rem' }}>{c.category}</span>
+                      </td>
+                      <td>
+                        <span style={{ color: '#374151', fontSize: '0.85rem' }}>{c.submittedBy?.name || '-'}</span>
+                      </td>
+                      <td style={{ textAlign: 'right' }}>
+                        <div style={{ color: '#6b7280', fontSize: '0.85rem' }}>{new Date(c.createdAt).toLocaleDateString('ms-MY')}</div>
+                        {c.responses?.length > 0 && <div style={{ fontSize: '0.7rem', color: '#9ca3af', marginTop: '2px' }}>{c.responses.length} respons</div>}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
         </div>
 
-        {role === 'student' && (
-          <Link href="/dashboard/complaints/new" className="btn btn-primary btn-lg">✏️ Submit New Complaint</Link>
-        )}
-        {role === 'admin' && (
-          <div style={{display:'flex',gap:'12px'}}>
-            <Link href="/dashboard/analytics" className="btn btn-primary">📈 View Analytics</Link>
-            <Link href="/dashboard/users" className="btn btn-secondary">👥 Manage Users</Link>
-          </div>
-        )}
       </div>
     </>
   );

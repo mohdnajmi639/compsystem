@@ -15,7 +15,10 @@ export default function ComplaintsPage() {
     if (filters.status) params.set('status', filters.status);
     if (filters.category) params.set('category', filters.category);
     if (filters.priority) params.set('priority', filters.priority);
-    fetch(`/api/complaints?${params}`).then(r => r.json()).then(d => { setComplaints(Array.isArray(d) ? d : []); setLoading(false); }).catch(() => setLoading(false));
+    fetch(`/api/complaints?${params}`, { cache: 'no-store' })
+      .then(r => r.json())
+      .then(d => { setComplaints(Array.isArray(d) ? d : []); setLoading(false); })
+      .catch(() => setLoading(false));
   }, [filters]);
 
   const statusBadge = (s) => {

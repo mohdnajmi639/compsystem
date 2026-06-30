@@ -15,7 +15,8 @@ export async function GET(request, { params }) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const id = params.id;
+    const unwrappedParams = await params;
+    const id = unwrappedParams.id;
     const complaint = await Complaint.findById(id)
       .populate('submittedBy', 'name email studentId department')
       .populate('assignedTo', 'name email department')
@@ -41,7 +42,8 @@ export async function PUT(request, { params }) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const id = params.id;
+    const unwrappedParams = await params;
+    const id = unwrappedParams.id;
     const body = await request.json();
     const { status, assignedTo, response, priority, feedback } = body;
 
@@ -131,7 +133,8 @@ export async function DELETE(request, { params }) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const id = params.id;
+    const unwrappedParams = await params;
+    const id = unwrappedParams.id;
     await Complaint.findByIdAndDelete(id);
     await Notification.deleteMany({ relatedComplaint: id });
 

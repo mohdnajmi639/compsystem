@@ -3,6 +3,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
+import HomeUserMenu from '@/components/HomeUserMenu';
 
 function AduanUmumForm() {
   const router = useRouter();
@@ -387,12 +388,7 @@ function AduanNav({ session }) {
             <button className="lp-lang-btn" id="anav-lang-en">🇬🇧</button>
           </div>
           {session ? (
-            <div className="aduan-nav-user">
-              <span className="aduan-nav-username">{session.user.name?.split(' ')[0]}</span>
-              <button className="lp-login-btn" onClick={() => signOut({ callbackUrl: '/' })} id="anav-logout">
-                Log Keluar
-              </button>
-            </div>
+            <HomeUserMenu session={session} />
           ) : (
             <Link href="/login?callbackUrl=/aduan/umum" className="lp-login-btn" id="anav-login">
               Log Masuk

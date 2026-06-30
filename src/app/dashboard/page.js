@@ -11,7 +11,7 @@ export default function DashboardPage() {
   const role = session?.user?.role;
 
   useEffect(() => {
-    fetch('/api/complaints')
+    fetch('/api/complaints', { cache: 'no-store' })
       .then(r => r.json())
       .then(d => { setComplaints(Array.isArray(d) ? d : []); setLoading(false); })
       .catch(() => setLoading(false));

@@ -166,14 +166,16 @@ function AduanFasilitiContent() {
       {/* ── Header ── */}
       <header className="ef-header">
         <div className="ef-header-logo">
-          <div className="ef-logo-box">
-            <svg width="52" height="52" viewBox="0 0 60 60" fill="none">
-              <rect x="0" y="0" width="60" height="60" fill="#6b0d8a" rx="4" />
-              <text x="30" y="22" textAnchor="middle" fontFamily="Georgia, serif" fontWeight="900" fontSize="11" fill="#f5c518">UNIVERSITI</text>
-              <text x="30" y="34" textAnchor="middle" fontFamily="Georgia, serif" fontWeight="900" fontSize="9"  fill="white">TEKNOLOGI</text>
-              <text x="30" y="46" textAnchor="middle" fontFamily="Georgia, serif" fontWeight="900" fontSize="11" fill="#f5c518">MARA</text>
-            </svg>
-          </div>
+          <Link href="/" style={{ textDecoration: 'none' }}>
+            <div className="ef-logo-box">
+              <svg width="52" height="52" viewBox="0 0 60 60" fill="none">
+                <rect x="0" y="0" width="60" height="60" fill="#6b0d8a" rx="4" />
+                <text x="30" y="22" textAnchor="middle" fontFamily="Georgia, serif" fontWeight="900" fontSize="11" fill="#f5c518">UNIVERSITI</text>
+                <text x="30" y="34" textAnchor="middle" fontFamily="Georgia, serif" fontWeight="900" fontSize="9"  fill="white">TEKNOLOGI</text>
+                <text x="30" y="46" textAnchor="middle" fontFamily="Georgia, serif" fontWeight="900" fontSize="11" fill="#f5c518">MARA</text>
+              </svg>
+            </div>
+          </Link>
         </div>
         <div className="ef-header-title">
           <h1 className="ef-title">e-Aduan Fasiliti</h1>
@@ -207,6 +209,8 @@ function AduanFasilitiContent() {
 
       {/* ── Top-right action links ── */}
       <div className="ef2-toplinks">
+        <Link href="/" className="ef2-toplink" id="ef2-laman-utama">Laman Utama</Link>
+        <span className="ef2-toplink-sep">|</span>
         <Link href="/aduan/fasiliti/semak" className="ef2-toplink" id="ef2-semak-aduan">Semak Aduan</Link>
         <span className="ef2-toplink-sep">|</span>
         <button

@@ -424,16 +424,18 @@ function UnitsSidebar({ active }) {
   return (
     <aside className="units-sidebar">
       <div className="units-sidebar-logo-area">
-        <div className="units-logo-box">
-          <svg width="52" height="28" viewBox="0 0 80 40" fill="none">
-            <text x="2"  y="30" fontFamily="Arial, sans-serif" fontWeight="900" fontSize="30" fill="white">u</text>
-            <text x="20" y="30" fontFamily="Arial, sans-serif" fontWeight="900" fontSize="30" fill="white">n</text>
-            <text x="38" y="30" fontFamily="Arial, sans-serif" fontWeight="900" fontSize="30" fill="white" fontStyle="italic">i</text>
-            <text x="48" y="30" fontFamily="Arial, sans-serif" fontWeight="900" fontSize="30" fill="#f59e0b">T</text>
-            <text x="62" y="30" fontFamily="Arial, sans-serif" fontWeight="900" fontSize="30" fill="#f59e0b">S</text>
-          </svg>
-          <div className="units-logo-sub">University IT Services</div>
-        </div>
+        <Link href="/" style={{ textDecoration: 'none' }}>
+          <div className="units-logo-box">
+            <svg width="52" height="28" viewBox="0 0 80 40" fill="none">
+              <text x="2"  y="30" fontFamily="Arial, sans-serif" fontWeight="900" fontSize="30" fill="white">u</text>
+              <text x="20" y="30" fontFamily="Arial, sans-serif" fontWeight="900" fontSize="30" fill="white">n</text>
+              <text x="38" y="30" fontFamily="Arial, sans-serif" fontWeight="900" fontSize="30" fill="white" fontStyle="italic">i</text>
+              <text x="48" y="30" fontFamily="Arial, sans-serif" fontWeight="900" fontSize="30" fill="#f59e0b">T</text>
+              <text x="62" y="30" fontFamily="Arial, sans-serif" fontWeight="900" fontSize="30" fill="#f59e0b">S</text>
+            </svg>
+            <div className="units-logo-sub">University IT Services</div>
+          </div>
+        </Link>
       </div>
       <nav className="units-sidebar-nav">
         <Link
@@ -473,6 +475,9 @@ function UnitsTopbar({ userName, onSignOut }) {
         <span style={{ fontSize: '0.65rem', marginLeft: 4 }}>▾</span>
         {open && (
           <div className="units-topbar-dropdown">
+            <Link href="/" className="units-topbar-dropdown-item" style={{ textDecoration: 'none', display: 'block', color: '#374151' }}>
+              Laman Utama
+            </Link>
             <button onClick={onSignOut} className="units-topbar-dropdown-item" id="topbar-logout">
               Log Out
             </button>

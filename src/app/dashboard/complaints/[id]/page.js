@@ -15,7 +15,8 @@ export default function ComplaintDetailPage({ params }) {
   const [staffList, setStaffList] = useState([]);
   const [showAssign, setShowAssign] = useState(false);
   const [assignTo, setAssignTo] = useState('');
-  const [feedback, setFeedback] = useState({ rating: 0, comment: '' });
+  const [feedbackRating, setFeedbackRating] = useState(0);
+  const [feedbackComment, setFeedbackComment] = useState('');
   const role = session?.user?.role;
 
   useEffect(() => {
@@ -39,7 +40,7 @@ export default function ComplaintDetailPage({ params }) {
 
   const handleStatusChange = async (newStatus) => { await updateComplaint({ status: newStatus }); };
   const handleAssign = async () => { if (assignTo) { await updateComplaint({ assignedTo: assignTo }); setShowAssign(false); } };
-  const handleFeedback = async () => { if (feedback.rating > 0) await updateComplaint({ feedback }); };
+  const handleFeedback = async () => { if (feedbackRating > 0) await updateComplaint({ feedback: { rating: feedbackRating, comment: feedbackComment } }); };
 
   const statusBadgeClass = (s) => {
     if (!s) return '';
@@ -78,7 +79,7 @@ export default function ComplaintDetailPage({ params }) {
                   </span>
                 )}
                 <span className="badge" style={{ background: '#f3f4f6', color: '#374151', border: '1px solid #e5e7eb' }}>
-                  {complaint.category}
+                  {complaint.categoryId?.name || complaint.category || 'N/A'}
                 </span>
               </div>
             </div>
@@ -142,18 +143,18 @@ export default function ComplaintDetailPage({ params }) {
               </div>
             </div>
 
-            {complaint.feedback?.rating && (
+            {complaint.feedbackRating && (
               <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
                 <div style={{ padding: '16px 24px', borderBottom: '1px solid #e5e7eb', background: '#f9fafb' }}>
                   <h3 style={{ fontSize: '0.9rem', color: '#111827', margin: 0, fontWeight: 600 }}>Maklum Balas Pengguna</h3>
                 </div>
                 <div style={{ padding: '24px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-                    <span style={{ color: '#f59e0b', fontSize: '1.2rem', letterSpacing: '2px' }}>{'★'.repeat(complaint.feedback.rating)}{'☆'.repeat(5 - complaint.feedback.rating)}</span>
-                    <span style={{ color: '#111827', fontSize: '0.9rem', fontWeight: 600 }}>{complaint.feedback.rating} / 5</span>
+                    <span style={{ color: '#f59e0b', fontSize: '1.2rem', letterSpacing: '2px' }}>{'★'.repeat(complaint.feedbackRating)}{'☆'.repeat(5 - complaint.feedbackRating)}</span>
+                    <span style={{ color: '#111827', fontSize: '0.9rem', fontWeight: 600 }}>{complaint.feedbackRating} / 5</span>
                   </div>
-                  {complaint.feedback.comment ? (
-                    <p style={{ color: '#374151', fontSize: '0.9rem', fontStyle: 'italic', margin: 0, background: '#f9fafb', padding: '12px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>"{complaint.feedback.comment}"</p>
+                  {complaint.feedbackComment ? (
+                    <p style={{ color: '#374151', fontSize: '0.9rem', fontStyle: 'italic', margin: 0, background: '#f9fafb', padding: '12px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>"{complaint.feedbackComment}"</p>
                   ) : (
                     <p style={{ color: '#9ca3af', fontSize: '0.85rem', margin: 0 }}>Tiada komen tambahan diberikan.</p>
                   )}

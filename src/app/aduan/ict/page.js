@@ -3,6 +3,8 @@ import { useState, useEffect, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
+import { NavDropdownAduan, NavDropdownSemak } from '@/components/NavDropdown';
+import HomeUserMenu from '@/components/HomeUserMenu';
 
 /* ── Ticket ID generator ── */
 function generateTicketId() {
@@ -46,7 +48,6 @@ function AduanICTForm() {
 
   const [ticketId] = useState(generateTicketId);
   const [form, setForm] = useState({
-    branch: '-CHOOSE CAMPUS-',
     locationDetail: '',
     category: '-CHOOSE CATEGORY-',
     details: '',
@@ -90,10 +91,7 @@ function AduanICTForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (form.branch === '-CHOOSE CAMPUS-') {
-      setError('Sila pilih kampus (Branch).');
-      return;
-    }
+
     if (form.category === '-CHOOSE CATEGORY-') {
       setError('Sila pilih kategori.');
       return;
@@ -105,7 +103,7 @@ function AduanICTForm() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          title: `[ICT] ${form.category} — ${form.branch}`,
+          title: `[ICT] ${form.category}`,
           description: form.details,
           category: 'ICT',
           priority: 'Medium',
@@ -123,7 +121,6 @@ function AduanICTForm() {
 
   const handleReset = () => {
     setForm({
-      branch: '-CHOOSE CAMPUS-',
       locationDetail: '',
       category: '-CHOOSE CATEGORY-',
       details: '',
@@ -138,356 +135,312 @@ function AduanICTForm() {
 
   if (status === 'loading') {
     return (
-      <div className="units-shell">
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1, minHeight: '100vh' }}>
-          <div className="spinner" />
-        </div>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="spinner" />
       </div>
     );
   }
 
   const userName = session?.user?.name || 'USER';
-  const userFirstName = userName.split(' ')[0];
 
   if (submitted) {
     return (
-      <div className="units-shell">
-        <UnitsSidebar active="new" />
-        <div className="units-main">
-          <UnitsTopbar userName={userName} onSignOut={() => signOut({ callbackUrl: '/' })} />
-          <div className="units-content">
-            <div className="units-success-box">
-              <div className="units-success-icon">✓</div>
-              <h2 className="units-success-title">Aduan Berjaya Dihantar!</h2>
-              <p className="units-success-text">
-                Aduan ICT anda telah diterima. No. Tiket: <strong style={{ color: '#d97706' }}>{ticketId}</strong>
-                <br />Anda akan menerima maklum balas melalui e-mel dalam masa 3–5 hari bekerja.
-              </p>
-              <div className="units-success-actions">
-                <button
-                  className="units-btn-green"
-                  onClick={() => { setSubmitted(false); handleReset(); }}
-                >
-                  New ADUAN ICT
-                </button>
-                <Link href="/aduan/ict/status" className="units-btn-outline">
-                  Status ADUAN ICT
-                </Link>
-              </div>
+      <div className="aduan-root">
+        <AduanNav session={session} />
+        <main className="aduan-body">
+          <div className="aduan-success-box">
+            <div className="aduan-success-icon">✓</div>
+            <h2 className="aduan-success-title">Aduan Berjaya Dihantar!</h2>
+            <p className="aduan-success-text">
+              Aduan ICT anda telah diterima. No. Tiket: <strong style={{ color: '#7c3aed' }}>{ticketId}</strong>
+              <br />Anda akan menerima maklum balas melalui e-mel dalam masa 3–5 hari bekerja.
+            </p>
+            <div className="aduan-success-actions">
+              <button
+                className="aduan-submit-btn"
+                onClick={() => { setSubmitted(false); handleReset(); }}
+                id="ict-new-aduan"
+              >
+                Hantar Aduan Baharu
+              </button>
+              <Link href="/aduan/ict/status" className="aduan-cancel-btn" id="ict-status-link">
+                Status Aduan ICT
+              </Link>
             </div>
           </div>
-          <UnitsFooter />
-        </div>
+        </main>
+        <AduanFooter />
       </div>
     );
   }
 
   return (
-    <div className="units-shell">
-      {/* Left Sidebar */}
-      <UnitsSidebar active="new" />
+    <div className="aduan-root">
+      <AduanNav session={session} />
 
-      {/* Main Area */}
-      <div className="units-main">
-        {/* Top Bar */}
-        <UnitsTopbar userName={userName} onSignOut={() => signOut({ callbackUrl: '/' })} />
+      <main className="aduan-body">
+        {/* Page Title Bar */}
+        <div className="aduan-page-header">
+          <div className="aduan-page-header-inner">
+            <div className="aduan-breadcrumb">
+              <Link href="/">Anjung</Link>
+              <span className="aduan-breadcrumb-sep">›</span>
+              <span>Aduan Baharu</span>
+              <span className="aduan-breadcrumb-sep">›</span>
+              <span className="aduan-breadcrumb-active">Aduan ICT</span>
+            </div>
+            <h1 className="aduan-page-title">Aduan ICT</h1>
+            <p className="aduan-page-desc">Aduan berkaitan rangkaian, perkakasan, perisian, akaun dan perkhidmatan IT universiti</p>
+          </div>
+        </div>
 
-        {/* Scrollable Content */}
-        <div className="units-content">
-          {error && <div className="units-form-error">{error}</div>}
+        {/* Form Container */}
+        <div className="aduan-form-wrap">
+          {error && <div className="aduan-form-error">{error}</div>}
 
           <form onSubmit={handleSubmit} noValidate>
 
-            {/* ── Ticket ID + User Type ── */}
-            <div className="units-ticket-row">
-              <div className="units-ticket-cell">
-                <span className="units-ticket-label">Ticket ID :</span>
-                <span className="units-ticket-value">{ticketId}</span>
+            {/* ── Bahagian 1: Maklumat Pengguna ── */}
+            <div className="aduan-section">
+              <div className="aduan-section-title">
+                <span className="aduan-section-num">1</span>
+                Maklumat Pengguna
               </div>
-              <div className="units-ticket-cell">
-                <span className="units-ticket-label">User Type :</span>
-                <label className="units-radio-inline">
-                  <input type="radio" name="userType" defaultChecked readOnly />
-                  Student
-                </label>
-              </div>
-            </div>
+              <div className="aduan-section-body">
+                <div className="aduan-field-grid aduan-field-grid-2">
+                  <div className="aduan-field">
+                    <label className="aduan-label">Nama Penuh</label>
+                    <div className="aduan-value-box aduan-value-highlight">{userName.toUpperCase()}</div>
+                  </div>
+                  <div className="aduan-field">
+                    <label className="aduan-label">No. Pelajar / Staf</label>
+                    <div className="aduan-value-box">{session?.user?.studentId || session?.user?.staffId || '—'}</div>
+                  </div>
 
-            {/* ── Personal Information ── */}
-            <div className="units-section-heading">Personal Information</div>
-            <div className="units-info-grid">
-              {/* Row 1 */}
-              <div className="units-info-label">Name :</div>
-              <div className="units-info-value units-info-highlight">
-                {userName.toUpperCase()}
-              </div>
-              <div className="units-info-label">Student ID :</div>
-              <div className="units-info-value">{session?.user?.studentId || '2025197521'}</div>
-
-              {/* Row 2 */}
-              <div className="units-info-label">Campus :</div>
-              <div className="units-info-value units-info-highlight">
-                {session?.user?.campus || 'UiTM Kampus Puncak Perdana'}
-              </div>
-              <div className="units-info-label">Faculty :</div>
-              <div className="units-info-value units-info-highlight">
-                {session?.user?.faculty || 'KOLEJ PENGAJIAN PENGKOMPUTERAN, INFORMATIK DAN MATEMATIK'}
-              </div>
-
-              {/* Row 3 */}
-              <div className="units-info-label">UiTM Email :</div>
-              <div className="units-info-value">
-                {session?.user?.email || '2025197521@student.uitm.edu.my'}
-              </div>
-              <div className="units-info-label">
-                Alternate Email * :<br />
-                <small className="units-info-note">
-                  * Feedback complaint will be sent to <em>UiTM Email / Alternate Email</em>. Please make sure the email is correct.
-                </small>
-              </div>
-              <div className="units-info-value">
-                <input
-                  className="units-input"
-                  type="email"
-                  placeholder="Alternate Email"
-                  value={form.alternateEmail}
-                  onChange={e => setForm({ ...form, alternateEmail: e.target.value })}
-                  id="ict-alt-email"
-                />
-              </div>
-
-              {/* Row 4 — Handphone spans left col */}
-              <div className="units-info-label">Handphone No * :</div>
-              <div className="units-info-value units-info-colspan">
-                <input
-                  className="units-input units-input-sm"
-                  type="tel"
-                  placeholder="01X-XXXXXXXX"
-                  value={form.handphone}
-                  onChange={e => setForm({ ...form, handphone: e.target.value })}
-                  id="ict-handphone"
-                />
-              </div>
-            </div>
-
-            <p className="units-personal-note">
-              * <strong>Important!</strong> This information is for UniTS only. The information updated here will not be updated to other systems.
-            </p>
-
-            {/* ── Report Information ── */}
-            <div className="units-section-heading" style={{ marginTop: 28 }}>Report Information</div>
-
-            <div className="units-report-grid">
-
-              {/* Branch */}
-              <div className="units-report-label">Branch * :</div>
-              <div className="units-report-value">
-                <select
-                  className="units-select"
-                  value={form.branch}
-                  onChange={e => setForm({ ...form, branch: e.target.value })}
-                  id="ict-branch"
-                  required
-                >
-                  {CAMPUS_OPTIONS.map(opt => (
-                    <option key={opt} value={opt}>{opt}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Location Detail */}
-              <div className="units-report-label">Location Detail * :</div>
-              <div className="units-report-value">
-                <textarea
-                  className="units-textarea units-textarea-sm"
-                  placeholder="Location Detail"
-                  rows={3}
-                  value={form.locationDetail}
-                  onChange={e => setForm({ ...form, locationDetail: e.target.value })}
-                  id="ict-location"
-                  required
-                />
-              </div>
-
-              {/* Category */}
-              <div className="units-report-label">Category * :</div>
-              <div className="units-report-value">
-                <select
-                  className="units-select"
-                  value={form.category}
-                  onChange={e => setForm({ ...form, category: e.target.value })}
-                  id="ict-category"
-                  required
-                >
-                  {CATEGORY_OPTIONS.map(opt => (
-                    <option key={opt} value={opt}>{opt}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Details */}
-              <div className="units-report-label">Details * :</div>
-              <div className="units-report-value">
-                <textarea
-                  className="units-textarea"
-                  placeholder="Report Details"
-                  rows={5}
-                  value={form.details}
-                  onChange={e => setForm({ ...form, details: e.target.value })}
-                  id="ict-details"
-                  required
-                />
-              </div>
-
-              {/* Attachment */}
-              <div className="units-report-label">Attachment :</div>
-              <div className="units-report-value">
-                <input
-                  id="ict-attachment-input"
-                  type="file"
-                  accept=".pdf,.jpg,.jpeg,.gif,.png"
-                  onChange={handleFileChange}
-                  className="units-file-input"
-                />
-                <p className="units-attach-note">
-                  * Format Pdf and Image (jpeg, jpg, Gif, Png) only. Maximum upload file size is 1MB.
+                  <div className="aduan-field">
+                    <label className="aduan-label">Fakulti</label>
+                    <div className="aduan-value-box aduan-value-highlight">{session?.user?.department || '—'}</div>
+                  </div>
+                  <div className="aduan-field">
+                    <label className="aduan-label">E-mel UiTM</label>
+                    <div className="aduan-value-box">{session?.user?.email || '—'}</div>
+                  </div>
+                  <div className="aduan-field">
+                    <label className="aduan-label">E-mel Alternatif</label>
+                    <input
+                      className="aduan-input"
+                      type="email"
+                      placeholder="E-mel alternatif"
+                      value={form.alternateEmail}
+                      onChange={e => setForm({ ...form, alternateEmail: e.target.value })}
+                      id="ict-alt-email"
+                    />
+                  </div>
+                  <div className="aduan-field">
+                    <label className="aduan-label">No. Handphone <span className="aduan-required">*</span></label>
+                    <input
+                      className="aduan-input"
+                      type="tel"
+                      placeholder="01X-XXXXXXXX"
+                      value={form.handphone}
+                      onChange={e => setForm({ ...form, handphone: e.target.value })}
+                      id="ict-handphone"
+                    />
+                  </div>
+                </div>
+                <p className="aduan-field-hint" style={{ marginTop: 8 }}>
+                  * Maklumat ini adalah untuk kegunaan UniTS sahaja dan tidak akan dikemas kini ke sistem lain.
                 </p>
+              </div>
+            </div>
+
+            {/* ── Bahagian 2: Maklumat Laporan ── */}
+            <div className="aduan-section">
+              <div className="aduan-section-title">
+                <span className="aduan-section-num">2</span>
+                Maklumat Laporan
+              </div>
+              <div className="aduan-section-body">
+                <div className="aduan-field-grid aduan-field-grid-2">
+                  <div className="aduan-field">
+                    <label className="aduan-label">No. Tiket</label>
+                    <div className="aduan-value-box aduan-value-highlight">{ticketId}</div>
+                  </div>
+                  <div className="aduan-field">
+                    <label className="aduan-label">Jenis Pengguna</label>
+                    <div className="aduan-value-box">Pelajar</div>
+                  </div>
+
+                  <div className="aduan-field">
+                    <label className="aduan-label">Kategori <span className="aduan-required">*</span></label>
+                    <select
+                      className="aduan-input aduan-select"
+                      value={form.category}
+                      onChange={e => setForm({ ...form, category: e.target.value })}
+                      id="ict-category"
+                      required
+                    >
+                      {CATEGORY_OPTIONS.map(opt => (
+                        <option key={opt} value={opt}>{opt}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="aduan-field" style={{ marginTop: 8 }}>
+                  <label className="aduan-label">Butiran Lokasi <span className="aduan-required">*</span></label>
+                  <textarea
+                    className="aduan-textarea"
+                    placeholder="Location Detail"
+                    rows={3}
+                    value={form.locationDetail}
+                    onChange={e => setForm({ ...form, locationDetail: e.target.value })}
+                    id="ict-location"
+                    required
+                  />
+                </div>
+
+                <div className="aduan-field">
+                  <label className="aduan-label">Butiran Laporan <span className="aduan-required">*</span></label>
+                  <textarea
+                    className="aduan-textarea"
+                    placeholder="Report Details"
+                    rows={5}
+                    value={form.details}
+                    onChange={e => setForm({ ...form, details: e.target.value })}
+                    id="ict-details"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* ── Bahagian 3: Lampiran ── */}
+            <div className="aduan-section">
+              <div className="aduan-section-title">
+                <span className="aduan-section-num">3</span>
+                Lampiran
+              </div>
+              <div className="aduan-section-body">
+                <p className="aduan-field-hint">
+                  Format PDF dan Imej (jpeg, jpg, gif, png) sahaja. Saiz maksimum 1MB.
+                </p>
+                <div className="aduan-field">
+                  <label className="aduan-label">Pilih Fail</label>
+                  <input
+                    id="ict-attachment-input"
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.gif,.png"
+                    onChange={handleFileChange}
+                    className="aduan-input"
+                  />
+                </div>
                 {attachment && (
-                  <button
-                    type="button"
-                    className="units-remove-btn"
-                    onClick={handleRemoveAttachment}
-                  >
-                    🗑 Remove Attachment
-                  </button>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 8 }}>
+                    <span className="aduan-file-chip">📎 {attachment.name}</span>
+                    <button
+                      type="button"
+                      className="aduan-reset-btn"
+                      style={{ padding: '6px 14px', fontSize: '0.8rem', margin: 0 }}
+                      onClick={handleRemoveAttachment}
+                      id="ict-remove-attachment"
+                    >
+                      🗑 Hapus
+                    </button>
+                  </div>
                 )}
               </div>
-
             </div>
 
-            {/* ── Submit / Reset ── */}
-            <div className="units-actions-bar">
+            {/* ── Actions ── */}
+            <div className="aduan-actions">
               <button
                 type="submit"
-                className="units-btn-submit"
+                className="aduan-submit-btn"
                 disabled={loading}
                 id="ict-submit"
               >
-                {loading ? 'Submitting...' : 'SUBMIT'}
+                {loading ? 'Menghantar...' : 'Hantar Aduan'}
               </button>
               <button
                 type="button"
-                className="units-btn-reset"
+                className="aduan-reset-btn"
                 onClick={handleReset}
                 id="ict-reset"
               >
-                RESET
+                Padam Semula
               </button>
+              <Link href="/" className="aduan-cancel-btn">Batal</Link>
             </div>
 
           </form>
-        </div>
 
-        <UnitsFooter />
-      </div>
+          {/* Disclaimer */}
+          <div className="aduan-disclaimer">
+            <strong>Penafian dan Notis Privasi:</strong>{' '}
+            Sistem ini disediakan untuk pengurusan aduan rasmi UiTM. Semua data yang dikemukakan adalah sulit dan hanya untuk kegunaan dalaman universiti.
+            Sistem ini dipantau secara berterusan dan sebarang penyalahgunaan boleh dikenakan tindakan undang-undang atau tatatertib.
+          </div>
+        </div>
+      </main>
+
+      <AduanFooter />
     </div>
   );
 }
 
-/* ── Sidebar ── */
-function UnitsSidebar({ active }) {
+function AduanNav({ session }) {
   return (
-    <aside className="units-sidebar">
-      {/* Logo area */}
-      <div className="units-sidebar-logo-area">
-        <Link href="/" style={{ textDecoration: 'none' }}>
-          <div className="units-logo-box">
-            <svg width="52" height="28" viewBox="0 0 80 40" fill="none">
-              {/* uniTS-style text logo */}
-              <text x="2" y="30" fontFamily="Arial, sans-serif" fontWeight="900" fontSize="30" fill="white">u</text>
-              <text x="20" y="30" fontFamily="Arial, sans-serif" fontWeight="900" fontSize="30" fill="white">n</text>
-              <text x="38" y="30" fontFamily="Arial, sans-serif" fontWeight="900" fontSize="30" fill="white" fontStyle="italic">i</text>
-              <text x="48" y="30" fontFamily="Arial, sans-serif" fontWeight="900" fontSize="30" fill="#f59e0b">T</text>
-              <text x="62" y="30" fontFamily="Arial, sans-serif" fontWeight="900" fontSize="30" fill="#f59e0b">S</text>
+    <nav className="lp-nav">
+      <div className="lp-nav-inner">
+        <Link href="/" className="lp-logo" id="aduan-nav-logo">
+          <span className="lp-logo-circle">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="10" stroke="#fff" strokeWidth="2"/>
+              <circle cx="12" cy="12" r="4" fill="#fff"/>
+              <path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="#fff" strokeWidth="2" strokeLinecap="round"/>
             </svg>
-            <div className="units-logo-sub">University IT Services</div>
-          </div>
+          </span>
+          <span className="lp-logo-text">ADUAN</span>
         </Link>
-      </div>
-
-      {/* Navigation */}
-      <nav className="units-sidebar-nav">
-        <Link
-          href="/aduan/ict"
-          className={`units-sidebar-link${active === 'new' ? ' units-sidebar-link-active' : ''}`}
-          id="sidebar-new-aduan"
-        >
-          New ADUAN ICT
-        </Link>
-        <Link
-          href="/aduan/ict/status"
-          className={`units-sidebar-link${active === 'status' ? ' units-sidebar-link-active' : ''}`}
-          id="sidebar-status-aduan"
-        >
-          Status ADUAN ICT
-        </Link>
-      </nav>
-    </aside>
-  );
-}
-
-/* ── Top Bar ── */
-function UnitsTopbar({ userName, onSignOut }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <header className="units-topbar">
-      <div style={{ flex: 1 }} />
-      <div className="units-topbar-user" onClick={() => setOpen(o => !o)} id="topbar-user-menu">
-        <div className="units-topbar-avatar">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="12" cy="8" r="4" />
-            <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
-          </svg>
+        <div className="lp-nav-links">
+          <Link href="/" className="lp-nav-link" id="anav-anjung">Anjung</Link>
+          <NavDropdownAduan />
+          <NavDropdownSemak />
+          <Link href="/#help" className="lp-nav-link" id="anav-panduan">Panduan</Link>
+          <Link href="/#faq" className="lp-nav-link" id="anav-faq">Soalan Lazim</Link>
         </div>
-        <span className="units-topbar-label">
-          WELCOME : <strong>{(userName || 'USER').toUpperCase().split(' ')[0]}</strong>
-        </span>
-        <span style={{ fontSize: '0.65rem', marginLeft: 4 }}>▾</span>
-
-        {open && (
-          <div className="units-topbar-dropdown">
-            <Link href="/" className="units-topbar-dropdown-item" style={{ textDecoration: 'none', display: 'block', color: '#374151' }}>
-              Laman Utama
+        <div className="lp-nav-end">
+          {session ? (
+            <HomeUserMenu session={session} />
+          ) : (
+            <Link href="/login?callbackUrl=/aduan/ict" className="lp-login-btn" id="anav-login">
+              Log Masuk
             </Link>
-            <button onClick={onSignOut} className="units-topbar-dropdown-item" id="topbar-logout">
-              Log Out
-            </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
-    </header>
+    </nav>
   );
 }
 
-/* ── Footer ── */
-function UnitsFooter() {
+function AduanFooter() {
   return (
-    <footer className="units-footer">
-      2017 © Pengurusan Sistem Sokongan, Jabatan Infostruktur.
+    <footer className="lp-footer">
+      <div className="lp-footer-inner">
+        <p className="lp-footer-text">
+          <strong>Penafian dan Notis Privasi:</strong>{' '}
+          Sistem ini disediakan untuk pengurusan aduan rasmi UiTM. Semua data yang dikemukakan adalah sulit dan hanya untuk kegunaan dalaman universiti.
+        </p>
+        <p className="lp-footer-copy">© Pejabat Komunikasi Strategik, UiTM 2025</p>
+      </div>
     </footer>
   );
 }
 
-/* ── Page Export ── */
 export default function AduanICTPage() {
   return (
-    <Suspense
-      fallback={
-        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div className="spinner" />
-        </div>
-      }
-    >
+    <Suspense fallback={<div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="spinner" /></div>}>
       <AduanICTForm />
     </Suspense>
   );

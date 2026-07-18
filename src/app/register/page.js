@@ -10,18 +10,47 @@ function RegisterForm() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
 
+  const [category, setCategory] = useState('student');
   const [form, setForm] = useState({
     name: '', email: '', password: '', confirmPassword: '',
-    studentId: '', department: 'Sains Komputer'
+    studentId: '', department: 'Fakulti Pengurusan Maklumat (FPM)', program: 'Diploma Pengurusan Maklumat'
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const departments = [
-    'Sains Komputer', 'Kejuruteraan', 'Perniagaan', 'Sains',
-    'Sastera', 'Perubatan', 'Undang-undang', 'Pendidikan',
-    'Senibina', 'Farmasi'
+    'Fakulti Pengurusan Maklumat (FPM)',
+    'Fakulti Filem, Teater dan Animasi (FiTA)'
   ];
+
+  const departmentPrograms = {
+    'Fakulti Pengurusan Maklumat (FPM)': [
+      'Diploma Pengurusan Maklumat',
+      'Ijazah Sarjana Muda Pengurusan Perpustakaan',
+      'Ijazah Sarjana Muda Pengurusan Rekod',
+      'Ijazah Sarjana Muda Pengurusan Sistem Maklumat',
+      'Ijazah Sarjana Muda Pengurusan Kandungan Maklumat'
+    ],
+    'Fakulti Filem, Teater dan Animasi (FiTA)': [
+      'Diploma Teknologi Kreatif (Seni Skrin)',
+      'Diploma Teknologi Kreatif (Teater)',
+      'Diploma Teknologi Kreatif (Animasi)',
+      'Sarjana Muda Teknologi Kreatif (Seni Skrin)',
+      'Sarjana Muda Teknologi Kreatif (Teater)',
+      'Sarjana Muda Teknologi Kreatif (Animasi)',
+      'Program Pengajian Seni Persembahan',
+      'Penulisan Skrin'
+    ]
+  };
+
+  const handleDepartmentChange = (e) => {
+    const dept = e.target.value;
+    setForm({
+      ...form,
+      department: dept,
+      program: departmentPrograms[dept][0]
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,9 +68,10 @@ function RegisterForm() {
           name: form.name,
           email: form.email,
           password: form.password,
-          studentId: form.studentId,
-          department: form.department,
-          role: 'student'
+          studentId: category === 'public' ? '' : form.studentId,
+          department: category === 'public' ? 'Umum' : form.department,
+          program: category === 'public' ? '' : form.program,
+          role: category === 'public' ? 'public' : 'student'
         }),
       });
       const data = await res.json();
@@ -79,10 +109,7 @@ function RegisterForm() {
             <Link href="#" className="lp-nav-link" id="nav-faq">Soalan Lazim</Link>
           </div>
           <div className="lp-nav-end">
-            <div className="lp-lang-group">
-              <button className="lp-lang-active" id="lang-my">🇲🇾</button>
-              <button className="lp-lang-btn" id="lang-en">🇬🇧</button>
-            </div>
+
             <Link href={loginUrl} className="lp-login-btn" id="login-nav-btn">Log Masuk</Link>
           </div>
         </div>
@@ -100,12 +127,26 @@ function RegisterForm() {
               </svg>
             </span>
             <h1 className="lp-auth-title">Daftar Akaun</h1>
-            <p className="lp-auth-subtitle">Cipta akaun pelajar untuk mengemukakan aduan</p>
+            <p className="lp-auth-subtitle">Cipta akaun untuk mengemukakan aduan</p>
           </div>
 
           {error && <div className="lp-auth-error">{error}</div>}
 
           <form onSubmit={handleSubmit} className="lp-auth-form">
+            <div className="lp-auth-field">
+              <label className="lp-auth-label">Kategori Pengguna</label>
+              <select
+                id="reg-category"
+                className="lp-auth-input lp-auth-select"
+                style={{ textAlign: 'center', textAlignLast: 'center' }}
+                value={category}
+                onChange={e => setCategory(e.target.value)}
+              >
+                <option value="student">Pelajar UiTM</option>
+                <option value="public">Orang Awam / Umum</option>
+              </select>
+            </div>
+
             <div className="lp-auth-row">
               <div className="lp-auth-field">
                 <label className="lp-auth-label">Nama Penuh</label>
@@ -118,20 +159,23 @@ function RegisterForm() {
                   placeholder="Nama penuh anda"
                 />
               </div>
-              <div className="lp-auth-field">
-                <label className="lp-auth-label">No. Pelajar</label>
-                <input
-                  id="reg-student-id"
-                  className="lp-auth-input"
-                  value={form.studentId}
-                  onChange={e => setForm({...form, studentId: e.target.value})}
-                  placeholder="cth. 2023123456"
-                />
-              </div>
+              {category === 'student' && (
+                <div className="lp-auth-field">
+                  <label className="lp-auth-label">No. Pelajar</label>
+                  <input
+                    id="reg-student-id"
+                    className="lp-auth-input"
+                    value={form.studentId}
+                    onChange={e => setForm({...form, studentId: e.target.value})}
+                    placeholder="cth. 2023123456"
+                    required={category === 'student'}
+                  />
+                </div>
+              )}
             </div>
 
             <div className="lp-auth-field">
-              <label className="lp-auth-label">E-mel Pelajar</label>
+              <label className="lp-auth-label">{category === 'student' ? 'E-mel Pelajar' : 'E-mel'}</label>
               <input
                 id="reg-email"
                 className="lp-auth-input"
@@ -139,21 +183,36 @@ function RegisterForm() {
                 required
                 value={form.email}
                 onChange={e => setForm({...form, email: e.target.value})}
-                placeholder="example@student.uitm.edu.my"
+                placeholder={category === 'student' ? "example@student.uitm.edu.my" : "example@gmail.com"}
               />
             </div>
 
-            <div className="lp-auth-field">
-              <label className="lp-auth-label">Fakulti / Jabatan</label>
-              <select
-                id="reg-department"
-                className="lp-auth-input lp-auth-select"
-                value={form.department}
-                onChange={e => setForm({...form, department: e.target.value})}
-              >
-                {departments.map(d => <option key={d} value={d}>{d}</option>)}
-              </select>
-            </div>
+            {category === 'student' && (
+              <>
+                <div className="lp-auth-field">
+                  <label className="lp-auth-label">Fakulti</label>
+                  <select
+                    id="reg-department"
+                    className="lp-auth-input lp-auth-select"
+                    value={form.department}
+                    onChange={handleDepartmentChange}
+                  >
+                    {departments.map(d => <option key={d} value={d}>{d}</option>)}
+                  </select>
+                </div>
+                <div className="lp-auth-field">
+                  <label className="lp-auth-label">Program / Course</label>
+                  <select
+                    id="reg-program"
+                    className="lp-auth-input lp-auth-select"
+                    value={form.program}
+                    onChange={e => setForm({...form, program: e.target.value})}
+                  >
+                    {departmentPrograms[form.department]?.map(p => <option key={p} value={p}>{p}</option>)}
+                  </select>
+                </div>
+              </>
+            )}
 
             <div className="lp-auth-row">
               <div className="lp-auth-field">

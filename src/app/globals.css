@@ -452,6 +452,7 @@ a:hover { color:var(--accent-hover); }
   display: flex;
   flex-direction: column;
   background: #f4f5f7;
+  color: #111827;
   font-family: 'Inter', system-ui, sans-serif;
 }
 

@@ -34,7 +34,7 @@ export async function POST(request) {
   try {
     await connectDB();
     const body = await request.json();
-    const { name, email, password, role, studentId, department } = body;
+    const { name, email, password, role, studentId, department, program } = body;
 
     // Check if user exists
     const existingUser = await User.findOne({ email });
@@ -52,6 +52,7 @@ export async function POST(request) {
       role: role || 'student',
       studentId,
       department: department || 'General',
+      program: program || '',
     });
 
     const userObj = user.toObject();

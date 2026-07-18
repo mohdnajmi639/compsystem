@@ -3,6 +3,8 @@ import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
+import { NavDropdownAduan, NavDropdownSemak } from '@/components/NavDropdown';
+import HomeUserMenu from '@/components/HomeUserMenu';
 
 /* ── helpers ── */
 function fmtDate(iso) {
@@ -17,15 +19,24 @@ function fmtDate(iso) {
 function statusColor(s) {
   if (!s) return '#6b7280';
   const lower = s.toLowerCase();
-  if (lower === 'resolved') return '#7c3aed';      // purple like reference
-  if (lower === 'in progress') return '#d97706';   // amber
-  if (lower === 'pending') return '#2563eb';        // blue
-  if (lower === 'rejected') return '#dc2626';       // red
+  if (lower === 'resolved')    return '#7c3aed';
+  if (lower === 'in progress') return '#d97706';
+  if (lower === 'pending')     return '#2563eb';
+  if (lower === 'rejected')    return '#dc2626';
   return '#6b7280';
 }
 
+function statusBg(s) {
+  if (!s) return '#f3f4f6';
+  const lower = s.toLowerCase();
+  if (lower === 'resolved')    return '#f5f3ff';
+  if (lower === 'in progress') return '#fffbeb';
+  if (lower === 'pending')     return '#eff6ff';
+  if (lower === 'rejected')    return '#fef2f2';
+  return '#f3f4f6';
+}
+
 function subCategory(title = '') {
-  // Derive a sub-category label from the ICT ticket title
   if (title.toLowerCase().includes('email') || title.toLowerCase().includes('akaun emel')) return 'NEW ACCOUNT';
   if (title.toLowerCase().includes('network')) return 'CONNECTIVITY';
   if (title.toLowerCase().includes('hardware')) return 'DEVICE';
@@ -48,19 +59,18 @@ function categoryLabel(c = '', title = '') {
   return c;
 }
 
-/* ── columns definition (matches the reference image) ── */
 const COLUMNS = [
   { key: 'bil',          label: 'Bil',               sortable: false },
-  { key: 'action',       label: 'Action',             sortable: false },
+  { key: 'action',       label: 'Tindakan',           sortable: false },
   { key: 'ticketId',     label: 'ICT Service Ticket', sortable: true  },
-  { key: 'dateReport',   label: 'Date Report',        sortable: true  },
-  { key: 'staffCharge',  label: 'Staff in Charge',    sortable: true  },
-  { key: 'staffDuty',    label: 'Staff on Duty',      sortable: true  },
-  { key: 'details',      label: 'Details',            sortable: false },
-  { key: 'category',     label: 'Category',           sortable: true  },
-  { key: 'subCategory',  label: 'Sub Category',       sortable: true  },
+  { key: 'dateReport',   label: 'Tarikh Hantar',      sortable: true  },
+  { key: 'staffCharge',  label: 'Staff Bertanggungjawab', sortable: true },
+  { key: 'staffDuty',    label: 'Staff Bertugas',     sortable: true  },
+  { key: 'details',      label: 'Butiran',            sortable: false },
+  { key: 'category',     label: 'Kategori',           sortable: true  },
+  { key: 'subCategory',  label: 'Sub Kategori',       sortable: true  },
   { key: 'status',       label: 'Status',             sortable: true  },
-  { key: 'completeDate', label: 'Complete date',      sortable: true  },
+  { key: 'completeDate', label: 'Tarikh Selesai',     sortable: true  },
 ];
 
 function StatusICTContent() {
@@ -75,7 +85,7 @@ function StatusICTContent() {
   const [page, setPage]             = useState(1);
   const [sortKey, setSortKey]       = useState('dateReport');
   const [sortDir, setSortDir]       = useState('desc');
-  const [verifyModal, setVerifyModal] = useState(null); // complaint being verified
+  const [verifyModal, setVerifyModal] = useState(null);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -83,7 +93,6 @@ function StatusICTContent() {
     }
   }, [status, router]);
 
-  /* fetch ICT complaints */
   useEffect(() => {
     if (status !== 'authenticated') return;
     setLoading(true);
@@ -93,13 +102,12 @@ function StatusICTContent() {
         setComplaints(Array.isArray(data) ? data : []);
         setLoading(false);
       })
-      .catch(err => {
+      .catch(() => {
         setError('Gagal memuatkan data aduan.');
         setLoading(false);
       });
   }, [status]);
 
-  /* sorting */
   function handleSort(key) {
     if (!key) return;
     if (sortKey === key) {
@@ -111,7 +119,6 @@ function StatusICTContent() {
     setPage(1);
   }
 
-  /* derived rows */
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
     return complaints.filter(c =>
@@ -139,8 +146,7 @@ function StatusICTContent() {
         va = (a._id || '').toLowerCase();
         vb = (b._id || '').toLowerCase();
       } else {
-        va = '';
-        vb = '';
+        va = ''; vb = '';
       }
       if (va < vb) return sortDir === 'asc' ? -1 : 1;
       if (va > vb) return sortDir === 'asc' ? 1 : -1;
@@ -151,261 +157,274 @@ function StatusICTContent() {
   const totalPages = Math.max(1, Math.ceil(sorted.length / perPage));
   const pageRows   = sorted.slice((page - 1) * perPage, page * perPage);
 
-  /* SortIcon */
   function SortIcon({ colKey }) {
-    if (sortKey !== colKey) return <span className="sts-sort-icon">⇅</span>;
-    return <span className="sts-sort-icon sts-sort-active">{sortDir === 'asc' ? '↑' : '↓'}</span>;
+    if (sortKey !== colKey) return <span style={{ opacity: 0.35, marginLeft: 4 }}>⇅</span>;
+    return <span style={{ color: '#7c3aed', marginLeft: 4 }}>{sortDir === 'asc' ? '↑' : '↓'}</span>;
   }
-
-  const userName = session?.user?.name || 'GUEST';
 
   if (status === 'loading') {
     return (
-      <div className="units-shell">
-        <div style={{ display:'flex', alignItems:'center', justifyContent:'center', flex:1, minHeight:'100vh' }}>
-          <div className="spinner" />
-        </div>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="spinner" />
       </div>
     );
   }
 
   return (
-    <div className="units-shell">
-      <UnitsSidebar active="status" />
+    <div className="aduan-root">
+      <AduanNav session={session} />
 
-      <div className="units-main">
-        <UnitsTopbar userName={userName} onSignOut={() => signOut({ callbackUrl: '/' })} />
-
-        <div className="units-content">
-
-          {/* ── Controls bar: records per page + search ── */}
-          <div className="sts-controls-row">
-            <div className="sts-per-page-wrap">
-              <select
-                className="sts-per-page-select"
-                value={perPage}
-                onChange={e => { setPerPage(Number(e.target.value)); setPage(1); }}
-                id="sts-per-page"
-              >
-                {[5, 10, 25, 50, 100].map(n => (
-                  <option key={n} value={n}>{n}</option>
-                ))}
-              </select>
-              <span className="sts-per-page-label">records per page</span>
+      <main className="aduan-body">
+        {/* Page Title Bar */}
+        <div className="aduan-page-header">
+          <div className="aduan-page-header-inner">
+            <div className="aduan-breadcrumb">
+              <Link href="/">Anjung</Link>
+              <span className="aduan-breadcrumb-sep">›</span>
+              <span>Semakan</span>
+              <span className="aduan-breadcrumb-sep">›</span>
+              <span className="aduan-breadcrumb-active">Status Aduan ICT</span>
             </div>
-
-            <div className="sts-search-wrap">
-              <input
-                className="sts-search-input"
-                type="text"
-                placeholder="Search..."
-                value={search}
-                onChange={e => { setSearch(e.target.value); setPage(1); }}
-                id="sts-search"
-              />
-            </div>
+            <h1 className="aduan-page-title">Status Aduan ICT</h1>
+            <p className="aduan-page-desc">Semak status aduan WiFi, internet &amp; ICT yang telah dikemukakan</p>
           </div>
+        </div>
 
-          {/* ── Error ── */}
-          {error && <div className="units-form-error">{error}</div>}
+        <div className="aduan-form-wrap">
+          {error && <div className="aduan-form-error">{error}</div>}
 
-          {/* ── Table ── */}
-          <div className="sts-table-wrap">
-            <table className="sts-table" id="sts-complaints-table">
-              <thead>
-                <tr>
-                  {COLUMNS.map(col => (
-                    <th
-                      key={col.key}
-                      className={`sts-th${col.sortable ? ' sts-th-sortable' : ''}`}
-                      onClick={() => col.sortable && handleSort(col.key)}
-                    >
-                      {col.label}
-                      {col.sortable && <SortIcon colKey={col.key} />}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {loading ? (
-                  <tr>
-                    <td colSpan={COLUMNS.length} className="sts-td sts-td-center">
-                      <div className="spinner" style={{ margin: '24px auto' }} />
-                    </td>
-                  </tr>
-                ) : pageRows.length === 0 ? (
-                  <tr>
-                    <td colSpan={COLUMNS.length} className="sts-td sts-td-center sts-empty">
-                      Tiada rekod dijumpai.
-                    </td>
-                  </tr>
-                ) : pageRows.map((c, idx) => {
-                  const globalIdx = (page - 1) * perPage + idx + 1;
-                  const staffCharge = c.assignedTo?.name || '—';
-                  const staffDuty   = c.assignedTo?.name || '—';
-                  const ticketShort = c._id?.slice(-12).toUpperCase() || '—';
-                  const isResolved  = c.status === 'Resolved';
-                  return (
-                    <tr key={c._id} className={`sts-tr${idx % 2 === 0 ? '' : ' sts-tr-alt'}`}>
-                      {/* Bil */}
-                      <td className="sts-td sts-td-center">{globalIdx}</td>
+          {/* Controls bar */}
+          <div className="aduan-section">
+            <div className="aduan-section-title">
+              <span className="aduan-section-num">📋</span>
+              Senarai Aduan ICT — {session?.user?.name || 'Pengguna'}
+            </div>
+            <div className="aduan-section-body" style={{ gap: 12 }}>
+              <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <select
+                    style={{ padding: '7px 10px', border: '1.5px solid #d1d5db', borderRadius: 4, fontSize: '0.85rem', color: '#374151', background: '#fff', outline: 'none' }}
+                    value={perPage}
+                    onChange={e => { setPerPage(Number(e.target.value)); setPage(1); }}
+                    id="sts-per-page"
+                  >
+                    {[5, 10, 25, 50, 100].map(n => (
+                      <option key={n} value={n}>{n}</option>
+                    ))}
+                  </select>
+                  <span style={{ fontSize: '0.82rem', color: '#6b7280' }}>rekod per halaman</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ fontSize: '0.82rem', color: '#6b7280' }}>Cari:</span>
+                  <input
+                    style={{ padding: '7px 12px', border: '1.5px solid #d1d5db', borderRadius: 4, fontSize: '0.85rem', color: '#374151', background: '#fff', outline: 'none', minWidth: 200 }}
+                    type="text"
+                    placeholder="Search..."
+                    value={search}
+                    onChange={e => { setSearch(e.target.value); setPage(1); }}
+                    id="sts-search"
+                  />
+                </div>
+              </div>
 
-                      {/* Action */}
-                      <td className="sts-td sts-td-center">
-                        <button
-                          className="sts-verify-btn"
-                          onClick={() => setVerifyModal(c)}
-                          id={`sts-verify-${c._id}`}
+              {/* Table */}
+              <div style={{ overflowX: 'auto', width: '100%' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }} id="sts-complaints-table">
+                  <thead>
+                    <tr style={{ background: '#f5f3ff' }}>
+                      {COLUMNS.map(col => (
+                        <th
+                          key={col.key}
+                          onClick={() => col.sortable && handleSort(col.key)}
+                          style={{
+                            padding: '10px 12px', textAlign: 'left', fontWeight: 700,
+                            fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.04em',
+                            color: '#374151', borderBottom: '2px solid #e5e7eb',
+                            cursor: col.sortable ? 'pointer' : 'default',
+                            whiteSpace: 'nowrap', userSelect: 'none',
+                          }}
                         >
-                          ✓ Verify
-                        </button>
-                      </td>
-
-                      {/* ICT Service Ticket */}
-                      <td className="sts-td sts-td-ticket">
-                        {`A${ticketShort}`}
-                      </td>
-
-                      {/* Date Report */}
-                      <td className="sts-td">{fmtDate(c.createdAt)}</td>
-
-                      {/* Staff in Charge */}
-                      <td className="sts-td sts-td-staff">{staffCharge}</td>
-
-                      {/* Staff on Duty */}
-                      <td className="sts-td sts-td-staff">{staffDuty}</td>
-
-                      {/* Details */}
-                      <td className="sts-td sts-td-details">
-                        {c.description || c.title || '—'}
-                      </td>
-
-                      {/* Category */}
-                      <td className="sts-td sts-td-small">
-                        {categoryLabel(c.category, c.title)}
-                      </td>
-
-                      {/* Sub Category */}
-                      <td className="sts-td sts-td-small">
-                        {subCategory(c.title)}
-                      </td>
-
-                      {/* Status */}
-                      <td className="sts-td sts-td-status">
-                        <span style={{ color: statusColor(c.status), fontWeight: 700 }}>
-                          {(c.status || '—').toUpperCase()}
-                          {isResolved && (
-                            <><br /><span style={{ color: '#7c3aed', fontWeight: 700 }}>COMPLETED</span></>
-                          )}
-                        </span>
-                      </td>
-
-                      {/* Complete date */}
-                      <td className="sts-td">
-                        {isResolved ? fmtDate(c.updatedAt) : '—'}
-                      </td>
+                          {col.label}
+                          {col.sortable && <SortIcon colKey={col.key} />}
+                        </th>
+                      ))}
                     </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                  </thead>
+                  <tbody>
+                    {loading ? (
+                      <tr>
+                        <td colSpan={COLUMNS.length} style={{ padding: 32, textAlign: 'center' }}>
+                          <div className="spinner" style={{ margin: '0 auto' }} />
+                        </td>
+                      </tr>
+                    ) : pageRows.length === 0 ? (
+                      <tr>
+                        <td colSpan={COLUMNS.length} style={{ padding: 32, textAlign: 'center', color: '#9ca3af', fontSize: '0.88rem' }}>
+                          Tiada rekod dijumpai.
+                        </td>
+                      </tr>
+                    ) : pageRows.map((c, idx) => {
+                      const globalIdx = (page - 1) * perPage + idx + 1;
+                      const staffCharge = c.assignedTo?.name || '—';
+                      const staffDuty   = c.assignedTo?.name || '—';
+                      const ticketShort = c._id?.slice(-12).toUpperCase() || '—';
+                      const isResolved  = c.status === 'Resolved';
+                      return (
+                        <tr key={c._id} style={{ background: idx % 2 === 0 ? '#fff' : '#fafafa', borderBottom: '1px solid #f3f4f6' }}>
+                          <td style={{ padding: '9px 12px', textAlign: 'center', color: '#6b7280' }}>{globalIdx}</td>
+                          <td style={{ padding: '9px 12px', textAlign: 'center' }}>
+                            <button
+                              onClick={() => setVerifyModal(c)}
+                              id={`sts-verify-${c._id}`}
+                              style={{
+                                padding: '5px 12px', background: '#7c3aed', color: '#fff',
+                                border: 'none', borderRadius: 4, fontSize: '0.75rem', fontWeight: 700,
+                                cursor: 'pointer', whiteSpace: 'nowrap',
+                              }}
+                            >
+                              ✓ Verify
+                            </button>
+                          </td>
+                          <td style={{ padding: '9px 12px', color: '#5b21b6', fontWeight: 700, whiteSpace: 'nowrap' }}>
+                            {`A${ticketShort}`}
+                          </td>
+                          <td style={{ padding: '9px 12px', whiteSpace: 'nowrap', color: '#374151' }}>{fmtDate(c.createdAt)}</td>
+                          <td style={{ padding: '9px 12px', color: '#374151' }}>{staffCharge}</td>
+                          <td style={{ padding: '9px 12px', color: '#374151' }}>{staffDuty}</td>
+                          <td style={{ padding: '9px 12px', maxWidth: 200, color: '#374151' }}>
+                            <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {c.description || c.title || '—'}
+                            </div>
+                          </td>
+                          <td style={{ padding: '9px 12px', fontSize: '0.75rem', color: '#374151', whiteSpace: 'nowrap' }}>
+                            {categoryLabel(c.category, c.title)}
+                          </td>
+                          <td style={{ padding: '9px 12px', fontSize: '0.75rem', color: '#374151', whiteSpace: 'nowrap' }}>
+                            {subCategory(c.title)}
+                          </td>
+                          <td style={{ padding: '9px 12px', whiteSpace: 'nowrap' }}>
+                            <span style={{
+                              color: statusColor(c.status), fontWeight: 700,
+                              background: statusBg(c.status),
+                              padding: '3px 9px', borderRadius: 4, fontSize: '0.75rem',
+                            }}>
+                              {(c.status || '—').toUpperCase()}
+                            </span>
+                          </td>
+                          <td style={{ padding: '9px 12px', whiteSpace: 'nowrap', color: '#374151' }}>
+                            {isResolved ? fmtDate(c.updatedAt) : '—'}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
 
-          {/* ── Pagination info + controls ── */}
-          <div className="sts-pagination-row">
-            <span className="sts-pagination-info">
-              {sorted.length === 0
-                ? 'Showing 0 entries'
-                : `Showing ${(page - 1) * perPage + 1} to ${Math.min(page * perPage, sorted.length)} of ${sorted.length} entries`
-              }
-            </span>
-            <div className="sts-pagination-btns">
-              <button
-                className="sts-page-btn"
-                onClick={() => setPage(p => Math.max(1, p - 1))}
-                disabled={page === 1}
-                id="sts-prev"
-              >
-                ‹
-              </button>
-              {Array.from({ length: totalPages }, (_, i) => i + 1)
-                .filter(p => p === 1 || p === totalPages || Math.abs(p - page) <= 1)
-                .reduce((acc, p, i, arr) => {
-                  if (i > 0 && p - arr[i - 1] > 1) acc.push('...');
-                  acc.push(p);
-                  return acc;
-                }, [])
-                .map((p, i) =>
-                  p === '...'
-                    ? <span key={`ellipsis-${i}`} className="sts-page-ellipsis">…</span>
-                    : (
-                      <button
-                        key={p}
-                        className={`sts-page-btn${page === p ? ' sts-page-active' : ''}`}
-                        onClick={() => setPage(p)}
-                        id={`sts-page-${p}`}
-                      >
-                        {p}
-                      </button>
+              {/* Pagination */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, paddingTop: 4 }}>
+                <span style={{ fontSize: '0.82rem', color: '#6b7280' }}>
+                  {sorted.length === 0
+                    ? 'Tiada rekod'
+                    : `Menunjukkan ${(page - 1) * perPage + 1} hingga ${Math.min(page * perPage, sorted.length)} daripada ${sorted.length} rekod`
+                  }
+                </span>
+                <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                  <button
+                    onClick={() => setPage(p => Math.max(1, p - 1))}
+                    disabled={page === 1}
+                    id="sts-prev"
+                    style={{ padding: '5px 12px', border: '1px solid #d1d5db', borderRadius: 4, background: '#fff', color: '#374151', cursor: page === 1 ? 'not-allowed' : 'pointer', opacity: page === 1 ? 0.5 : 1, fontSize: '0.85rem' }}
+                  >‹</button>
+                  {Array.from({ length: totalPages }, (_, i) => i + 1)
+                    .filter(p => p === 1 || p === totalPages || Math.abs(p - page) <= 1)
+                    .reduce((acc, p, i, arr) => {
+                      if (i > 0 && p - arr[i - 1] > 1) acc.push('...');
+                      acc.push(p);
+                      return acc;
+                    }, [])
+                    .map((p, i) =>
+                      p === '...'
+                        ? <span key={`e-${i}`} style={{ padding: '5px 8px', color: '#6b7280' }}>…</span>
+                        : (
+                          <button
+                            key={p}
+                            onClick={() => setPage(p)}
+                            id={`sts-page-${p}`}
+                            style={{
+                              padding: '5px 10px', border: '1px solid', borderRadius: 4,
+                              background: page === p ? '#7c3aed' : '#fff',
+                              borderColor: page === p ? '#7c3aed' : '#d1d5db',
+                              color: page === p ? '#fff' : '#374151',
+                              cursor: 'pointer', fontWeight: page === p ? 700 : 400,
+                              fontSize: '0.85rem',
+                            }}
+                          >{p}</button>
+                        )
                     )
-                )
-              }
-              <button
-                className="sts-page-btn"
-                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                disabled={page === totalPages}
-                id="sts-next"
-              >
-                ›
-              </button>
+                  }
+                  <button
+                    onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                    disabled={page === totalPages}
+                    id="sts-next"
+                    style={{ padding: '5px 12px', border: '1px solid #d1d5db', borderRadius: 4, background: '#fff', color: '#374151', cursor: page === totalPages ? 'not-allowed' : 'pointer', opacity: page === totalPages ? 0.5 : 1, fontSize: '0.85rem' }}
+                  >›</button>
+                </div>
+              </div>
             </div>
           </div>
 
-        </div>{/* /units-content */}
+          {/* Disclaimer */}
+          <div className="aduan-disclaimer">
+            <strong>Penafian dan Notis Privasi:</strong>{' '}
+            Sistem ini disediakan untuk pengurusan aduan rasmi UiTM. Semua data yang dikemukakan adalah sulit dan hanya untuk kegunaan dalaman universiti.
+          </div>
+        </div>
+      </main>
 
-        <UnitsFooter />
-      </div>
+      <AduanFooter />
 
-      {/* ── Verify Modal ── */}
+      {/* Verify Modal */}
       {verifyModal && (
-        <div className="sts-modal-overlay" onClick={() => setVerifyModal(null)}>
-          <div className="sts-modal" onClick={e => e.stopPropagation()}>
-            <h3 className="sts-modal-title">Verify Complaint</h3>
-            <div className="sts-modal-body">
-              <div className="sts-modal-row">
-                <span className="sts-modal-label">Ticket</span>
-                <span className="sts-modal-value sts-modal-ticket">
-                  A{verifyModal._id?.slice(-12).toUpperCase()}
-                </span>
-              </div>
-              <div className="sts-modal-row">
-                <span className="sts-modal-label">Date</span>
-                <span className="sts-modal-value">{fmtDate(verifyModal.createdAt)}</span>
-              </div>
-              <div className="sts-modal-row">
-                <span className="sts-modal-label">Status</span>
-                <span className="sts-modal-value" style={{ color: statusColor(verifyModal.status), fontWeight: 700 }}>
+        <div
+          onClick={() => setVerifyModal(null)}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{ background: '#fff', borderRadius: 8, padding: 28, maxWidth: 480, width: '90%', boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}
+          >
+            <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#1f2937', marginBottom: 16 }}>Verify Complaint</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {[
+                { label: 'Ticket', value: `A${verifyModal._id?.slice(-12).toUpperCase()}` },
+                { label: 'Date', value: fmtDate(verifyModal.createdAt) },
+                { label: 'Details', value: verifyModal.description || verifyModal.title || '—' },
+              ].map(({ label, value }) => (
+                <div key={label} style={{ display: 'flex', gap: 12, fontSize: '0.85rem' }}>
+                  <span style={{ minWidth: 80, fontWeight: 700, color: '#374151' }}>{label}</span>
+                  <span style={{ color: '#6b7280', flex: 1 }}>{value}</span>
+                </div>
+              ))}
+              <div style={{ display: 'flex', gap: 12, fontSize: '0.85rem' }}>
+                <span style={{ minWidth: 80, fontWeight: 700, color: '#374151' }}>Status</span>
+                <span style={{ color: statusColor(verifyModal.status), fontWeight: 700 }}>
                   {(verifyModal.status || '—').toUpperCase()}
                 </span>
               </div>
-              <div className="sts-modal-row">
-                <span className="sts-modal-label">Details</span>
-                <span className="sts-modal-value">{verifyModal.description || verifyModal.title || '—'}</span>
-              </div>
             </div>
-            <div className="sts-modal-actions">
+            <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
               <button
-                className="sts-verify-btn"
-                style={{ padding: '9px 28px' }}
                 onClick={() => setVerifyModal(null)}
                 id="sts-modal-confirm"
+                style={{ padding: '9px 24px', background: '#7c3aed', color: '#fff', border: 'none', borderRadius: 4, fontWeight: 700, cursor: 'pointer', fontSize: '0.88rem' }}
               >
                 ✓ Confirm
               </button>
               <button
-                className="sts-modal-close-btn"
                 onClick={() => setVerifyModal(null)}
                 id="sts-modal-close"
+                style={{ padding: '9px 20px', background: '#fff', color: '#374151', border: '1.5px solid #d1d5db', borderRadius: 4, fontWeight: 600, cursor: 'pointer', fontSize: '0.88rem' }}
               >
                 Close
               </button>
@@ -417,95 +436,58 @@ function StatusICTContent() {
   );
 }
 
-/* ══════════════════════════════════
-   Shared UI Components (same as ICT new page)
-══════════════════════════════════ */
-function UnitsSidebar({ active }) {
+function AduanNav({ session }) {
   return (
-    <aside className="units-sidebar">
-      <div className="units-sidebar-logo-area">
-        <Link href="/" style={{ textDecoration: 'none' }}>
-          <div className="units-logo-box">
-            <svg width="52" height="28" viewBox="0 0 80 40" fill="none">
-              <text x="2"  y="30" fontFamily="Arial, sans-serif" fontWeight="900" fontSize="30" fill="white">u</text>
-              <text x="20" y="30" fontFamily="Arial, sans-serif" fontWeight="900" fontSize="30" fill="white">n</text>
-              <text x="38" y="30" fontFamily="Arial, sans-serif" fontWeight="900" fontSize="30" fill="white" fontStyle="italic">i</text>
-              <text x="48" y="30" fontFamily="Arial, sans-serif" fontWeight="900" fontSize="30" fill="#f59e0b">T</text>
-              <text x="62" y="30" fontFamily="Arial, sans-serif" fontWeight="900" fontSize="30" fill="#f59e0b">S</text>
+    <nav className="lp-nav">
+      <div className="lp-nav-inner">
+        <Link href="/" className="lp-logo" id="aduan-nav-logo">
+          <span className="lp-logo-circle">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="10" stroke="#fff" strokeWidth="2"/>
+              <circle cx="12" cy="12" r="4" fill="#fff"/>
+              <path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="#fff" strokeWidth="2" strokeLinecap="round"/>
             </svg>
-            <div className="units-logo-sub">University IT Services</div>
-          </div>
+          </span>
+          <span className="lp-logo-text">ADUAN</span>
         </Link>
-      </div>
-      <nav className="units-sidebar-nav">
-        <Link
-          href="/aduan/ict"
-          className={`units-sidebar-link${active === 'new' ? ' units-sidebar-link-active' : ''}`}
-          id="sidebar-new-aduan"
-        >
-          New ADUAN ICT
-        </Link>
-        <Link
-          href="/aduan/ict/status"
-          className={`units-sidebar-link${active === 'status' ? ' units-sidebar-link-active' : ''}`}
-          id="sidebar-status-aduan"
-        >
-          Status ADUAN ICT
-        </Link>
-      </nav>
-    </aside>
-  );
-}
-
-function UnitsTopbar({ userName, onSignOut }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <header className="units-topbar">
-      <div style={{ flex: 1 }} />
-      <div className="units-topbar-user" onClick={() => setOpen(o => !o)} id="topbar-user-menu">
-        <div className="units-topbar-avatar">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="12" cy="8" r="4" />
-            <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
-          </svg>
+        <div className="lp-nav-links">
+          <Link href="/" className="lp-nav-link" id="anav-anjung">Anjung</Link>
+          <NavDropdownAduan />
+          <NavDropdownSemak />
+          <Link href="/#help" className="lp-nav-link" id="anav-panduan">Panduan</Link>
+          <Link href="/#faq" className="lp-nav-link" id="anav-faq">Soalan Lazim</Link>
         </div>
-        <span className="units-topbar-label">
-          WELCOME : <strong>{(userName || 'GUEST').toUpperCase().split(' ')[0]}</strong>
-        </span>
-        <span style={{ fontSize: '0.65rem', marginLeft: 4 }}>▾</span>
-        {open && (
-          <div className="units-topbar-dropdown">
-            <Link href="/" className="units-topbar-dropdown-item" style={{ textDecoration: 'none', display: 'block', color: '#374151' }}>
-              Laman Utama
+        <div className="lp-nav-end">
+          {session ? (
+            <HomeUserMenu session={session} />
+          ) : (
+            <Link href="/login?callbackUrl=/aduan/ict/status" className="lp-login-btn" id="anav-login">
+              Log Masuk
             </Link>
-            <button onClick={onSignOut} className="units-topbar-dropdown-item" id="topbar-logout">
-              Log Out
-            </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
-    </header>
+    </nav>
   );
 }
 
-function UnitsFooter() {
+function AduanFooter() {
   return (
-    <footer className="units-footer">
-      2017 © Pengurusan Sistem Sokongan, Jabatan Infostruktur.
+    <footer className="lp-footer">
+      <div className="lp-footer-inner">
+        <p className="lp-footer-text">
+          <strong>Penafian dan Notis Privasi:</strong>{' '}
+          Sistem ini disediakan untuk pengurusan aduan rasmi UiTM. Semua data yang dikemukakan adalah sulit dan hanya untuk kegunaan dalaman universiti.
+        </p>
+        <p className="lp-footer-copy">© Pejabat Komunikasi Strategik, UiTM 2025</p>
+      </div>
     </footer>
   );
 }
 
-/* ── Page Export ── */
 export default function StatusAduanICTPage() {
   return (
-    <Suspense
-      fallback={
-        <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center' }}>
-          <div className="spinner" />
-        </div>
-      }
-    >
+    <Suspense fallback={<div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="spinner" /></div>}>
       <StatusICTContent />
     </Suspense>
   );

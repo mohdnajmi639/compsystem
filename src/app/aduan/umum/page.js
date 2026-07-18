@@ -176,13 +176,13 @@ function AduanUmumForm() {
             <div className="aduan-section">
               <div className="aduan-section-title">
                 <span className="aduan-section-num">1</span>
-                Profil Pengguna
+                Maklumat Pengguna
               </div>
               <div className="aduan-section-body">
                 <div className="aduan-field-grid aduan-field-grid-2">
                   <div className="aduan-field">
                     <label className="aduan-label">Kategori Pengguna</label>
-                    <div className="aduan-value-box">Pelajar</div>
+                    <div className="aduan-value-box">{session?.user?.role === 'public' ? 'Umum' : 'Pelajar'}</div>
                   </div>
                   <div className="aduan-field">
                     <label className="aduan-label">Nama Penuh</label>
@@ -369,9 +369,9 @@ function AduanNav({ session }) {
         <Link href="/" className="lp-logo" id="aduan-nav-logo">
           <span className="lp-logo-circle">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="10" stroke="#fff" strokeWidth="2"/>
-              <circle cx="12" cy="12" r="4" fill="#fff"/>
-              <path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="#fff" strokeWidth="2" strokeLinecap="round"/>
+              <circle cx="12" cy="12" r="10" stroke="#fff" strokeWidth="2" />
+              <circle cx="12" cy="12" r="4" fill="#fff" />
+              <path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
             </svg>
           </span>
           <span className="lp-logo-text">ADUAN</span>
@@ -384,10 +384,6 @@ function AduanNav({ session }) {
           <Link href="/#faq" className="lp-nav-link" id="anav-faq">Soalan Lazim</Link>
         </div>
         <div className="lp-nav-end">
-          <div className="lp-lang-group">
-            <button className="lp-lang-active" id="anav-lang-my">🇲🇾</button>
-            <button className="lp-lang-btn" id="anav-lang-en">🇬🇧</button>
-          </div>
           {session ? (
             <HomeUserMenu session={session} />
           ) : (

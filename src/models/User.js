@@ -20,7 +20,7 @@ const UserSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['student', 'staff', 'admin'],
+    enum: ['student', 'staff', 'admin', 'public'],
     default: 'student',
   },
   studentId: {
@@ -31,6 +31,11 @@ const UserSchema = new mongoose.Schema({
     type: String,
     trim: true,
     default: 'General',
+  },
+  program: {
+    type: String,
+    trim: true,
+    default: '',
   },
   avatar: {
     type: String,

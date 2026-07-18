@@ -1,11 +1,12 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import Topbar from '@/components/Topbar';
 
-export default function ComplaintDetailPage({ params }) {
-  const id = params.id;
+export default function ComplaintDetailPage() {
+  const params = useParams();
+  const id = params?.id || '';
   const { data: session } = useSession();
   const router = useRouter();
   const [complaint, setComplaint] = useState(null);

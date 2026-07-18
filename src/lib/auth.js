@@ -32,6 +32,8 @@ export const authOptions = {
           email: user.email,
           role: user.role,
           department: user.department,
+          studentId: user.studentId,
+          program: user.program,
         };
       },
     }),
@@ -42,6 +44,8 @@ export const authOptions = {
         token.id = user.id;
         token.role = user.role;
         token.department = user.department;
+        token.studentId = user.studentId;
+        token.program = user.program;
       }
       return token;
     },
@@ -49,6 +53,8 @@ export const authOptions = {
       session.user.id = token.id;
       session.user.role = token.role;
       session.user.department = token.department;
+      session.user.studentId = token.studentId;
+      session.user.program = token.program;
       return session;
     },
   },

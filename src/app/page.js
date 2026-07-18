@@ -36,19 +36,18 @@ export default async function Home() {
 
           <div className="lp-nav-links">
             <Link href="/" className="lp-nav-link lp-nav-active" id="nav-home">Anjung</Link>
-            <NavDropdownAduan />
             {session?.user?.role !== 'admin' && session?.user?.role !== 'staff' && (
-              <NavDropdownSemak />
+              <>
+                <NavDropdownAduan />
+                <NavDropdownSemak />
+              </>
             )}
             <Link href="#help" className="lp-nav-link" id="nav-panduan">Panduan</Link>
             <Link href="#faq" className="lp-nav-link" id="nav-faq">Soalan Lazim</Link>
           </div>
 
           <div className="lp-nav-end">
-            <div className="lp-lang-group">
-              <button className="lp-lang-active" id="lang-my">🇲🇾</button>
-              <button className="lp-lang-btn" id="lang-en">🇬🇧</button>
-            </div>
+
             {session ? (
               <HomeUserMenu session={session} />
             ) : (

@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { signIn } from 'next-auth/react';
+import { signIn, getSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Suspense } from 'react';
@@ -20,11 +20,17 @@ function LoginForm() {
     setLoading(true);
     setError('');
     const res = await signIn('credentials', { ...form, redirect: false });
-    setLoading(false);
+    
     if (res?.error) {
       setError('E-mel atau kata laluan tidak sah. Sila cuba semula.');
+      setLoading(false);
     } else {
-      window.location.href = callbackUrl;
+      const session = await getSession();
+      if (session?.user?.role === 'admin' || session?.user?.role === 'staff') {
+        window.location.href = '/dashboard';
+      } else {
+        window.location.href = callbackUrl;
+      }
     }
   };
 
@@ -53,10 +59,7 @@ function LoginForm() {
             <Link href="#" className="lp-nav-link" id="nav-faq">Soalan Lazim</Link>
           </div>
           <div className="lp-nav-end">
-            <div className="lp-lang-group">
-              <button className="lp-lang-active" id="lang-my">🇲🇾</button>
-              <button className="lp-lang-btn" id="lang-en">🇬🇧</button>
-            </div>
+
             <Link href={registerUrl} className="lp-login-btn" id="register-nav-btn">Daftar</Link>
           </div>
         </div>

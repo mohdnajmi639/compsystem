@@ -3,6 +3,8 @@ import { useState, useEffect, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
+import { NavDropdownAduan, NavDropdownSemak } from '@/components/NavDropdown';
+import HomeUserMenu from '@/components/HomeUserMenu';
 
 /* ══════════════════════════════════════
    DROPDOWN DATA
@@ -35,7 +37,7 @@ function AduanFasilitiContent() {
 
   /* ── Dalam Bangunan fields ── */
   const [dbNegeri, setDbNegeri]     = useState('-- Sila Pilih --');
-  const [dbKampus, setDbKampus]     = useState('--Sila Pilih--');
+  const [dbKampus]                  = useState('UiTM Kampus Puncak Perdana');
   const [dbBangunan, setDbBangunan] = useState('--Sila Pilih--');
   const [dbBlok, setDbBlok]         = useState('--Sila Pilih--');
   const [dbAras, setDbAras]         = useState('--Sila Pilih--');
@@ -44,7 +46,7 @@ function AduanFasilitiContent() {
 
   /* ── Luar Bangunan fields ── */
   const [lbNegeri, setLbNegeri]         = useState('-- Sila Pilih --');
-  const [lbKampus, setLbKampus]         = useState('--Sila Pilih--');
+  const [lbKampus]                      = useState('UiTM Kampus Puncak Perdana');
   const [lbBangunan, setLbBangunan]     = useState('--Sila Pilih--');
   const [lbBlok, setLbBlok]             = useState('--Sila Pilih--');
   const [lbKatInfra, setLbKatInfra]     = useState('--Sila Pilih--');
@@ -76,7 +78,7 @@ function AduanFasilitiContent() {
 
   const userName    = session?.user?.name    || '';
   const userEmail   = session?.user?.email   || '';
-  const userFaculty = session?.user?.faculty || 'KOLEJ PENGAJIAN PENGKOMPUTERAN, INFORMATIK DAN MATEMATIK';
+  const userFaculty = session?.user?.department || '—';
   const userCampus  = session?.user?.campus  || '';
   const userProgram = session?.user?.program || '';
   const userId      = session?.user?.studentId || session?.user?.staffId || '';
@@ -93,7 +95,7 @@ function AduanFasilitiContent() {
     const ket      = isDB ? dbKeterangan : lbKeterangan;
 
     if (negeri.startsWith('--') || negeri === '-- Sila Pilih --') { setError('Sila pilih Negeri.'); return; }
-    if (kampus.startsWith('--')) { setError('Sila pilih Kampus.'); return; }
+
     if (!ket.trim()) { setError('Sila isi keterangan lokasi.'); return; }
     if (!ketKerosakan.trim()) { setError('Sila isi keterangan kerosakan.'); return; }
 
@@ -127,11 +129,11 @@ function AduanFasilitiContent() {
   const handleReset = () => {
     setLokasiPilih('');
     setJenisBangunan('');
-    setDbNegeri('-- Sila Pilih --'); setDbKampus('--Sila Pilih--');
+    setDbNegeri('-- Sila Pilih --');
     setDbBangunan('--Sila Pilih--'); setDbBlok('--Sila Pilih--');
     setDbAras('--Sila Pilih--');     setDbRuang('--Sila Pilih--');
     setDbKeterangan('');
-    setLbNegeri('-- Sila Pilih --'); setLbKampus('--Sila Pilih--');
+    setLbNegeri('-- Sila Pilih --');
     setLbBangunan('--Sila Pilih--'); setLbBlok('--Sila Pilih--');
     setLbKatInfra('--Sila Pilih--'); setLbSubInfra('--Sila Pilih--');
     setLbKeterangan('');
@@ -142,173 +144,127 @@ function AduanFasilitiContent() {
 
   if (status === 'loading') {
     return (
-      <div className="ef-root">
-        <div style={{ display:'flex', alignItems:'center', justifyContent:'center', flex:1, minHeight:'100vh' }}>
-          <div className="spinner" />
-        </div>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="spinner" />
       </div>
     );
   }
 
   /* ── Shared select helper ── */
   const Sel = ({ id, value, onChange, opts }) => (
-    <select id={id} className="ef2-select" value={value} onChange={e => onChange(e.target.value)}>
+    <select id={id} className="aduan-input aduan-select" value={value} onChange={e => onChange(e.target.value)}>
       {opts.map(o => <option key={o} value={o}>{o}</option>)}
     </select>
   );
 
-  return (
-    <div className="ef-root">
-
-      {/* ── Top strip ── */}
-      <div className="ef-topstrip" />
-
-      {/* ── Header ── */}
-      <header className="ef-header">
-        <div className="ef-header-logo">
-          <Link href="/" style={{ textDecoration: 'none' }}>
-            <div className="ef-logo-box">
-              <svg width="52" height="52" viewBox="0 0 60 60" fill="none">
-                <rect x="0" y="0" width="60" height="60" fill="#6b0d8a" rx="4" />
-                <text x="30" y="22" textAnchor="middle" fontFamily="Georgia, serif" fontWeight="900" fontSize="11" fill="#f5c518">UNIVERSITI</text>
-                <text x="30" y="34" textAnchor="middle" fontFamily="Georgia, serif" fontWeight="900" fontSize="9"  fill="white">TEKNOLOGI</text>
-                <text x="30" y="46" textAnchor="middle" fontFamily="Georgia, serif" fontWeight="900" fontSize="11" fill="#f5c518">MARA</text>
-              </svg>
-            </div>
-          </Link>
-        </div>
-        <div className="ef-header-title">
-          <h1 className="ef-title">e-Aduan Fasiliti</h1>
-          <p className="ef-subtitle">Sistem Pengurusan Aduan dan Perkhidmatan Pejabat Pengurusan Fasiliti v.2</p>
-        </div>
-        <div className="ef-header-deco">
-          <div className="ef-deco-squares">
-            <span className="ef-sq ef-sq-1" /><span className="ef-sq ef-sq-2" />
-            <span className="ef-sq ef-sq-3" /><span className="ef-sq ef-sq-4" />
-          </div>
-          <div className="ef-deco-building">
-            <svg width="90" height="70" viewBox="0 0 90 70" fill="none">
-              <rect x="10" y="20" width="18" height="50" fill="#d1c4e9" opacity="0.7" />
-              <rect x="32" y="10" width="26" height="60" fill="#b39ddb" opacity="0.8" />
-              <rect x="62" y="28" width="18" height="42" fill="#d1c4e9" opacity="0.7" />
-              <rect x="14" y="30" width="4" height="5" fill="white" opacity="0.5" />
-              <rect x="20" y="30" width="4" height="5" fill="white" opacity="0.5" />
-              <rect x="36" y="18" width="5" height="6" fill="white" opacity="0.5" />
-              <rect x="44" y="18" width="5" height="6" fill="white" opacity="0.5" />
-              <rect x="36" y="28" width="5" height="6" fill="white" opacity="0.5" />
-              <rect x="44" y="28" width="5" height="6" fill="white" opacity="0.5" />
-              <rect x="66" y="36" width="4" height="5" fill="white" opacity="0.5" />
-              <rect x="72" y="36" width="4" height="5" fill="white" opacity="0.5" />
-            </svg>
-          </div>
-        </div>
-      </header>
-
-      {/* ── Purple bar ── */}
-      <div className="ef-purplebar" />
-
-      {/* ── Top-right action links ── */}
-      <div className="ef2-toplinks">
-        <Link href="/" className="ef2-toplink" id="ef2-laman-utama">Laman Utama</Link>
-        <span className="ef2-toplink-sep">|</span>
-        <Link href="/aduan/fasiliti/semak" className="ef2-toplink" id="ef2-semak-aduan">Semak Aduan</Link>
-        <span className="ef2-toplink-sep">|</span>
-        <button
-          className="ef2-toplink ef2-toplink-btn"
-          onClick={() => signOut({ callbackUrl: '/' })}
-          id="ef2-keluar"
-        >
-          Keluar
-        </button>
-      </div>
-
-      {/* ── Main body ── */}
-      <main className="ef2-body">
-
-        {submitted ? (
-          /* ── Success ── */
-          <div className="ef2-card">
-            <div className="ef2-card-hdr">Aduan Berjaya Dihantar</div>
-            <div style={{ padding: '24px 20px', textAlign:'center', background:'#f3e5f5' }}>
-              <p style={{ color:'#4a0070', fontWeight:600, marginBottom:16 }}>
-                Terima kasih. Aduan Fasiliti anda telah diterima dan akan diproses.
-              </p>
-              <button className="ef2-btn-hantar" onClick={handleReset} id="ef2-aduan-baharu">
+  if (submitted) {
+    return (
+      <div className="aduan-root">
+        <AduanNav session={session} />
+        <main className="aduan-body">
+          <div className="aduan-success-box">
+            <div className="aduan-success-icon">✓</div>
+            <h2 className="aduan-success-title">Aduan Berjaya Dihantar!</h2>
+            <p className="aduan-success-text">
+              Terima kasih. Aduan Fasiliti anda telah diterima dan akan diproses dalam masa 3–5 hari bekerja.
+              Anda boleh menyemak status aduan di halaman Semakan.
+            </p>
+            <div className="aduan-success-actions">
+              <button className="aduan-submit-btn" onClick={handleReset} id="fasiliti-aduan-baharu">
                 Hantar Aduan Baharu
               </button>
-              <span style={{ margin:'0 10px', color:'#888' }}>|</span>
-              <Link href="/aduan/fasiliti/semak" className="ef2-link" id="ef2-semak-link">Semak Status Aduan</Link>
+              <Link href="/aduan/fasiliti/semak" className="aduan-cancel-btn" id="fasiliti-semak-link">
+                Semak Status Aduan
+              </Link>
             </div>
           </div>
-        ) : (
+        </main>
+        <AduanFooter />
+      </div>
+    );
+  }
+
+  return (
+    <div className="aduan-root">
+      <AduanNav session={session} />
+
+      <main className="aduan-body">
+        {/* Page Title Bar */}
+        <div className="aduan-page-header">
+          <div className="aduan-page-header-inner">
+            <div className="aduan-breadcrumb">
+              <Link href="/">Anjung</Link>
+              <span className="aduan-breadcrumb-sep">›</span>
+              <span>Aduan Baharu</span>
+              <span className="aduan-breadcrumb-sep">›</span>
+              <span className="aduan-breadcrumb-active">Aduan Fasiliti</span>
+            </div>
+            <h1 className="aduan-page-title">Aduan Fasiliti</h1>
+            <p className="aduan-page-desc">Sistem Pengurusan Aduan dan Perkhidmatan Pejabat Pengurusan Fasiliti</p>
+          </div>
+        </div>
+
+        {/* Form Container */}
+        <div className="aduan-form-wrap">
+          {error && <div className="aduan-form-error">{error}</div>}
+
           <form onSubmit={handleHantar} noValidate>
 
-            {error && <div className="ef2-error">{error}</div>}
+            {/* ── Bahagian 1: Maklumat Pengguna ── */}
+            <div className="aduan-section">
+              <div className="aduan-section-title">
+                <span className="aduan-section-num">1</span>
+                Maklumat Pengguna
+              </div>
+              <div className="aduan-section-body">
+                <div className="aduan-field-grid aduan-field-grid-2">
+                  <div className="aduan-field">
+                    <label className="aduan-label">Nama Pelajar</label>
+                    <div className="aduan-value-box aduan-value-highlight">{userName.toUpperCase()}</div>
+                  </div>
 
-            {/* ══════════════════════════════════
-                SECTION 1.0 — Maklumat Pengguna
-            ══════════════════════════════════ */}
-            <div className="ef2-card" style={{ marginBottom: 6 }}>
-              <div className="ef2-card-hdr">1.0 Maklumat anda seperti berikut:</div>
-              <div className="ef2-userinfo-grid">
-
-                {/* Row 1 */}
-                <span className="ef2-ui-label">Nama Pelajar</span>
-                <span className="ef2-ui-colon">:</span>
-                <span className="ef2-ui-value ef2-ui-orange">{userName.toUpperCase()}</span>
-                <span className="ef2-ui-label">Kampus</span>
-                <span className="ef2-ui-colon">:</span>
-                <span className="ef2-ui-value">{userCampus}</span>
-
-                {/* Row 2 */}
-                <span className="ef2-ui-label">Fakulti</span>
-                <span className="ef2-ui-colon">:</span>
-                <span className="ef2-ui-value ef2-ui-orange">{userFaculty}</span>
-                <span className="ef2-ui-label">E-mail</span>
-                <span className="ef2-ui-colon">:</span>
-                <span className="ef2-ui-value">{userEmail}</span>
-
-                {/* Row 3 */}
-                <span className="ef2-ui-label">No. telefon</span>
-                <span className="ef2-ui-colon">:</span>
-                <span className="ef2-ui-value ef2-ui-orange">
-                  <input
-                    className="ef2-inline-input"
-                    type="tel"
-                    value={telefon}
-                    onChange={e => setTelefon(e.target.value)}
-                    placeholder="01X-XXXXXXXX"
-                    id="ef2-telefon"
-                  />
-                </span>
-                <span className="ef2-ui-label" />
-                <span className="ef2-ui-colon" />
-                <span className="ef2-ui-value" />
-
-                {/* Row 4 */}
-                <span className="ef2-ui-label">Program</span>
-                <span className="ef2-ui-colon">:</span>
-                <span className="ef2-ui-value">{userProgram || userId}</span>
-                <span className="ef2-ui-label" />
-                <span className="ef2-ui-colon" />
-                <span className="ef2-ui-value" />
-
+                  <div className="aduan-field">
+                    <label className="aduan-label">Fakulti</label>
+                    <div className="aduan-value-box aduan-value-highlight">{userFaculty}</div>
+                  </div>
+                  <div className="aduan-field">
+                    <label className="aduan-label">E-mel</label>
+                    <div className="aduan-value-box">{userEmail || '—'}</div>
+                  </div>
+                  <div className="aduan-field">
+                    <label className="aduan-label">Program / No. ID</label>
+                    <div className="aduan-value-box">{userProgram || userId || '—'}</div>
+                  </div>
+                  <div className="aduan-field">
+                    <label className="aduan-label">No. Telefon</label>
+                    <input
+                      className="aduan-input"
+                      type="tel"
+                      value={telefon}
+                      onChange={e => setTelefon(e.target.value)}
+                      placeholder="01X-XXXXXXXX"
+                      id="ef2-telefon"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* ══════════════════════════════════
-                SECTION 2.0 — Lokasi & Kerosakan
-            ══════════════════════════════════ */}
-            <div className="ef2-card">
-              <div className="ef2-card-hdr">2.0 Nyatakan lokasi dan jenis kerosakan:</div>
-              <div className="ef2-section2-body">
+            {/* ── Bahagian 2: Lokasi & Kerosakan ── */}
+            <div className="aduan-section">
+              <div className="aduan-section-title">
+                <span className="aduan-section-num">2</span>
+                Lokasi dan Jenis Kerosakan
+              </div>
+              <div className="aduan-section-body">
 
-                {/* ── Lokasi kerosakan label ── */}
-                <p className="ef2-lokasi-label">* Lokasi kerosakan:</p>
+                <p className="aduan-field-hint" style={{ marginBottom: 12, fontWeight: 600 }}>
+                  * Lokasi kerosakan:
+                </p>
 
                 {/* ── Step 1: Lokasi Lain radio ── */}
-                <div className="ef2-radio-row">
-                  <label className="ef2-radio-lbl" htmlFor="ef2-lokasi-lain">
+                <div style={{ marginBottom: 12 }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: '0.9rem', fontWeight: 500 }} htmlFor="ef2-lokasi-lain">
                     <input
                       id="ef2-lokasi-lain"
                       type="radio"
@@ -316,15 +272,16 @@ function AduanFasilitiContent() {
                       value="lokasi_lain"
                       checked={lokasiPilih === 'lokasi_lain'}
                       onChange={() => setLokasiPilih('lokasi_lain')}
+                      style={{ accentColor: '#7c3aed', width: 16, height: 16 }}
                     />
                     Lokasi Lain
                   </label>
                 </div>
 
-                {/* ── Step 2: Dalam Bangunan / Luar Bangunan (only after Lokasi Lain selected) ── */}
+                {/* ── Step 2: Dalam Bangunan / Luar Bangunan ── */}
                 {lokasiPilih === 'lokasi_lain' && (
-                  <div className="ef2-jenis-row">
-                    <label className="ef2-radio-lbl" htmlFor="ef2-dalam">
+                  <div style={{ display: 'flex', gap: 32, marginBottom: 20 }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: '0.9rem', fontWeight: 500 }} htmlFor="ef2-dalam">
                       <input
                         id="ef2-dalam"
                         type="radio"
@@ -332,10 +289,11 @@ function AduanFasilitiContent() {
                         value="dalam"
                         checked={jenisBangunan === 'dalam'}
                         onChange={() => setJenisBangunan('dalam')}
+                        style={{ accentColor: '#7c3aed', width: 16, height: 16 }}
                       />
                       Dalam Bangunan
                     </label>
-                    <label className="ef2-radio-lbl" htmlFor="ef2-luar" style={{ marginLeft: 40 }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: '0.9rem', fontWeight: 500 }} htmlFor="ef2-luar">
                       <input
                         id="ef2-luar"
                         type="radio"
@@ -343,37 +301,47 @@ function AduanFasilitiContent() {
                         value="luar"
                         checked={jenisBangunan === 'luar'}
                         onChange={() => setJenisBangunan('luar')}
+                        style={{ accentColor: '#7c3aed', width: 16, height: 16 }}
                       />
                       Luar Bangunan
                     </label>
                   </div>
                 )}
 
-                {/* ══════════════════════════════════
-                    DALAM BANGUNAN form
-                ══════════════════════════════════ */}
+                {/* ══ DALAM BANGUNAN form ══ */}
                 {lokasiPilih === 'lokasi_lain' && jenisBangunan === 'dalam' && (
-                  <div className="ef2-twocol">
+                  <div className="aduan-field-grid aduan-field-grid-2" style={{ gap: '16px 24px' }}>
 
-                    {/* Left — Lokasi Lain fields */}
-                    <div className="ef2-col">
-                      <div className="ef2-col-hdr">Lokasi Lain</div>
-                      <div className="ef2-field-grid">
-                        <label className="ef2-fl">Negeri :*</label>
+                    {/* Left — Lokasi */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                      <div style={{ background: '#7c3aed', color: '#fff', fontWeight: 700, fontSize: '0.8rem', padding: '8px 14px', borderRadius: 4, letterSpacing: '0.04em' }}>
+                        LOKASI LAIN
+                      </div>
+                      <div className="aduan-field">
+                        <label className="aduan-label">Negeri :*</label>
                         <Sel id="ef2-db-negeri" value={dbNegeri} onChange={setDbNegeri} opts={NEGERI_OPTS} />
-                        <label className="ef2-fl">Kampus :*</label>
-                        <Sel id="ef2-db-kampus" value={dbKampus} onChange={setDbKampus} opts={KAMPUS_OPTS} />
-                        <label className="ef2-fl">Bangunan :*</label>
+                      </div>
+
+                      <div className="aduan-field">
+                        <label className="aduan-label">Bangunan :*</label>
                         <Sel id="ef2-db-bangunan" value={dbBangunan} onChange={setDbBangunan} opts={BANGUNAN_OPTS} />
-                        <label className="ef2-fl">Blok :*</label>
+                      </div>
+                      <div className="aduan-field">
+                        <label className="aduan-label">Blok :*</label>
                         <Sel id="ef2-db-blok" value={dbBlok} onChange={setDbBlok} opts={BLOK_OPTS} />
-                        <label className="ef2-fl">Aras :</label>
+                      </div>
+                      <div className="aduan-field">
+                        <label className="aduan-label">Aras :</label>
                         <Sel id="ef2-db-aras" value={dbAras} onChange={setDbAras} opts={ARAS_OPTS} />
-                        <label className="ef2-fl">Ruang :</label>
+                      </div>
+                      <div className="aduan-field">
+                        <label className="aduan-label">Ruang :</label>
                         <Sel id="ef2-db-ruang" value={dbRuang} onChange={setDbRuang} opts={RUANG_OPTS} />
-                        <label className="ef2-fl ef2-fl-top">Keterangan lokasi :*</label>
+                      </div>
+                      <div className="aduan-field">
+                        <label className="aduan-label">Keterangan Lokasi :*</label>
                         <textarea
-                          className="ef2-textarea"
+                          className="aduan-textarea"
                           id="ef2-db-ket"
                           rows={4}
                           value={dbKeterangan}
@@ -383,20 +351,28 @@ function AduanFasilitiContent() {
                     </div>
 
                     {/* Right — Jenis Kerosakan */}
-                    <div className="ef2-col">
-                      <div className="ef2-col-hdr">Jenis Kerosakan</div>
-                      <div className="ef2-field-grid">
-                        <label className="ef2-fl">Seksyen :*</label>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                      <div style={{ background: '#7c3aed', color: '#fff', fontWeight: 700, fontSize: '0.8rem', padding: '8px 14px', borderRadius: 4, letterSpacing: '0.04em' }}>
+                        JENIS KEROSAKAN
+                      </div>
+                      <div className="aduan-field">
+                        <label className="aduan-label">Seksyen :*</label>
                         <Sel id="ef2-seksyen" value={seksyen} onChange={setSeksyen} opts={SEKSYEN_OPTS} />
-                        <label className="ef2-fl">Elemen :*</label>
+                      </div>
+                      <div className="aduan-field">
+                        <label className="aduan-label">Elemen :*</label>
                         <Sel id="ef2-elemen" value={elemen} onChange={setElemen} opts={ELEMEN_OPTS} />
-                        <label className="ef2-fl">Masalah :*</label>
+                      </div>
+                      <div className="aduan-field">
+                        <label className="aduan-label">Masalah :*</label>
                         <Sel id="ef2-masalah" value={masalah} onChange={setMasalah} opts={MASALAH_OPTS} />
-                        <label className="ef2-fl ef2-fl-top" style={{ color:'#1e88e5', fontSize:'0.75rem', lineHeight:1.3 }}>
-                          Keterangan kerosakan<br/>(Sila isikan keterangan terperinci, cth no.telefon) :*
+                      </div>
+                      <div className="aduan-field">
+                        <label className="aduan-label" style={{ color: '#1e88e5', lineHeight: 1.4 }}>
+                          Keterangan Kerosakan<br />(Sila isikan keterangan terperinci, cth no. telefon) :*
                         </label>
                         <textarea
-                          className="ef2-textarea"
+                          className="aduan-textarea"
                           id="ef2-ket-kerosakan-db"
                           rows={4}
                           value={ketKerosakan}
@@ -408,31 +384,40 @@ function AduanFasilitiContent() {
                   </div>
                 )}
 
-                {/* ══════════════════════════════════
-                    LUAR BANGUNAN form
-                ══════════════════════════════════ */}
+                {/* ══ LUAR BANGUNAN form ══ */}
                 {lokasiPilih === 'lokasi_lain' && jenisBangunan === 'luar' && (
-                  <div className="ef2-twocol">
+                  <div className="aduan-field-grid aduan-field-grid-2" style={{ gap: '16px 24px' }}>
 
-                    {/* Left — Lokasi Lain (infra) */}
-                    <div className="ef2-col">
-                      <div className="ef2-col-hdr">Lokasi Lain</div>
-                      <div className="ef2-field-grid">
-                        <label className="ef2-fl">Negeri :*</label>
+                    {/* Left — Lokasi (infra) */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                      <div style={{ background: '#7c3aed', color: '#fff', fontWeight: 700, fontSize: '0.8rem', padding: '8px 14px', borderRadius: 4, letterSpacing: '0.04em' }}>
+                        LOKASI LAIN
+                      </div>
+                      <div className="aduan-field">
+                        <label className="aduan-label">Negeri :*</label>
                         <Sel id="ef2-lb-negeri" value={lbNegeri} onChange={setLbNegeri} opts={NEGERI_OPTS} />
-                        <label className="ef2-fl">Kampus :*</label>
-                        <Sel id="ef2-lb-kampus" value={lbKampus} onChange={setLbKampus} opts={KAMPUS_OPTS} />
-                        <label className="ef2-fl">Bangunan :*</label>
+                      </div>
+
+                      <div className="aduan-field">
+                        <label className="aduan-label">Bangunan :*</label>
                         <Sel id="ef2-lb-bangunan" value={lbBangunan} onChange={setLbBangunan} opts={BANGUNAN_OPTS} />
-                        <label className="ef2-fl">Blok :*</label>
+                      </div>
+                      <div className="aduan-field">
+                        <label className="aduan-label">Blok :*</label>
                         <Sel id="ef2-lb-blok" value={lbBlok} onChange={setLbBlok} opts={BLOK_OPTS} />
-                        <label className="ef2-fl">Kategori Infra :*</label>
+                      </div>
+                      <div className="aduan-field">
+                        <label className="aduan-label">Kategori Infra :*</label>
                         <Sel id="ef2-lb-katinfra" value={lbKatInfra} onChange={setLbKatInfra} opts={KATEGORI_INFRA_OPTS} />
-                        <label className="ef2-fl">Sub Kategori Infra :*</label>
+                      </div>
+                      <div className="aduan-field">
+                        <label className="aduan-label">Sub Kategori Infra :*</label>
                         <Sel id="ef2-lb-subinfra" value={lbSubInfra} onChange={setLbSubInfra} opts={SUB_KATEGORI_INFRA_OPTS} />
-                        <label className="ef2-fl ef2-fl-top">Keterangan lokasi :*</label>
+                      </div>
+                      <div className="aduan-field">
+                        <label className="aduan-label">Keterangan Lokasi :*</label>
                         <textarea
-                          className="ef2-textarea"
+                          className="aduan-textarea"
                           id="ef2-lb-ket"
                           rows={4}
                           value={lbKeterangan}
@@ -442,20 +427,28 @@ function AduanFasilitiContent() {
                     </div>
 
                     {/* Right — Jenis Kerosakan */}
-                    <div className="ef2-col">
-                      <div className="ef2-col-hdr">Jenis Kerosakan</div>
-                      <div className="ef2-field-grid">
-                        <label className="ef2-fl">Seksyen :*</label>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                      <div style={{ background: '#7c3aed', color: '#fff', fontWeight: 700, fontSize: '0.8rem', padding: '8px 14px', borderRadius: 4, letterSpacing: '0.04em' }}>
+                        JENIS KEROSAKAN
+                      </div>
+                      <div className="aduan-field">
+                        <label className="aduan-label">Seksyen :*</label>
                         <Sel id="ef2-seksyen-lb" value={seksyen} onChange={setSeksyen} opts={SEKSYEN_OPTS} />
-                        <label className="ef2-fl">Elemen :*</label>
+                      </div>
+                      <div className="aduan-field">
+                        <label className="aduan-label">Elemen :*</label>
                         <Sel id="ef2-elemen-lb" value={elemen} onChange={setElemen} opts={ELEMEN_OPTS} />
-                        <label className="ef2-fl">Masalah :*</label>
+                      </div>
+                      <div className="aduan-field">
+                        <label className="aduan-label">Masalah :*</label>
                         <Sel id="ef2-masalah-lb" value={masalah} onChange={setMasalah} opts={MASALAH_OPTS} />
-                        <label className="ef2-fl ef2-fl-top" style={{ color:'#1e88e5', fontSize:'0.75rem', lineHeight:1.3 }}>
-                          Keterangan kerosakan<br/>(Sila isikan keterangan terperinci, cth no.telefon) :*
+                      </div>
+                      <div className="aduan-field">
+                        <label className="aduan-label" style={{ color: '#1e88e5', lineHeight: 1.4 }}>
+                          Keterangan Kerosakan<br />(Sila isikan keterangan terperinci, cth no. telefon) :*
                         </label>
                         <textarea
-                          className="ef2-textarea"
+                          className="aduan-textarea"
                           id="ef2-ket-kerosakan-lb"
                           rows={4}
                           value={ketKerosakan}
@@ -467,50 +460,98 @@ function AduanFasilitiContent() {
                   </div>
                 )}
 
-                {/* ── Hantar button ── */}
-                <div className="ef2-hantar-center">
-                  <button type="submit" className="ef2-btn-hantar" disabled={loading} id="ef2-hantar">
-                    {loading ? 'Sila tunggu...' : 'Hantar'}
-                  </button>
-                </div>
-
-              </div>{/* /section2-body */}
+              </div>
             </div>
 
-            {/* ── Penafian ── */}
-            <p className="ef2-penafian">
-              - <strong>Penafian</strong> : Saya mengaku bahawa segala maklumat aduan yang dikemukakan adalah benar dan saya bertanggungjawab ke atas aduan tersebut.
-            </p>
+            {/* ── Actions ── */}
+            <div className="aduan-actions">
+              <button
+                type="submit"
+                className="aduan-submit-btn"
+                disabled={loading}
+                id="ef2-hantar"
+              >
+                {loading ? 'Menghantar...' : 'Hantar Aduan'}
+              </button>
+              <button
+                type="button"
+                className="aduan-reset-btn"
+                onClick={handleReset}
+                id="fasiliti-reset"
+              >
+                Padam Semula
+              </button>
+              <Link href="/" className="aduan-cancel-btn" id="ef2-kembali">Batal</Link>
+            </div>
 
           </form>
-        )}
 
-        {/* ── Kembali bar ── */}
-        <div className="ef2-kembali-bar">
-          <Link href="/" className="ef2-kembali" id="ef2-kembali">
-            &lt;&lt; Kembali
-          </Link>
+          {/* Disclaimer */}
+          <div className="aduan-disclaimer">
+            <strong>Penafian:</strong>{' '}
+            Saya mengaku bahawa segala maklumat aduan yang dikemukakan adalah benar dan saya bertanggungjawab ke atas aduan tersebut.
+            Sistem ini disediakan untuk pengurusan aduan rasmi UiTM. Semua data yang dikemukakan adalah sulit dan hanya untuk kegunaan dalaman universiti.
+          </div>
         </div>
-
-        {/* ── Footer copyright ── */}
-        <div className="ef2-footer-copy">
-          HAKCIPTA TERPELIHARA © 2009 PPF dan DFMS, UiTM SHAH ALAM.
-        </div>
-
       </main>
+
+      <AduanFooter />
     </div>
+  );
+}
+
+function AduanNav({ session }) {
+  return (
+    <nav className="lp-nav">
+      <div className="lp-nav-inner">
+        <Link href="/" className="lp-logo" id="aduan-nav-logo">
+          <span className="lp-logo-circle">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="10" stroke="#fff" strokeWidth="2"/>
+              <circle cx="12" cy="12" r="4" fill="#fff"/>
+              <path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="#fff" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+          </span>
+          <span className="lp-logo-text">ADUAN</span>
+        </Link>
+        <div className="lp-nav-links">
+          <Link href="/" className="lp-nav-link" id="anav-anjung">Anjung</Link>
+          <NavDropdownAduan />
+          <NavDropdownSemak />
+          <Link href="/#help" className="lp-nav-link" id="anav-panduan">Panduan</Link>
+          <Link href="/#faq" className="lp-nav-link" id="anav-faq">Soalan Lazim</Link>
+        </div>
+        <div className="lp-nav-end">
+          {session ? (
+            <HomeUserMenu session={session} />
+          ) : (
+            <Link href="/login?callbackUrl=/aduan/fasiliti" className="lp-login-btn" id="anav-login">
+              Log Masuk
+            </Link>
+          )}
+        </div>
+      </div>
+    </nav>
+  );
+}
+
+function AduanFooter() {
+  return (
+    <footer className="lp-footer">
+      <div className="lp-footer-inner">
+        <p className="lp-footer-text">
+          <strong>Penafian dan Notis Privasi:</strong>{' '}
+          Sistem ini disediakan untuk pengurusan aduan rasmi UiTM. Semua data yang dikemukakan adalah sulit dan hanya untuk kegunaan dalaman universiti.
+        </p>
+        <p className="lp-footer-copy">© Pejabat Komunikasi Strategik, UiTM 2025</p>
+      </div>
+    </footer>
   );
 }
 
 export default function AduanFasilitiPage() {
   return (
-    <Suspense
-      fallback={
-        <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', background:'#6b0d8a' }}>
-          <div className="spinner" />
-        </div>
-      }
-    >
+    <Suspense fallback={<div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="spinner" /></div>}>
       <AduanFasilitiContent />
     </Suspense>
   );

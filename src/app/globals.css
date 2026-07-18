@@ -154,6 +154,12 @@ a:hover { color:var(--accent-hover); }
   color:#1f2937; font-weight:600;
   border-bottom-color:#7c3aed;
 }
+@keyframes navDDFadeIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(-6px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+.lp-nav-dd-item:last-child { border-bottom: none !important; }
+.lp-nav-dd-item:hover { background: #f5f3ff !important; }
 .lp-nav-end {
   display:flex; align-items:center; gap:10px; margin-left:auto;
 }

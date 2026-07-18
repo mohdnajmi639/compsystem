@@ -3,6 +3,7 @@ import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
+import { NavDropdownAduan, NavDropdownSemak } from '@/components/NavDropdown';
 
 /* ── helpers ── */
 function fmtDate(iso) {
@@ -120,8 +121,8 @@ function SemakUmumContent() {
           </Link>
           <div className="lp-nav-links">
             <Link href="/" className="lp-nav-link" id="semak-nav-anjung">Anjung</Link>
-            <Link href="/aduan/umum" className="lp-nav-link" id="semak-nav-new">Aduan Baharu</Link>
-            <Link href="/aduan/umum/semak" className="lp-nav-link lp-nav-active" id="semak-nav-semak">Semakan</Link>
+            <NavDropdownAduan />
+            <NavDropdownSemak />
             <Link href="/#help" className="lp-nav-link" id="semak-nav-panduan">Panduan</Link>
             <Link href="/#faq" className="lp-nav-link" id="semak-nav-faq">Soalan Lazim</Link>
           </div>

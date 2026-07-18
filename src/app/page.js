@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import HomeUserMenu from '@/components/HomeUserMenu';
+import { NavDropdownAduan, NavDropdownSemak } from '@/components/NavDropdown';
 
 export const metadata = {
   title: 'Sistem Aduan | Pengurusan Aduan Universiti',
@@ -35,8 +36,10 @@ export default async function Home() {
 
           <div className="lp-nav-links">
             <Link href="/" className="lp-nav-link lp-nav-active" id="nav-home">Anjung</Link>
-            <Link href={getAduanLink('/dashboard/complaints/new')} className="lp-nav-link" id="nav-new">Aduan Baharu</Link>
-            <Link href="/dashboard/complaints" className="lp-nav-link" id="nav-check">Semakan</Link>
+            <NavDropdownAduan />
+            {session?.user?.role !== 'admin' && session?.user?.role !== 'staff' && (
+              <NavDropdownSemak />
+            )}
             <Link href="#help" className="lp-nav-link" id="nav-panduan">Panduan</Link>
             <Link href="#faq" className="lp-nav-link" id="nav-faq">Soalan Lazim</Link>
           </div>

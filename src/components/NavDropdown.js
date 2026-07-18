@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 
-function Dropdown({ label, items, id }) {
+function Dropdown({ label, items, id, buttonClassName, buttonStyle }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 
@@ -15,14 +15,16 @@ function Dropdown({ label, items, id }) {
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
+  const isQaButton = buttonClassName === 'lp-qa-btn';
+
   return (
-    <div ref={ref} style={{ position: 'relative', height: '52px', display: 'flex', alignItems: 'center' }}>
+    <div ref={ref} style={{ position: 'relative', height: isQaButton ? '100%' : '52px', width: isQaButton ? '100%' : 'auto', display: 'flex', alignItems: 'center' }}>
       <button
-        className="lp-nav-link lp-nav-dropdown-btn"
+        className={buttonClassName || "lp-nav-link lp-nav-dropdown-btn"}
         id={id}
         onClick={() => setOpen(o => !o)}
         aria-expanded={open}
-        style={{ height: '52px', display: 'flex', alignItems: 'center', gap: '4px', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', padding: '0 14px', borderBottom: `3px solid ${open ? '#7c3aed' : 'transparent'}` }}
+        style={buttonStyle || { height: '52px', display: 'flex', alignItems: 'center', gap: '4px', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', padding: '0 14px', borderBottom: `3px solid ${open ? '#7c3aed' : 'transparent'}` }}
       >
         {label}
         <svg
@@ -135,7 +137,7 @@ export function NavDropdownAduan() {
   return <Dropdown label="Aduan Baharu" items={items} id="nav-new" />;
 }
 
-export function NavDropdownSemak() {
+export function NavDropdownSemak({ variant }) {
   const { data: session } = useSession();
   const link = (path) => session ? path : `/login?callbackUrl=${path}`;
 
@@ -174,6 +176,18 @@ export function NavDropdownSemak() {
       ),
     },
   ];
+
+  if (variant === 'qa-button') {
+    return (
+      <Dropdown 
+        label="Semak Aduan" 
+        items={items} 
+        id="btn-semak" 
+        buttonClassName="lp-qa-btn"
+        buttonStyle={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', width: '100%', height: '100%', fontFamily: 'inherit', cursor: 'pointer' }} 
+      />
+    );
+  }
 
   return <Dropdown label="Semakan" items={items} id="nav-check" />;
 }

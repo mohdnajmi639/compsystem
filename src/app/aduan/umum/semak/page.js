@@ -123,8 +123,8 @@ function SemakUmumContent() {
             <Link href="/" className="lp-nav-link" id="semak-nav-anjung">Anjung</Link>
             <NavDropdownAduan />
             <NavDropdownSemak />
-            <Link href="/#help" className="lp-nav-link" id="semak-nav-panduan">Panduan</Link>
-            <Link href="/#faq" className="lp-nav-link" id="semak-nav-faq">Soalan Lazim</Link>
+            <Link href="/panduan" className="lp-nav-link" id="semak-nav-panduan">Panduan</Link>
+            <Link href="/faq" className="lp-nav-link" id="semak-nav-faq">Soalan Lazim</Link>
           </div>
           <div className="lp-nav-end">
             <div className="lp-lang-group">

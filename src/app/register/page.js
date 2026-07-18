@@ -75,8 +75,8 @@ function RegisterForm() {
             <Link href="/" className="lp-nav-link" id="nav-anjung">Anjung</Link>
             <NavDropdownAduan />
             <NavDropdownSemak />
-            <Link href="#" className="lp-nav-link" id="nav-panduan">Panduan</Link>
-            <Link href="#" className="lp-nav-link" id="nav-faq">Soalan Lazim</Link>
+            <Link href="/panduan" className="lp-nav-link" id="nav-panduan">Panduan</Link>
+            <Link href="/faq" className="lp-nav-link" id="nav-faq">Soalan Lazim</Link>
           </div>
           <div className="lp-nav-end">
             <div className="lp-lang-group">

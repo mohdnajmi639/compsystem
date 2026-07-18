@@ -42,8 +42,8 @@ export default async function Home() {
                 <NavDropdownSemak />
               </>
             )}
-            <Link href="#help" className="lp-nav-link" id="nav-panduan">Panduan</Link>
-            <Link href="#faq" className="lp-nav-link" id="nav-faq">Soalan Lazim</Link>
+            <Link href="/panduan" className="lp-nav-link" id="nav-panduan">Panduan</Link>
+            <Link href="/faq" className="lp-nav-link" id="nav-faq">Soalan Lazim</Link>
           </div>
 
           <div className="lp-nav-end">
@@ -115,9 +115,9 @@ export default async function Home() {
 
         {/* Quick Action Buttons */}
         <div className="lp-qa-row">
-          <Link href="/dashboard/complaints" className="lp-qa-btn" id="btn-semak">Semak Aduan</Link>
-          <Link href="/manual" className="lp-qa-btn" id="btn-manual">Manual Aduan Umum</Link>
-          <Link href="#faq" className="lp-qa-btn" id="btn-faq">Soalan Lazim</Link>
+          <NavDropdownSemak variant="qa-button" />
+          <Link href="/panduan" className="lp-qa-btn" id="btn-manual">Manual Aduan Umum</Link>
+          <Link href="/faq" className="lp-qa-btn" id="btn-faq">Soalan Lazim</Link>
         </div>
 
         {/* Perlukan Bantuan */}

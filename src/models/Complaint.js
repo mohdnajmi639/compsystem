@@ -1,19 +1,5 @@
 import mongoose from 'mongoose';
 
-const ResponseSchema = new mongoose.Schema({
-  message: {
-    type: String,
-    required: true,
-  },
-  respondedBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
-  },
-}, {
-  timestamps: true,
-});
-
 const ComplaintSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -26,8 +12,10 @@ const ComplaintSchema = new mongoose.Schema({
   },
   category: {
     type: String,
-    enum: ['Academic', 'Facility', 'Financial', 'Administrative', 'Other', 'General', 'ICT'],
-    required: true,
+  },
+  categoryId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Category',
   },
   priority: {
     type: String,
@@ -49,19 +37,15 @@ const ComplaintSchema = new mongoose.Schema({
     ref: 'User',
     default: null,
   },
-  attachments: [{
+  feedbackRating: {
+    type: Number,
+    min: 1,
+    max: 5,
+    default: null,
+  },
+  feedbackComment: {
     type: String,
-  }],
-  responses: [ResponseSchema],
-  feedback: {
-    rating: {
-      type: Number,
-      min: 1,
-      max: 5,
-    },
-    comment: {
-      type: String,
-    },
+    default: null,
   },
 }, {
   timestamps: true,

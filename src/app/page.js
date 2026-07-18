@@ -1,12 +1,22 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth';
+import HomeUserMenu from '@/components/HomeUserMenu';
+import { NavDropdownAduan, NavDropdownSemak } from '@/components/NavDropdown';
 
 export const metadata = {
   title: 'Sistem Aduan | Pengurusan Aduan Universiti',
   description: 'Ada aduan? Salurkan aduan anda mengikut kategori yang sesuai di bawah.',
 };
 
-export default function Home() {
+export default async function Home() {
+  const session = await getServerSession(authOptions);
+
+  const getAduanLink = (path) => {
+    return session ? path : `/login?callbackUrl=${path}`;
+  };
+
   return (
     <div className="lp-root">
 
@@ -26,8 +36,10 @@ export default function Home() {
 
           <div className="lp-nav-links">
             <Link href="/" className="lp-nav-link lp-nav-active" id="nav-home">Anjung</Link>
-            <Link href="/dashboard/complaints/new" className="lp-nav-link" id="nav-new">Aduan Baharu</Link>
-            <Link href="/dashboard/complaints" className="lp-nav-link" id="nav-check">Semakan</Link>
+            <NavDropdownAduan />
+            {session?.user?.role !== 'admin' && session?.user?.role !== 'staff' && (
+              <NavDropdownSemak />
+            )}
             <Link href="#help" className="lp-nav-link" id="nav-panduan">Panduan</Link>
             <Link href="#faq" className="lp-nav-link" id="nav-faq">Soalan Lazim</Link>
           </div>
@@ -37,7 +49,11 @@ export default function Home() {
               <button className="lp-lang-active" id="lang-my">🇲🇾</button>
               <button className="lp-lang-btn" id="lang-en">🇬🇧</button>
             </div>
-            <Link href="/login" className="lp-login-btn" id="login-button">Log Masuk</Link>
+            {session ? (
+              <HomeUserMenu session={session} />
+            ) : (
+              <Link href="/login" className="lp-login-btn" id="login-button">Log Masuk</Link>
+            )}
           </div>
         </div>
       </nav>
@@ -45,7 +61,7 @@ export default function Home() {
       {/* ── HERO BANNER ── */}
       <section className="lp-hero">
         <Image
-          src="/uitm-banner.png"
+          src="/images/uitm-banner.png"
           alt="Universiti Teknologi MARA Banner"
           fill
           priority
@@ -63,7 +79,7 @@ export default function Home() {
 
         {/* Category Cards */}
         <div className="lp-cards-row">
-          <Link href="/login?callbackUrl=/aduan/umum" className="lp-card" id="card-umum">
+          <Link href={getAduanLink('/aduan/umum')} className="lp-card" id="card-umum">
             <div className="lp-card-top">
               <div className="lp-card-diamond lp-diamond-1" />
             </div>
@@ -74,7 +90,7 @@ export default function Home() {
             </div>
           </Link>
 
-          <Link href="/login?callbackUrl=/aduan/ict" className="lp-card" id="card-ict">
+          <Link href={getAduanLink('/aduan/ict')} className="lp-card" id="card-ict">
             <div className="lp-card-top">
               <div className="lp-card-diamond lp-diamond-2" />
             </div>
@@ -85,7 +101,7 @@ export default function Home() {
             </div>
           </Link>
 
-          <Link href="/login?callbackUrl=/aduan/fasiliti" className="lp-card" id="card-fasiliti">
+          <Link href={getAduanLink('/aduan/fasiliti')} className="lp-card" id="card-fasiliti">
             <div className="lp-card-top">
               <div className="lp-card-diamond lp-diamond-3" />
             </div>

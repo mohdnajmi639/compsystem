@@ -1,23 +1,35 @@
 'use client';
-import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import Sidebar from '@/components/Sidebar';
+import { useEffect } from 'react';
 
 export default function DashboardLayout({ children }) {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  if (status === 'loading') return <div className="loading"><div className="spinner" /></div>;
-  if (!session) { router.push('/login'); return null; }
+  useEffect(() => {
+    if (status === 'loading') return;
+    if (!session) {
+      router.push('/login');
+    } else if (session.user.role === 'student') {
+      router.replace('/');
+    }
+  }, [session, status, router]);
+
+  if (status === 'loading' || !session || session.user.role === 'student') {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f4f5f7' }}>
+        <div className="spinner" style={{ borderTopColor: '#7c3aed' }} />
+      </div>
+    );
+  }
 
   return (
-    <div className="dashboard-layout">
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      <main className="main-content">
+    <div className="db-layout">
+      <div className="db-main">
         {children}
-      </main>
+      </div>
     </div>
   );
 }
+

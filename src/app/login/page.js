@@ -4,6 +4,7 @@ import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Suspense } from 'react';
+import { NavDropdownAduan, NavDropdownSemak } from '@/components/NavDropdown';
 
 function LoginForm() {
   const router = useRouter();
@@ -23,7 +24,7 @@ function LoginForm() {
     if (res?.error) {
       setError('E-mel atau kata laluan tidak sah. Sila cuba semula.');
     } else {
-      router.push(callbackUrl);
+      window.location.href = callbackUrl;
     }
   };
 
@@ -46,8 +47,8 @@ function LoginForm() {
           </Link>
           <div className="lp-nav-links">
             <Link href="/" className="lp-nav-link" id="nav-anjung">Anjung</Link>
-            <Link href="#" className="lp-nav-link" id="nav-aduan">Aduan Baharu</Link>
-            <Link href="#" className="lp-nav-link" id="nav-semakan">Semakan</Link>
+            <NavDropdownAduan />
+            <NavDropdownSemak />
             <Link href="#" className="lp-nav-link" id="nav-panduan">Panduan</Link>
             <Link href="#" className="lp-nav-link" id="nav-faq">Soalan Lazim</Link>
           </div>

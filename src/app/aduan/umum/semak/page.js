@@ -123,6 +123,9 @@ function SemakUmumContent() {
               <span>Semakan</span>
               <span className="aduan-breadcrumb-sep">›</span>
               <span className="aduan-breadcrumb-active">Semak Aduan Umum</span>
+            </div>
+          </div>
+        </div>
 
         <div className="aduan-form-wrap">
           {error && <div className="aduan-form-error">{error}</div>}

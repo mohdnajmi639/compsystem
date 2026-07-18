@@ -399,8 +399,8 @@ function AduanNav({ session }) {
           <Link href="/" className="lp-nav-link" id="anav-anjung">Anjung</Link>
           <NavDropdownAduan />
           <NavDropdownSemak />
-          <Link href="/#help" className="lp-nav-link" id="anav-panduan">Panduan</Link>
-          <Link href="/#faq" className="lp-nav-link" id="anav-faq">Soalan Lazim</Link>
+          <Link href="/panduan" className="lp-nav-link" id="anav-panduan">Panduan</Link>
+          <Link href="/faq" className="lp-nav-link" id="anav-faq">Soalan Lazim</Link>
         </div>
         <div className="lp-nav-end">
           {session ? (

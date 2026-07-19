@@ -42,7 +42,7 @@ export default function UsersPage() {
                       <td style={{ fontWeight: 600, color: '#111827' }}>{u.name}</td>
                       <td style={{ color: '#6b7280' }}>{u.email}</td>
                       <td>
-                        <span className={`badge ${u.role === 'admin' ? 'badge-urgent' : u.role === 'staff' ? 'badge-progress' : 'badge-resolved'}`}>
+                        <span className={`badge ${u.role === 'admin' ? 'badge-urgent' : u.role === 'staff' ? 'badge-pending' : u.role === 'public' ? 'badge-progress' : 'badge-resolved'}`}>
                           {u.role}
                         </span>
                       </td>

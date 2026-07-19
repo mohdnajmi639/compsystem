@@ -9,7 +9,8 @@ import { NavDropdownAduan, NavDropdownSemak } from '@/components/NavDropdown';
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+  let callbackUrl = searchParams.get('callbackUrl');
+  if (callbackUrl === 'null') callbackUrl = null;
 
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
@@ -27,9 +28,9 @@ function LoginForm() {
     } else {
       const session = await getSession();
       if (session?.user?.role === 'admin' || session?.user?.role === 'staff') {
-        window.location.href = '/dashboard';
+        window.location.href = callbackUrl || '/dashboard';
       } else {
-        window.location.href = callbackUrl;
+        window.location.href = (callbackUrl && callbackUrl !== '/dashboard') ? callbackUrl : '/';
       }
     }
   };

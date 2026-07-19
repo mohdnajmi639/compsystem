@@ -11,6 +11,11 @@ export async function middleware(request) {
       return NextResponse.redirect(new URL('/login', request.url));
     }
 
+    // Redirect public and student users to the home page if they try to access the dashboard
+    if (token.role !== 'admin' && token.role !== 'staff') {
+      return NextResponse.redirect(new URL('/', request.url));
+    }
+
     // Admin-only routes
     if (pathname.startsWith('/dashboard/users') && token.role !== 'admin') {
       return NextResponse.redirect(new URL('/dashboard', request.url));

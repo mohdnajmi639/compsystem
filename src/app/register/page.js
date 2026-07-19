@@ -8,7 +8,8 @@ import { NavDropdownAduan, NavDropdownSemak } from '@/components/NavDropdown';
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+  let callbackUrl = searchParams.get('callbackUrl');
+  if (callbackUrl === 'null') callbackUrl = null;
 
   const [category, setCategory] = useState('student');
   const [form, setForm] = useState({
@@ -77,14 +78,14 @@ function RegisterForm() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       // Redirect to login with the callbackUrl preserved
-      router.push(`/login?callbackUrl=${encodeURIComponent(callbackUrl)}&registered=1`);
+      router.push(callbackUrl ? `/login?callbackUrl=${encodeURIComponent(callbackUrl)}&registered=1` : '/login?registered=1');
     } catch (err) {
       setError(err.message);
     }
     setLoading(false);
   };
 
-  const loginUrl = `/login?callbackUrl=${encodeURIComponent(callbackUrl)}`;
+  const loginUrl = callbackUrl ? `/login?callbackUrl=${encodeURIComponent(callbackUrl)}` : '/login';
 
   return (
     <div className="lp-auth-root">

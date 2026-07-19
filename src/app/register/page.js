@@ -90,7 +90,7 @@ function RegisterForm() {
   return (
     <div className="lp-auth-root">
       {/* Navbar */}
-      <nav className="lp-nav">
+      <nav className="lp-nav-glass">
         <div className="lp-nav-inner">
           <Link href="/" className="lp-logo" id="auth-logo">
             <span className="lp-logo-circle">

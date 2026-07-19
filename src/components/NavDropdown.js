@@ -47,7 +47,7 @@ function Dropdown({ label, items, id, buttonClassName, buttonStyle }) {
             transform: 'translateX(-50%)',
             background: '#fff',
             border: '1px solid #e5e7eb',
-            borderRadius: '12px',
+            borderRadius: 0,
             boxShadow: '0 10px 40px rgba(0,0,0,0.18)',
             minWidth: '270px',
             zIndex: 200,
@@ -73,7 +73,7 @@ function Dropdown({ label, items, id, buttonClassName, buttonStyle }) {
                 className="lp-nav-dd-item"
               >
                 <span style={{
-                  width: 34, height: 34, borderRadius: 8,
+                  width: 34, height: 34, borderRadius: 0,
                   background: item.iconBg || '#ede9fe',
                   color: item.iconColor || '#7c3aed',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',

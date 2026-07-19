@@ -40,10 +40,7 @@ export default async function PanduanPage() {
           </div>
 
           <div className="lp-nav-end">
-            <div className="lp-lang-group">
-              <button className="lp-lang-active" id="panduan-lang-my">🇲🇾</button>
-              <button className="lp-lang-btn" id="panduan-lang-en">🇬🇧</button>
-            </div>
+
             {session ? (
               <HomeUserMenu session={session} />
             ) : (

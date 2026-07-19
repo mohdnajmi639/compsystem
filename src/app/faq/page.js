@@ -199,10 +199,7 @@ export default async function FaqPage() {
           </div>
 
           <div className="lp-nav-end">
-            <div className="lp-lang-group">
-              <button className="lp-lang-active" id="faq-lang-my">🇲🇾</button>
-              <button className="lp-lang-btn" id="faq-lang-en">🇬🇧</button>
-            </div>
+
             {session ? (
               <HomeUserMenu session={session} />
             ) : (

@@ -36,6 +36,16 @@ function statusBg(s) {
   return '#f3f4f6';
 }
 
+function statusLabel(s) {
+  const map = {
+    Resolved:      'Selesai',
+    'In Progress': 'Dalam Proses',
+    Pending:       'Menunggu',
+    Rejected:      'Ditolak',
+  };
+  return map[s] || s || '—';
+}
+
 function subCategory(title = '') {
   if (title.toLowerCase().includes('email') || title.toLowerCase().includes('akaun emel')) return 'NEW ACCOUNT';
   if (title.toLowerCase().includes('network')) return 'CONNECTIVITY';
@@ -88,6 +98,12 @@ function StatusICTContent() {
   const [verifyModal, setVerifyModal] = useState(null);
   const [feedbackForm, setFeedbackForm] = useState({ rating: 0, comment: '' });
   const [submittingFeedback, setSubmittingFeedback] = useState(false);
+  const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+
+  const showToast = (msg, type = 'success') => {
+    setToast({ show: true, message: msg, type });
+    setTimeout(() => setToast({ show: false, message: '', type: 'success' }), 3500);
+  };
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -122,7 +138,10 @@ function StatusICTContent() {
   }
 
   const handleFeedbackSubmit = async () => {
-    if (feedbackForm.rating === 0) return alert('Sila pilih rating (1-5 bintang).');
+    if (feedbackForm.rating === 0) {
+      showToast('Sila pilih rating (1-5 bintang).', 'error');
+      return;
+    }
     setSubmittingFeedback(true);
     try {
       const res = await fetch(`/api/complaints/${verifyModal._id}`, {
@@ -137,7 +156,7 @@ function StatusICTContent() {
       setVerifyModal(data);
       setComplaints(prev => prev.map(c => c._id === data._id ? data : c));
     } catch (err) {
-      alert(err.message);
+      showToast(err.message, 'error');
     }
     setSubmittingFeedback(false);
   };
@@ -226,7 +245,7 @@ function StatusICTContent() {
               <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <select
-                    style={{ padding: '7px 10px', border: '1.5px solid #d1d5db', borderRadius: 4, fontSize: '0.85rem', color: '#374151', background: '#fff', outline: 'none' }}
+                    style={{ padding: '7px 10px', border: '1.5px solid #d1d5db', borderRadius: 0, fontSize: '0.85rem', color: '#374151', background: '#fff', outline: 'none' }}
                     value={perPage}
                     onChange={e => { setPerPage(Number(e.target.value)); setPage(1); }}
                     id="sts-per-page"
@@ -240,7 +259,7 @@ function StatusICTContent() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ fontSize: '0.82rem', color: '#6b7280' }}>Cari:</span>
                   <input
-                    style={{ padding: '7px 12px', border: '1.5px solid #d1d5db', borderRadius: 4, fontSize: '0.85rem', color: '#374151', background: '#fff', outline: 'none', minWidth: 200 }}
+                    style={{ padding: '7px 12px', border: '1.5px solid #d1d5db', borderRadius: 0, fontSize: '0.85rem', color: '#374151', background: '#fff', outline: 'none', minWidth: 200 }}
                     type="text"
                     placeholder="Search..."
                     value={search}
@@ -316,9 +335,9 @@ function StatusICTContent() {
                             <span style={{
                               color: statusColor(c.status), fontWeight: 700,
                               background: statusBg(c.status),
-                              padding: '3px 9px', borderRadius: 4, fontSize: '0.75rem',
+                              padding: '3px 9px', borderRadius: 0, fontSize: '0.75rem',
                             }}>
-                              {(c.status || '—').toUpperCase()}
+                              {statusLabel(c.status).toUpperCase()}
                             </span>
                           </td>
                           <td style={{ padding: '9px 12px', whiteSpace: 'nowrap', color: '#374151' }}>
@@ -357,7 +376,7 @@ function StatusICTContent() {
                     onClick={() => setPage(p => Math.max(1, p - 1))}
                     disabled={page === 1}
                     id="sts-prev"
-                    style={{ padding: '5px 12px', border: '1px solid #d1d5db', borderRadius: 4, background: '#fff', color: '#374151', cursor: page === 1 ? 'not-allowed' : 'pointer', opacity: page === 1 ? 0.5 : 1, fontSize: '0.85rem' }}
+                    style={{ padding: '5px 12px', border: '1px solid #d1d5db', borderRadius: 0, background: '#fff', color: '#374151', cursor: page === 1 ? 'not-allowed' : 'pointer', opacity: page === 1 ? 0.5 : 1, fontSize: '0.85rem' }}
                   >‹</button>
                   {Array.from({ length: totalPages }, (_, i) => i + 1)
                     .filter(p => p === 1 || p === totalPages || Math.abs(p - page) <= 1)
@@ -375,7 +394,7 @@ function StatusICTContent() {
                             onClick={() => setPage(p)}
                             id={`sts-page-${p}`}
                             style={{
-                              padding: '5px 10px', border: '1px solid', borderRadius: 4,
+                              padding: '5px 10px', border: '1px solid', borderRadius: 0,
                               background: page === p ? '#7c3aed' : '#fff',
                               borderColor: page === p ? '#7c3aed' : '#d1d5db',
                               color: page === p ? '#fff' : '#374151',
@@ -390,7 +409,7 @@ function StatusICTContent() {
                     onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                     disabled={page === totalPages}
                     id="sts-next"
-                    style={{ padding: '5px 12px', border: '1px solid #d1d5db', borderRadius: 4, background: '#fff', color: '#374151', cursor: page === totalPages ? 'not-allowed' : 'pointer', opacity: page === totalPages ? 0.5 : 1, fontSize: '0.85rem' }}
+                    style={{ padding: '5px 12px', border: '1px solid #d1d5db', borderRadius: 0, background: '#fff', color: '#374151', cursor: page === totalPages ? 'not-allowed' : 'pointer', opacity: page === totalPages ? 0.5 : 1, fontSize: '0.85rem' }}
                   >›</button>
                 </div>
               </div>
@@ -447,7 +466,7 @@ function StatusICTContent() {
               <div style={{ display: 'flex', gap: 12, fontSize: '0.85rem' }}>
                 <span style={{ minWidth: 80, fontWeight: 700, color: '#374151' }}>Status</span>
                 <span style={{ color: statusColor(verifyModal.status), fontWeight: 700 }}>
-                  {(verifyModal.status || '—').toUpperCase()}
+                  {statusLabel(verifyModal.status).toUpperCase()}
                 </span>
               </div>
             </div>
@@ -518,6 +537,32 @@ function StatusICTContent() {
           </div>
         </div>
       )}
+
+      {/* Toast Notification */}
+      {toast.show && (
+        <div style={{
+          position: 'fixed', bottom: 24, right: 24, zIndex: 9999,
+          background: toast.type === 'error' ? '#ef4444' : '#10b981',
+          color: '#fff', padding: '14px 24px', borderRadius: 0,
+          boxShadow: '0 10px 25px -5px rgba(0,0,0,0.2)',
+          fontWeight: 600, fontSize: '0.95rem',
+          display: 'flex', alignItems: 'center', gap: 10,
+          animation: 'slideInRight 0.3s ease-out',
+        }}>
+          {toast.type === 'error' ? (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          ) : (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          )}
+          {toast.message}
+        </div>
+      )}
+      <style>{`
+        @keyframes slideInRight {
+          from { opacity: 0; transform: translateX(40px); }
+          to   { opacity: 1; transform: translateX(0); }
+        }
+      `}</style>
     </div>
   );
 }

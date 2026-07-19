@@ -41,7 +41,7 @@ export default function DashboardPage() {
         {/* ── Welcome bar ── */}
         <div style={{
           background: 'linear-gradient(135deg, #3b0764 0%, #5b21b6 60%, #7c3aed 100%)',
-          borderRadius: 10, padding: '24px 28px', marginBottom: 24,
+          borderRadius: 0, padding: '24px 28px', marginBottom: 24,
           display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12,
         }}>
           <div>

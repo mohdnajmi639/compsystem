@@ -19,7 +19,7 @@ function AttachmentPreview({ url }) {
             width: '100%',
             maxHeight: '200px',
             objectFit: 'cover',
-            borderRadius: '6px',
+            borderRadius: 0,
             border: '1px solid #e5e7eb',
             display: 'block',
           }}
@@ -41,7 +41,7 @@ function AttachmentPreview({ url }) {
         gap: '10px',
         padding: '12px 14px',
         border: '1px solid #e5e7eb',
-        borderRadius: '6px',
+        borderRadius: 0,
         textDecoration: 'none',
         background: '#f9fafb',
         color: '#374151',
@@ -79,7 +79,13 @@ export default function ComplaintDetailPage() {
   const [assignTo, setAssignTo] = useState('');
   const [feedbackRating, setFeedbackRating] = useState(0);
   const [feedbackComment, setFeedbackComment] = useState('');
+  const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
   const role = session?.user?.role;
+
+  const showToast = (msg, type = 'success') => {
+    setToast({ show: true, message: msg, type });
+    setTimeout(() => setToast({ show: false, message: '', type: 'success' }), 3500);
+  };
 
   useEffect(() => {
     fetch(`/api/complaints/${id}`).then(r => r.json()).then(d => { setComplaint(d); setLoading(false); }).catch(() => setLoading(false));
@@ -151,7 +157,20 @@ export default function ComplaintDetailPage() {
             <div style={{ display: 'flex', gap: '8px' }}>
               {(role === 'admin' || role === 'staff') && complaint.status !== 'Resolved' && complaint.status !== 'Rejected' && (
                 <>
-                  {complaint.status === 'Pending' && <button onClick={() => handleStatusChange('In Progress')} className="btn btn-primary btn-sm">Mula Proses</button>}
+                  {complaint.status === 'Pending' && (
+                    <button 
+                      onClick={() => {
+                        if (!complaint.assignedTo) {
+                          showToast('Sila tugaskan staf terlebih dahulu sebelum memulakan proses.', 'error');
+                          return;
+                        }
+                        handleStatusChange('In Progress');
+                      }} 
+                      className="btn btn-primary btn-sm"
+                    >
+                      Mula Proses
+                    </button>
+                  )}
                   {complaint.status === 'In Progress' && <button onClick={() => handleStatusChange('Resolved')} className="btn btn-sm" style={{ background: '#10b981', color: '#fff', border: 'none' }}>Tandai Selesai</button>}
                   <button onClick={() => handleStatusChange('Rejected')} className="btn btn-danger btn-sm">Tolak</button>
                 </>
@@ -217,7 +236,7 @@ export default function ComplaintDetailPage() {
                 {complaint.responses?.length > 0 ? (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     {complaint.responses.map((r, i) => (
-                      <div key={i} style={{ background: '#f9fafb', padding: '16px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
+                      <div key={i} style={{ background: '#f9fafb', padding: '16px', borderRadius: 0, border: '1px solid #e5e7eb' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', alignItems: 'center' }}>
                           <span style={{ fontWeight: 600, color: '#111827', fontSize: '0.85rem' }}>{r.respondedBy?.name || 'Staf'}</span>
                           <span style={{ color: '#6b7280', fontSize: '0.75rem' }}>{new Date(r.createdAt).toLocaleString('ms-MY')}</span>
@@ -227,7 +246,7 @@ export default function ComplaintDetailPage() {
                     ))}
                   </div>
                 ) : (
-                  <div style={{ padding: '32px 24px', textAlign: 'center', background: '#f9fafb', borderRadius: '8px', border: '1px dashed #e5e7eb' }}>
+                  <div style={{ padding: '32px 24px', textAlign: 'center', background: '#f9fafb', borderRadius: 0, border: '1px dashed #e5e7eb' }}>
                     <p style={{ color: '#9ca3af', fontSize: '0.85rem', margin: 0 }}>Tiada respons direkodkan setakat ini.</p>
                   </div>
                 )}
@@ -254,7 +273,7 @@ export default function ComplaintDetailPage() {
                     <span style={{ color: '#111827', fontSize: '0.9rem', fontWeight: 600 }}>{complaint.feedbackRating} / 5</span>
                   </div>
                   {complaint.feedbackComment ? (
-                    <p style={{ color: '#374151', fontSize: '0.9rem', fontStyle: 'italic', margin: 0, background: '#f9fafb', padding: '12px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>"{complaint.feedbackComment}"</p>
+                    <p style={{ color: '#374151', fontSize: '0.9rem', fontStyle: 'italic', margin: 0, background: '#f9fafb', padding: '12px', borderRadius: 0, border: '1px solid #e5e7eb' }}>"{complaint.feedbackComment}"</p>
                   ) : (
                     <p style={{ color: '#9ca3af', fontSize: '0.85rem', margin: 0 }}>Tiada komen tambahan diberikan.</p>
                   )}
@@ -343,6 +362,32 @@ export default function ComplaintDetailPage() {
           </div>
         )}
       </div>
+
+      {/* Toast Notification */}
+      {toast.show && (
+        <div style={{
+          position: 'fixed', bottom: 24, right: 24, zIndex: 9999,
+          background: toast.type === 'error' ? '#ef4444' : '#10b981',
+          color: '#fff', padding: '14px 24px', borderRadius: 0,
+          boxShadow: '0 10px 25px -5px rgba(0,0,0,0.2)',
+          fontWeight: 600, fontSize: '0.95rem',
+          display: 'flex', alignItems: 'center', gap: 10,
+          animation: 'slideInRight 0.3s ease-out',
+        }}>
+          {toast.type === 'error' ? (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          ) : (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          )}
+          {toast.message}
+        </div>
+      )}
+      <style>{`
+        @keyframes slideInRight {
+          from { opacity: 0; transform: translateX(40px); }
+          to   { opacity: 1; transform: translateX(0); }
+        }
+      `}</style>
     </>
   );
 }

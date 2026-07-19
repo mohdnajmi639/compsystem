@@ -9,6 +9,10 @@ const DEPARTMENTS = [
   'Fakulti Pengurusan Maklumat (FPM)',
   'Fakulti Filem, Teater dan Animasi (FiTA)',
   'Umum',
+  'System Admin',
+  'Facilities',
+  'Student Affairs',
+  'IT',
 ];
 
 const roleBadge = (role) => {

@@ -256,7 +256,7 @@ function AduanFasilitiContent() {
                 <span className="aduan-section-num">2</span>
                 Lokasi dan Jenis Kerosakan
               </div>
-              <div className="aduan-section-body" style={{ backgroundColor: '#ffffff', padding: '16px', borderRadius: '4px', border: '1px solid #d8b4e2' }}>
+              <div className="aduan-section-body" style={{ backgroundColor: '#ffffff', padding: '16px', borderRadius: 0, border: '1px solid #d8b4e2' }}>
 
                 {/* ── Step 1: Lokasi Lain radio ── */}
                 <div style={{ marginBottom: '4px', paddingLeft: '80px' }}>
@@ -313,33 +313,33 @@ function AduanFasilitiContent() {
                       <div style={{ textAlign: 'center', fontWeight: 'bold', color: '#000', fontSize: '0.85rem', marginBottom: '8px' }}>Lokasi Lain</div>
                       
                       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
-                        <label style={{ width: '140px', textAlign: 'right', marginRight: '4px', color: 'blue', fontSize: '0.8rem' }}>
+                        <label style={{ width: '140px', textAlign: 'right', marginRight: '4px', color: '#000', fontSize: '0.8rem' }}>
                           Negeri:
                         </label>
-                        <input type="text" disabled readOnly style={{ width: '120px', padding: '1px 2px', border: '1px solid #777', fontSize: '0.8rem', backgroundColor: '#fff', color: '#000' }} value="B - Selangor" />
+                        <input type="text" disabled readOnly style={{ width: '120px', padding: '7px 10px', border: '1px solid #d1d5db', fontSize: '0.8rem', backgroundColor: '#fff', color: '#000' }} value="B - Selangor" />
                       </div>
 
                       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
-                        <label style={{ width: '140px', textAlign: 'right', marginRight: '4px', color: 'blue', fontSize: '0.8rem' }}>
+                        <label style={{ width: '140px', textAlign: 'right', marginRight: '4px', color: '#000', fontSize: '0.8rem' }}>
                           Kampus :
                         </label>
-                        <input type="text" disabled readOnly style={{ width: '220px', padding: '1px 2px', border: '1px solid #777', fontSize: '0.8rem', backgroundColor: '#fff', color: '#000' }} value="B04 - Kampus Puncak Perdana" />
+                        <input type="text" disabled readOnly style={{ width: '220px', padding: '7px 10px', border: '1px solid #d1d5db', fontSize: '0.8rem', backgroundColor: '#fff', color: '#000' }} value="B04 - Kampus Puncak Perdana" />
                       </div>
 
                       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
-                        <label style={{ width: '140px', textAlign: 'right', marginRight: '4px', color: 'blue', fontSize: '0.8rem' }}>
+                        <label style={{ width: '140px', textAlign: 'right', marginRight: '4px', color: '#000', fontSize: '0.8rem' }}>
                           Bangunan:<span style={{ color: 'red' }}>*</span>
                         </label>
-                        <select style={{ width: '180px', padding: '1px 2px', border: '1px solid #777', fontSize: '0.8rem' }} value={jenisBangunan === 'dalam' ? dbBangunan : lbBangunan} onChange={e => jenisBangunan === 'dalam' ? setDbBangunan(e.target.value) : setLbBangunan(e.target.value)}>
+                        <select style={{ width: '180px', padding: '7px 10px', border: '1px solid #d1d5db', fontSize: '0.8rem' }} value={jenisBangunan === 'dalam' ? dbBangunan : lbBangunan} onChange={e => jenisBangunan === 'dalam' ? setDbBangunan(e.target.value) : setLbBangunan(e.target.value)}>
                           {BANGUNAN_OPTS.map(o => <option key={o} value={o}>{o}</option>)}
                         </select>
                       </div>
 
                       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
-                        <label style={{ width: '140px', textAlign: 'right', marginRight: '4px', color: 'blue', fontSize: '0.8rem' }}>
+                        <label style={{ width: '140px', textAlign: 'right', marginRight: '4px', color: '#000', fontSize: '0.8rem' }}>
                           Blok:<span style={{ color: 'red' }}>*</span>
                         </label>
-                        <select style={{ width: '100px', padding: '1px 2px', border: '1px solid #777', fontSize: '0.8rem' }} value={jenisBangunan === 'dalam' ? dbBlok : lbBlok} onChange={e => jenisBangunan === 'dalam' ? setDbBlok(e.target.value) : setLbBlok(e.target.value)}>
+                        <select style={{ width: '100px', padding: '7px 10px', border: '1px solid #d1d5db', fontSize: '0.8rem' }} value={jenisBangunan === 'dalam' ? dbBlok : lbBlok} onChange={e => jenisBangunan === 'dalam' ? setDbBlok(e.target.value) : setLbBlok(e.target.value)}>
                           {BLOK_OPTS.map(o => <option key={o} value={o}>{o}</option>)}
                         </select>
                       </div>
@@ -347,18 +347,18 @@ function AduanFasilitiContent() {
                       {jenisBangunan === 'dalam' && (
                         <>
                           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
-                            <label style={{ width: '140px', textAlign: 'right', marginRight: '4px', color: 'blue', fontSize: '0.8rem' }}>
+                            <label style={{ width: '140px', textAlign: 'right', marginRight: '4px', color: '#000', fontSize: '0.8rem' }}>
                               Aras :
                             </label>
-                            <select style={{ width: '100px', padding: '1px 2px', border: '1px solid #777', fontSize: '0.8rem' }} value={dbAras} onChange={e => setDbAras(e.target.value)}>
+                            <select style={{ width: '100px', padding: '7px 10px', border: '1px solid #d1d5db', fontSize: '0.8rem' }} value={dbAras} onChange={e => setDbAras(e.target.value)}>
                               {ARAS_OPTS.map(o => <option key={o} value={o}>{o}</option>)}
                             </select>
                           </div>
                           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
-                            <label style={{ width: '140px', textAlign: 'right', marginRight: '4px', color: 'blue', fontSize: '0.8rem' }}>
+                            <label style={{ width: '140px', textAlign: 'right', marginRight: '4px', color: '#000', fontSize: '0.8rem' }}>
                               Ruang :
                             </label>
-                            <select style={{ width: '100px', padding: '1px 2px', border: '1px solid #777', fontSize: '0.8rem' }} value={dbRuang} onChange={e => setDbRuang(e.target.value)}>
+                            <select style={{ width: '100px', padding: '7px 10px', border: '1px solid #d1d5db', fontSize: '0.8rem' }} value={dbRuang} onChange={e => setDbRuang(e.target.value)}>
                               {RUANG_OPTS.map(o => <option key={o} value={o}>{o}</option>)}
                             </select>
                           </div>
@@ -368,18 +368,18 @@ function AduanFasilitiContent() {
                       {jenisBangunan === 'luar' && (
                         <>
                           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
-                            <label style={{ width: '140px', textAlign: 'right', marginRight: '4px', color: 'blue', fontSize: '0.8rem' }}>
+                            <label style={{ width: '140px', textAlign: 'right', marginRight: '4px', color: '#000', fontSize: '0.8rem' }}>
                               Kategori Infra :<span style={{ color: 'red' }}>*</span>
                             </label>
-                            <select style={{ width: '120px', padding: '1px 2px', border: '1px solid #777', fontSize: '0.8rem' }} value={lbKatInfra} onChange={e => setLbKatInfra(e.target.value)}>
+                            <select style={{ width: '120px', padding: '7px 10px', border: '1px solid #d1d5db', fontSize: '0.8rem' }} value={lbKatInfra} onChange={e => setLbKatInfra(e.target.value)}>
                               {KATEGORI_INFRA_OPTS.map(o => <option key={o} value={o}>{o}</option>)}
                             </select>
                           </div>
                           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
-                            <label style={{ width: '140px', textAlign: 'right', marginRight: '4px', color: 'blue', fontSize: '0.8rem' }}>
+                            <label style={{ width: '140px', textAlign: 'right', marginRight: '4px', color: '#000', fontSize: '0.8rem' }}>
                               Sub Kategori Infra :<span style={{ color: 'red' }}>*</span>
                             </label>
-                            <select style={{ width: '120px', padding: '1px 2px', border: '1px solid #777', fontSize: '0.8rem' }} value={lbSubInfra} onChange={e => setLbSubInfra(e.target.value)}>
+                            <select style={{ width: '120px', padding: '7px 10px', border: '1px solid #d1d5db', fontSize: '0.8rem' }} value={lbSubInfra} onChange={e => setLbSubInfra(e.target.value)}>
                               {SUB_KATEGORI_INFRA_OPTS.map(o => <option key={o} value={o}>{o}</option>)}
                             </select>
                           </div>
@@ -387,10 +387,10 @@ function AduanFasilitiContent() {
                       )}
 
                       <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '4px' }}>
-                        <label style={{ width: '140px', textAlign: 'right', marginRight: '4px', color: 'blue', fontSize: '0.8rem', paddingTop: '2px' }}>
+                        <label style={{ width: '140px', textAlign: 'right', marginRight: '4px', color: '#000', fontSize: '0.8rem', paddingTop: '2px' }}>
                           Keterangan lokasi :<span style={{ color: 'red' }}>*</span>
                         </label>
-                        <textarea rows={3} style={{ width: '280px', padding: '2px', border: '1px solid #a9a9a9', fontSize: '0.8rem', resize: 'vertical' }} value={jenisBangunan === 'dalam' ? dbKeterangan : lbKeterangan} onChange={e => jenisBangunan === 'dalam' ? setDbKeterangan(e.target.value) : setLbKeterangan(e.target.value)} />
+                        <textarea rows={3} style={{ width: '280px', padding: '8px 10px', border: '1px solid #d1d5db', fontSize: '0.8rem', resize: 'vertical' }} value={jenisBangunan === 'dalam' ? dbKeterangan : lbKeterangan} onChange={e => jenisBangunan === 'dalam' ? setDbKeterangan(e.target.value) : setLbKeterangan(e.target.value)} />
                       </div>
                     </div>
 
@@ -399,37 +399,37 @@ function AduanFasilitiContent() {
                       <div style={{ textAlign: 'center', fontWeight: 'bold', color: '#000', fontSize: '0.85rem', marginBottom: '8px' }}>Jenis Kerosakan</div>
                       
                       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
-                        <label style={{ width: '280px', textAlign: 'right', marginRight: '4px', color: 'blue', fontSize: '0.8rem' }}>
+                        <label style={{ width: '280px', textAlign: 'right', marginRight: '4px', color: '#000', fontSize: '0.8rem' }}>
                           Seksyen:<span style={{ color: 'red' }}>*</span>
                         </label>
-                        <select style={{ width: '200px', padding: '1px 2px', border: '1px solid #777', fontSize: '0.8rem' }} value={seksyen} onChange={e => setSeksyen(e.target.value)}>
+                        <select style={{ width: '200px', padding: '7px 10px', border: '1px solid #d1d5db', fontSize: '0.8rem' }} value={seksyen} onChange={e => setSeksyen(e.target.value)}>
                           {SEKSYEN_OPTS.map(o => <option key={o} value={o}>{o}</option>)}
                         </select>
                       </div>
 
                       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
-                        <label style={{ width: '280px', textAlign: 'right', marginRight: '4px', color: 'blue', fontSize: '0.8rem' }}>
+                        <label style={{ width: '280px', textAlign: 'right', marginRight: '4px', color: '#000', fontSize: '0.8rem' }}>
                           Elemen :<span style={{ color: 'red' }}>*</span>
                         </label>
-                        <select style={{ width: '100px', padding: '1px 2px', border: '1px solid #777', fontSize: '0.8rem' }} value={elemen} onChange={e => setElemen(e.target.value)}>
+                        <select style={{ width: '100px', padding: '7px 10px', border: '1px solid #d1d5db', fontSize: '0.8rem' }} value={elemen} onChange={e => setElemen(e.target.value)}>
                           {ELEMEN_OPTS.map(o => <option key={o} value={o}>{o}</option>)}
                         </select>
                       </div>
 
                       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
-                        <label style={{ width: '280px', textAlign: 'right', marginRight: '4px', color: 'blue', fontSize: '0.8rem' }}>
+                        <label style={{ width: '280px', textAlign: 'right', marginRight: '4px', color: '#000', fontSize: '0.8rem' }}>
                           Masalah:<span style={{ color: 'red' }}>*</span>
                         </label>
-                        <select style={{ width: '100px', padding: '1px 2px', border: '1px solid #777', fontSize: '0.8rem' }} value={masalah} onChange={e => setMasalah(e.target.value)}>
+                        <select style={{ width: '100px', padding: '7px 10px', border: '1px solid #d1d5db', fontSize: '0.8rem' }} value={masalah} onChange={e => setMasalah(e.target.value)}>
                           {MASALAH_OPTS.map(o => <option key={o} value={o}>{o}</option>)}
                         </select>
                       </div>
 
                       <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '4px' }}>
-                        <label style={{ width: '280px', textAlign: 'right', marginRight: '4px', color: 'blue', fontSize: '0.8rem', paddingTop: '2px', lineHeight: '1.2' }}>
+                        <label style={{ width: '280px', textAlign: 'right', marginRight: '4px', color: '#000', fontSize: '0.8rem', paddingTop: '2px', lineHeight: '1.2' }}>
                           Keterangan kerosakan (Sila isikan<br/>keterangan terperinci, cth<br/>no.telefon): <span style={{ color: 'red' }}>*</span>
                         </label>
-                        <textarea rows={3} style={{ width: '280px', padding: '2px', border: '1px solid #a9a9a9', fontSize: '0.8rem', resize: 'vertical' }} value={ketKerosakan} onChange={e => setKetKerosakan(e.target.value)} />
+                        <textarea rows={3} style={{ width: '280px', padding: '8px 10px', border: '1px solid #d1d5db', fontSize: '0.8rem', resize: 'vertical' }} value={ketKerosakan} onChange={e => setKetKerosakan(e.target.value)} />
                       </div>
                     </div>
 
@@ -445,14 +445,7 @@ function AduanFasilitiContent() {
                 type="submit"
                 disabled={loading}
                 id="ef2-hantar"
-                style={{
-                  padding: '2px 8px',
-                  backgroundColor: '#e9e9ed',
-                  border: '1px solid #777',
-                  color: '#000',
-                  fontSize: '0.85rem',
-                  cursor: 'pointer'
-                }}
+                className="btn btn-primary" style={{ padding: '10px 24px', fontWeight: 600, fontSize: '0.9rem' }}
               >
                 {loading ? 'Hantar...' : 'Hantar'}
               </button>

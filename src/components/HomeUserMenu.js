@@ -27,7 +27,7 @@ export default function HomeUserMenu({ session }) {
         onClick={() => setUserMenuOpen(o => !o)}
         id="home-user-btn"
       >
-        <div className="db-topbar-avatar" style={{ background: 'linear-gradient(135deg, #8b2be2, #5b21b6)', color: '#fff', borderRadius: '4px' }}>{initials}</div>
+        <div className="db-topbar-avatar" style={{ background: 'linear-gradient(135deg, #8b2be2, #5b21b6)', color: '#fff', borderRadius: 0 }}>{initials}</div>
         <div className="db-topbar-user-text">
           <span className="db-topbar-user-name" style={{ color: '#111827' }}>{session?.user?.name?.split(' ')[0]}</span>
           <span className="db-topbar-user-role" style={{ color: '#6b7280' }}>{roleLabel}</span>

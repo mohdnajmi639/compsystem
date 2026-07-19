@@ -17,6 +17,7 @@ function AduanUmumForm() {
   const [rows, setRows] = useState([{ id: 1 }]);
   const [attachments, setAttachments] = useState({});
   const [uploadingRowId, setUploadingRowId] = useState(null);
+  const [fileErrorModal, setFileErrorModal] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -32,33 +33,56 @@ function AduanUmumForm() {
     const file = e.target.files[0];
     if (!file) return;
 
+    const allowed = ['image/jpeg', 'image/jpg', 'image/png'];
+    if (!allowed.includes(file.type)) {
+      const msg = 'Format tidak dibenarkan. Sila pilih fail Imej (jpg, png) sahaja.';
+      setError(msg);
+      setFileErrorModal(msg);
+      setTimeout(() => setFileErrorModal(null), 3500);
+      e.target.value = '';
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      const msg = 'Saiz fail melebihi 5MB. Sila pilih fail yang lebih kecil.';
+      setError(msg);
+      setFileErrorModal(msg);
+      setTimeout(() => setFileErrorModal(null), 3500);
+      e.target.value = '';
+      return;
+    }
+
     setUploadingRowId(rowId);
     setError('');
 
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      try {
+        const base64 = event.target.result;
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ file: base64, name: file.name }),
+        });
 
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
+        if (!res.ok) throw new Error(`Gagal memuat naik fail: ${file.name}`);
 
-      if (!res.ok) {
-        throw new Error(`Gagal memuat naik fail: ${file.name}`);
+        const data = await res.json();
+        setAttachments((prev) => ({
+          ...prev,
+          [rowId]: { name: file.name, url: data.url }
+        }));
+      } catch (err) {
+        setError(err.message || 'Ralat berlaku ketika memuat naik fail.');
+      } finally {
+        setUploadingRowId(null);
       }
-
-      const data = await res.json();
-
-      setAttachments((prev) => ({
-        ...prev,
-        [rowId]: { name: file.name, url: data.url }
-      }));
-    } catch (err) {
-      setError(err.message || 'Ralat berlaku ketika memuat naik fail.');
-    } finally {
+    };
+    reader.onerror = () => {
+      setError('Gagal membaca fail.');
       setUploadingRowId(null);
-    }
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleRemoveRow = (rowId) => {
@@ -149,6 +173,27 @@ function AduanUmumForm() {
   return (
     <div className="aduan-root">
       <AduanNav session={session} />
+
+      {fileErrorModal && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: '28px',
+            right: '28px',
+            zIndex: 9999,
+            background: '#dc2626',
+            color: '#fff',
+            padding: '14px 22px',
+            borderRadius: 0,
+            fontSize: '0.9rem',
+            fontWeight: 600,
+            boxShadow: '0 8px 30px rgba(0,0,0,0.18)',
+            animation: 'slideInRight 0.3s ease',
+          }}
+        >
+          {fileErrorModal}
+        </div>
+      )}
 
       <main className="aduan-body">
         {/* Page Title Bar */}
@@ -263,7 +308,7 @@ function AduanUmumForm() {
               <div className="aduan-section-body" style={{ gap: '16px' }}>
                 <p className="aduan-field-hint" style={{ marginBottom: 4 }}>
                   Sertakan dokumen seperti surat, sertifikasi, kronologi atau mana-mana bukti lain yang menyokong aduan anda.
-                  <br /><em>Format diterima: PDF, JPG, PNG, DOCX (Maks. 5MB setiap fail)</em>
+                  <br /><em>Format diterima: JPG, PNG (Maks. 5MB setiap fail)</em>
                 </p>
 
                 {/* List of File Input Rows */}
@@ -277,7 +322,7 @@ function AduanUmumForm() {
                         type="file"
                         className="aduan-input"
                         style={{ flex: 1, minWidth: '220px' }}
-                        accept=".pdf,.jpg,.jpeg,.png,.docx"
+                        accept=".jpg,.jpeg,.png"
                         onChange={(e) => handleRowFileChange(row.id, e)}
                         disabled={uploadingRowId === row.id}
                       />

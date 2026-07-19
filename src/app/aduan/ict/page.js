@@ -54,7 +54,9 @@ function AduanICTForm() {
     alternateEmail: '',
     handphone: '',
   });
-  const [attachment, setAttachment] = useState(null);
+  const [attachment, setAttachment] = useState(null);      // { name, url }
+  const [uploadingAttachment, setUploadingAttachment] = useState(false);
+  const [fileErrorModal, setFileErrorModal] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -65,22 +67,53 @@ function AduanICTForm() {
     }
   }, [status, router]);
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    const allowed = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/gif', 'image/png'];
+    const allowed = ['image/jpeg', 'image/jpg', 'image/png'];
     if (!allowed.includes(file.type)) {
-      setError('Format tidak dibenarkan. Sila pilih fail PDF atau Imej (jpeg, jpg, gif, png).');
+      const msg = 'Format tidak dibenarkan. Sila pilih fail Imej (jpg, png) sahaja.';
+      setError(msg);
+      setFileErrorModal(msg);
+      setTimeout(() => setFileErrorModal(null), 3500);
       e.target.value = '';
       return;
     }
-    if (file.size > 1 * 1024 * 1024) {
-      setError('Saiz fail melebihi 1MB. Sila pilih fail yang lebih kecil.');
+    if (file.size > 5 * 1024 * 1024) {
+      const msg = 'Saiz fail melebihi 5MB. Sila pilih fail yang lebih kecil.';
+      setError(msg);
+      setFileErrorModal(msg);
+      setTimeout(() => setFileErrorModal(null), 3500);
       e.target.value = '';
       return;
     }
     setError('');
-    setAttachment(file);
+    setUploadingAttachment(true);
+
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      try {
+        const base64 = event.target.result;
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ file: base64, name: file.name }),
+        });
+        if (!res.ok) throw new Error('Gagal memuat naik fail.');
+        const data = await res.json();
+        setAttachment({ name: file.name, url: data.url });
+      } catch (err) {
+        setError(err.message || 'Ralat berlaku ketika memuat naik fail.');
+        e.target.value = '';
+      } finally {
+        setUploadingAttachment(false);
+      }
+    };
+    reader.onerror = () => {
+      setError('Gagal membaca fail.');
+      setUploadingAttachment(false);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleRemoveAttachment = () => {
@@ -96,6 +129,10 @@ function AduanICTForm() {
       setError('Sila pilih kategori.');
       return;
     }
+    if (uploadingAttachment) {
+      setError('Sila tunggu fail selesai dimuat naik.');
+      return;
+    }
     setLoading(true);
     setError('');
     try {
@@ -107,7 +144,7 @@ function AduanICTForm() {
           description: form.details,
           category: 'ICT',
           priority: 'Medium',
-          attachments: [],
+          attachments: attachment ? [attachment.url] : [],
         }),
       });
       const data = await res.json();
@@ -177,6 +214,27 @@ function AduanICTForm() {
   return (
     <div className="aduan-root">
       <AduanNav session={session} />
+
+      {fileErrorModal && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: '28px',
+            right: '28px',
+            zIndex: 9999,
+            background: '#dc2626',
+            color: '#fff',
+            padding: '14px 22px',
+            borderRadius: 0,
+            fontSize: '0.9rem',
+            fontWeight: 600,
+            boxShadow: '0 8px 30px rgba(0,0,0,0.18)',
+            animation: 'slideInRight 0.3s ease',
+          }}
+        >
+          {fileErrorModal}
+        </div>
+      )}
 
       <main className="aduan-body">
         {/* Page Title Bar */}
@@ -323,21 +381,28 @@ function AduanICTForm() {
               </div>
               <div className="aduan-section-body">
                 <p className="aduan-field-hint">
-                  Format PDF dan Imej (jpeg, jpg, gif, png) sahaja. Saiz maksimum 1MB.
+                  Format Imej (jpg, png) sahaja. Saiz maksimum 5MB.
                 </p>
                 <div className="aduan-field">
                   <label className="aduan-label">Pilih Fail</label>
                   <input
                     id="ict-attachment-input"
                     type="file"
-                    accept=".pdf,.jpg,.jpeg,.gif,.png"
+                    accept=".jpg,.jpeg,.png"
                     onChange={handleFileChange}
                     className="aduan-input"
+                    disabled={uploadingAttachment}
                   />
                 </div>
-                {attachment && (
+                {uploadingAttachment && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8, color: '#6b7280', fontSize: '0.85rem' }}>
+                    <span className="spinner" style={{ width: 14, height: 14, borderWidth: 2 }} />
+                    Memuat naik fail...
+                  </div>
+                )}
+                {attachment && !uploadingAttachment && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 8 }}>
-                    <span className="aduan-file-chip">📎 {attachment.name}</span>
+                    <span className="aduan-file-chip">{attachment.name}</span>
                     <button
                       type="button"
                       className="aduan-reset-btn"
@@ -345,7 +410,7 @@ function AduanICTForm() {
                       onClick={handleRemoveAttachment}
                       id="ict-remove-attachment"
                     >
-                      🗑 Hapus
+                      Hapus
                     </button>
                   </div>
                 )}

@@ -61,7 +61,6 @@ function categoryLabel(c = '', title = '') {
 
 const COLUMNS = [
   { key: 'bil',          label: 'Bil',               sortable: false },
-  { key: 'action',       label: 'Tindakan',           sortable: false },
   { key: 'ticketId',     label: 'ICT Service Ticket', sortable: true  },
   { key: 'dateReport',   label: 'Tarikh Hantar',      sortable: true  },
   { key: 'staffCharge',  label: 'Staff Bertanggungjawab', sortable: true },
@@ -71,6 +70,7 @@ const COLUMNS = [
   { key: 'subCategory',  label: 'Sub Kategori',       sortable: true  },
   { key: 'status',       label: 'Status',             sortable: true  },
   { key: 'completeDate', label: 'Tarikh Selesai',     sortable: true  },
+  { key: 'action',       label: 'Tindakan',           sortable: false },
 ];
 
 function StatusICTContent() {
@@ -86,6 +86,8 @@ function StatusICTContent() {
   const [sortKey, setSortKey]       = useState('dateReport');
   const [sortDir, setSortDir]       = useState('desc');
   const [verifyModal, setVerifyModal] = useState(null);
+  const [feedbackForm, setFeedbackForm] = useState({ rating: 0, comment: '' });
+  const [submittingFeedback, setSubmittingFeedback] = useState(false);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -118,6 +120,27 @@ function StatusICTContent() {
     }
     setPage(1);
   }
+
+  const handleFeedbackSubmit = async () => {
+    if (feedbackForm.rating === 0) return alert('Sila pilih rating (1-5 bintang).');
+    setSubmittingFeedback(true);
+    try {
+      const res = await fetch(`/api/complaints/${verifyModal._id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          feedback: { rating: feedbackForm.rating, comment: feedbackForm.comment }
+        })
+      });
+      if (!res.ok) throw new Error('Gagal menghantar maklum balas.');
+      const data = await res.json();
+      setVerifyModal(data);
+      setComplaints(prev => prev.map(c => c._id === data._id ? data : c));
+    } catch (err) {
+      alert(err.message);
+    }
+    setSubmittingFeedback(false);
+  };
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
@@ -272,19 +295,6 @@ function StatusICTContent() {
                       return (
                         <tr key={c._id} style={{ background: idx % 2 === 0 ? '#fff' : '#fafafa', borderBottom: '1px solid #f3f4f6' }}>
                           <td style={{ padding: '9px 12px', textAlign: 'center', color: '#6b7280' }}>{globalIdx}</td>
-                          <td style={{ padding: '9px 12px', textAlign: 'center' }}>
-                            <button
-                              onClick={() => setVerifyModal(c)}
-                              id={`sts-verify-${c._id}`}
-                              style={{
-                                padding: '5px 12px', background: '#7c3aed', color: '#fff',
-                                border: 'none', borderRadius: 4, fontSize: '0.75rem', fontWeight: 700,
-                                cursor: 'pointer', whiteSpace: 'nowrap',
-                              }}
-                            >
-                              ✓ Verify
-                            </button>
-                          </td>
                           <td style={{ padding: '9px 12px', color: '#5b21b6', fontWeight: 700, whiteSpace: 'nowrap' }}>
                             {`A${ticketShort}`}
                           </td>
@@ -313,6 +323,19 @@ function StatusICTContent() {
                           </td>
                           <td style={{ padding: '9px 12px', whiteSpace: 'nowrap', color: '#374151' }}>
                             {isResolved ? fmtDate(c.updatedAt) : '—'}
+                          </td>
+                          <td style={{ padding: '9px 12px', textAlign: 'center' }}>
+                            <button
+                              onClick={() => { setVerifyModal(c); setFeedbackForm({ rating: 0, comment: '' }); }}
+                              id={`sts-verify-${c._id}`}
+                              style={{
+                                padding: '5px 12px', background: '#7c3aed', color: '#fff',
+                                border: 'none', borderRadius: 0, fontSize: '0.75rem', fontWeight: 700,
+                                cursor: 'pointer', whiteSpace: 'nowrap',
+                              }}
+                            >
+                              {(isResolved && !c.feedbackRating) ? 'Sahkan' : 'Lihat'}
+                            </button>
                           </td>
                         </tr>
                       );
@@ -392,7 +415,7 @@ function StatusICTContent() {
         >
           <div
             onClick={e => e.stopPropagation()}
-            style={{ background: '#fff', borderRadius: 8, padding: 28, maxWidth: 480, width: '90%', boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}
+            style={{ background: '#fff', borderRadius: 0, padding: 28, maxWidth: 480, width: '90%', boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}
           >
             <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#1f2937', marginBottom: 16 }}>Verify Complaint</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -406,6 +429,21 @@ function StatusICTContent() {
                   <span style={{ color: '#6b7280', flex: 1 }}>{value}</span>
                 </div>
               ))}
+              {verifyModal.attachments && verifyModal.attachments.length > 0 && (
+                <div style={{ display: 'flex', gap: 12, fontSize: '0.85rem', alignItems: 'flex-start', marginTop: 4 }}>
+                  <span style={{ minWidth: 80, fontWeight: 700, color: '#374151' }}>Lampiran</span>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
+                    {verifyModal.attachments.map((url, i) => {
+                      const isImage = /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(url);
+                      return (
+                        <a key={i} href={url} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', color: '#7c3aed', fontWeight: 600, background: '#f3f4f6', padding: '6px 10px', borderRadius: 0 }}>
+                          {isImage ? '🖼️' : '📎'} {url.split('/').pop()}
+                        </a>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
               <div style={{ display: 'flex', gap: 12, fontSize: '0.85rem' }}>
                 <span style={{ minWidth: 80, fontWeight: 700, color: '#374151' }}>Status</span>
                 <span style={{ color: statusColor(verifyModal.status), fontWeight: 700 }}>
@@ -413,18 +451,66 @@ function StatusICTContent() {
                 </span>
               </div>
             </div>
+
+            {/* Feedback Section */}
+            {verifyModal.status === 'Resolved' && (
+              <div style={{ marginTop: 20, padding: 16, border: '1px solid #e5e7eb', background: '#f9fafb' }}>
+                <h4 style={{ margin: '0 0 12px 0', fontSize: '0.9rem', color: '#111827' }}>Pengesahan & Penilaian Pemohon</h4>
+                
+                {verifyModal.feedbackRating ? (
+                  <div style={{ fontSize: '0.85rem' }}>
+                    <div style={{ display: 'flex', gap: 4, marginBottom: 8 }}>
+                      {[1, 2, 3, 4, 5].map(star => (
+                        <span key={star} style={{ color: star <= verifyModal.feedbackRating ? '#f59e0b' : '#d1d5db', fontSize: '1.2rem' }}>★</span>
+                      ))}
+                    </div>
+                    {verifyModal.feedbackComment && (
+                      <div style={{ color: '#4b5563', whiteSpace: 'pre-wrap' }}>"{verifyModal.feedbackComment}"</div>
+                    )}
+                  </div>
+                ) : (
+                  <div>
+                    <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+                      {[1, 2, 3, 4, 5].map(star => (
+                        <span
+                          key={star}
+                          onClick={() => setFeedbackForm({ ...feedbackForm, rating: star })}
+                          style={{ color: star <= feedbackForm.rating ? '#f59e0b' : '#d1d5db', fontSize: '1.5rem', cursor: 'pointer' }}
+                        >
+                          ★
+                        </span>
+                      ))}
+                    </div>
+                    <textarea
+                      value={feedbackForm.comment}
+                      onChange={e => setFeedbackForm({ ...feedbackForm, comment: e.target.value })}
+                      placeholder="Sila masukkan ulasan anda (pilihan)..."
+                      style={{ width: '100%', padding: '8px 12px', borderRadius: 0, border: '1px solid #d1d5db', fontSize: '0.85rem', minHeight: 60, marginBottom: 12 }}
+                    />
+                    <button
+                      onClick={handleFeedbackSubmit}
+                      disabled={submittingFeedback}
+                      style={{ padding: '6px 16px', background: '#16a34a', color: '#fff', border: 'none', borderRadius: 0, fontWeight: 700, cursor: 'pointer', fontSize: '0.85rem' }}
+                    >
+                      {submittingFeedback ? 'Menghantar...' : 'Sahkan & Hantar'}
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
             <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
               <button
                 onClick={() => setVerifyModal(null)}
                 id="sts-modal-confirm"
-                style={{ padding: '9px 24px', background: '#7c3aed', color: '#fff', border: 'none', borderRadius: 4, fontWeight: 700, cursor: 'pointer', fontSize: '0.88rem' }}
+                style={{ padding: '9px 24px', background: '#7c3aed', color: '#fff', border: 'none', borderRadius: 0, fontWeight: 700, cursor: 'pointer', fontSize: '0.88rem' }}
               >
                 ✓ Confirm
               </button>
               <button
                 onClick={() => setVerifyModal(null)}
                 id="sts-modal-close"
-                style={{ padding: '9px 20px', background: '#fff', color: '#374151', border: '1.5px solid #d1d5db', borderRadius: 4, fontWeight: 600, cursor: 'pointer', fontSize: '0.88rem' }}
+                style={{ padding: '9px 20px', background: '#fff', color: '#374151', border: '1.5px solid #d1d5db', borderRadius: 0, fontWeight: 600, cursor: 'pointer', fontSize: '0.88rem' }}
               >
                 Close
               </button>

@@ -47,6 +47,10 @@ const ComplaintSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
+  attachments: {
+    type: [String],
+    default: [],
+  },
 }, {
   timestamps: true,
 });

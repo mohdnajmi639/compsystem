@@ -4,6 +4,68 @@ import { useSession } from 'next-auth/react';
 import { useRouter, useParams } from 'next/navigation';
 import Topbar from '@/components/Topbar';
 
+const isImage = (url) => /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(url);
+const isPdf   = (url) => /\.pdf$/i.test(url);
+
+function AttachmentPreview({ url }) {
+  const name = url.split('/').pop();
+  if (isImage(url)) {
+    return (
+      <a href={url} target="_blank" rel="noopener noreferrer" style={{ display: 'block', textDecoration: 'none' }}>
+        <img
+          src={url}
+          alt={name}
+          style={{
+            width: '100%',
+            maxHeight: '200px',
+            objectFit: 'cover',
+            borderRadius: '6px',
+            border: '1px solid #e5e7eb',
+            display: 'block',
+          }}
+        />
+        <div style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {name}
+        </div>
+      </a>
+    );
+  }
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+        padding: '12px 14px',
+        border: '1px solid #e5e7eb',
+        borderRadius: '6px',
+        textDecoration: 'none',
+        background: '#f9fafb',
+        color: '#374151',
+        fontSize: '0.85rem',
+        fontWeight: 600,
+        transition: 'background 0.15s',
+      }}
+      onMouseEnter={(e) => { e.currentTarget.style.background = '#f3f4f6'; }}
+      onMouseLeave={(e) => { e.currentTarget.style.background = '#f9fafb'; }}
+    >
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        {isPdf(url)
+          ? <><rect x="3" y="2" width="18" height="20" rx="2"/><path d="M8 10h8M8 14h5"/></>
+          : <><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></>
+        }
+      </svg>
+      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: 'auto', flexShrink: 0 }}>
+        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+      </svg>
+    </a>
+  );
+}
+
 export default function ComplaintDetailPage() {
   const params = useParams();
   const id = params?.id || '';
@@ -50,6 +112,8 @@ export default function ComplaintDetailPage() {
 
   if (loading) return <><Topbar title="Butiran Aduan" /><div className="page-content"><div className="loading"><div className="spinner" /></div></div></>;
   if (!complaint) return <><Topbar title="Butiran Aduan" /><div className="page-content"><div className="empty-state"><h3>Aduan tidak dijumpai</h3></div></div></>;
+
+  const attachments = complaint.attachments?.filter(Boolean) || [];
 
   return (
     <>
@@ -98,8 +162,10 @@ export default function ComplaintDetailPage() {
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px', alignItems: 'start' }}>
-          {/* Left Column: Description & Responses */}
+          {/* Left Column: Description, Attachments & Responses */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', gridColumn: 'span 2' }}>
+
+            {/* Description */}
             <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
               <div style={{ padding: '16px 24px', borderBottom: '1px solid #e5e7eb', background: '#f9fafb' }}>
                 <h3 style={{ fontSize: '0.9rem', color: '#111827', margin: 0, fontWeight: 600 }}>Keterangan</h3>
@@ -109,6 +175,39 @@ export default function ComplaintDetailPage() {
               </div>
             </div>
 
+            {/* Attachments */}
+            {attachments.length > 0 && (
+              <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+                <div style={{ padding: '16px 24px', borderBottom: '1px solid #e5e7eb', background: '#f9fafb', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+                  </svg>
+                  <h3 style={{ fontSize: '0.9rem', color: '#111827', margin: 0, fontWeight: 600 }}>
+                    Lampiran ({attachments.length})
+                  </h3>
+                </div>
+                <div style={{ padding: '24px' }}>
+                  {/* Image grid */}
+                  {attachments.some(isImage) && (
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '12px', marginBottom: attachments.some(a => !isImage(a)) ? '16px' : 0 }}>
+                      {attachments.filter(isImage).map((url, i) => (
+                        <AttachmentPreview key={i} url={url} />
+                      ))}
+                    </div>
+                  )}
+                  {/* Non-image files */}
+                  {attachments.filter(a => !isImage(a)).length > 0 && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      {attachments.filter(a => !isImage(a)).map((url, i) => (
+                        <AttachmentPreview key={i} url={url} />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Responses */}
             <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
               <div style={{ padding: '16px 24px', borderBottom: '1px solid #e5e7eb', background: '#f9fafb' }}>
                 <h3 style={{ fontSize: '0.9rem', color: '#111827', margin: 0, fontWeight: 600 }}>Aktiviti & Respons ({complaint.responses?.length || 0})</h3>
@@ -143,6 +242,7 @@ export default function ComplaintDetailPage() {
               </div>
             </div>
 
+            {/* Feedback */}
             {complaint.feedbackRating && (
               <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
                 <div style={{ padding: '16px 24px', borderBottom: '1px solid #e5e7eb', background: '#f9fafb' }}>
@@ -175,6 +275,12 @@ export default function ComplaintDetailPage() {
                   <div style={{ fontSize: '0.75rem', color: '#6b7280', marginBottom: '6px', fontWeight: 600, textTransform: 'uppercase' }}>Dilapor Oleh</div>
                   <div style={{ color: '#111827', fontSize: '0.9rem', fontWeight: 600, marginBottom: '2px' }}>{complaint.submittedBy?.name}</div>
                   <div style={{ color: '#6b7280', fontSize: '0.8rem' }}>{complaint.submittedBy?.email}</div>
+                  {complaint.submittedBy?.studentId && (
+                    <div style={{ color: '#6b7280', fontSize: '0.8rem', marginTop: '2px' }}>No. Pelajar: {complaint.submittedBy.studentId}</div>
+                  )}
+                  {complaint.submittedBy?.department && (
+                    <div style={{ color: '#6b7280', fontSize: '0.8rem', marginTop: '2px' }}>{complaint.submittedBy.department}</div>
+                  )}
                 </div>
                 
                 <div>
@@ -200,11 +306,22 @@ export default function ComplaintDetailPage() {
                   <div style={{ fontSize: '0.75rem', color: '#6b7280', marginBottom: '6px', fontWeight: 600, textTransform: 'uppercase' }}>Kemaskini Terakhir</div>
                   <div style={{ color: '#374151', fontSize: '0.85rem' }}>{new Date(complaint.updatedAt).toLocaleString('ms-MY')}</div>
                 </div>
+
+                {attachments.length > 0 && (
+                  <>
+                    <div style={{ height: '1px', background: '#e5e7eb', margin: '4px 0' }} />
+                    <div>
+                      <div style={{ fontSize: '0.75rem', color: '#6b7280', marginBottom: '6px', fontWeight: 600, textTransform: 'uppercase' }}>Lampiran</div>
+                      <div style={{ color: '#374151', fontSize: '0.85rem', fontWeight: 600 }}>{attachments.length} fail dilampirkan</div>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
         </div>
 
+        {/* Assign Modal */}
         {showAssign && (
           <div className="modal-overlay" onClick={() => setShowAssign(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <div className="card" onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: '420px', padding: 0 }}>

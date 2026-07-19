@@ -11,7 +11,7 @@ import HomeUserMenu from '@/components/HomeUserMenu';
 ══════════════════════════════════════ */
 const NEGERI_OPTS = ['-- Sila Pilih --','Johor','Kedah','Kelantan','Melaka','Negeri Sembilan','Pahang','Perak','Perlis','Pulau Pinang','Sabah','Sarawak','Selangor','Terengganu','W.P. Kuala Lumpur','W.P. Labuan','W.P. Putrajaya'];
 const KAMPUS_OPTS = ['--Sila Pilih--','UiTM Shah Alam','UiTM Kampus Puncak Perdana','UiTM Kampus Puncak Alam','UiTM Kampus Dengkil','UiTM Kampus Arau','UiTM Kampus Kota Bharu','UiTM Kampus Kuantan','UiTM Kampus Dungun','UiTM Kampus Johor Bahru','UiTM Kampus Alor Gajah'];
-const BANGUNAN_OPTS = ['--Sila Pilih--','Bangunan Akademik 1','Bangunan Akademik 2','Bangunan Pentadbiran','Perpustakaan','Dewan Besar','Kafeteria','Kolej Kediaman A','Kolej Kediaman B','Makmal Komputer','Pusat Sukan'];
+const BANGUNAN_OPTS = ['--Sila Pilih--','B0410 - Blok Akademik','B0407 - Dewan Makan','B0401 - Kolej Blok 1','B0402 - Kolej Blok 2','B0403 - Kolej Blok 3','B0404 - Kolej Blok 4','B0405 - Kolej Blok 5','B0408 - Kolej Blok 6','B0411 - Perhentian Bas','B0409 - Pos Pengawal Kolej','B0406 - Surau'];
 const BLOK_OPTS = ['--Sila Pilih--','Blok A','Blok B','Blok C','Blok D','Blok E','Blok F'];
 const ARAS_OPTS = ['--Sila Pilih--','Aras 1','Aras 2','Aras 3','Aras 4','Aras 5'];
 const RUANG_OPTS = ['--Sila Pilih--','Bilik Darjah','Makmal','Pejabat','Tandas','Koridor','Parkir','Padang'];
@@ -36,8 +36,8 @@ function AduanFasilitiContent() {
   const [jenisBangunan, setJenisBangunan] = useState(''); // '' | 'dalam' | 'luar'
 
   /* ── Dalam Bangunan fields ── */
-  const [dbNegeri, setDbNegeri]     = useState('-- Sila Pilih --');
-  const [dbKampus]                  = useState('UiTM Kampus Puncak Perdana');
+  const [dbNegeri, setDbNegeri]     = useState('B - Selangor');
+  const [dbKampus]                  = useState('B04 - Kampus Puncak Perdana');
   const [dbBangunan, setDbBangunan] = useState('--Sila Pilih--');
   const [dbBlok, setDbBlok]         = useState('--Sila Pilih--');
   const [dbAras, setDbAras]         = useState('--Sila Pilih--');
@@ -45,8 +45,8 @@ function AduanFasilitiContent() {
   const [dbKeterangan, setDbKeterangan] = useState('');
 
   /* ── Luar Bangunan fields ── */
-  const [lbNegeri, setLbNegeri]         = useState('-- Sila Pilih --');
-  const [lbKampus]                      = useState('UiTM Kampus Puncak Perdana');
+  const [lbNegeri, setLbNegeri]         = useState('B - Selangor');
+  const [lbKampus]                      = useState('B04 - Kampus Puncak Perdana');
   const [lbBangunan, setLbBangunan]     = useState('--Sila Pilih--');
   const [lbBlok, setLbBlok]             = useState('--Sila Pilih--');
   const [lbKatInfra, setLbKatInfra]     = useState('--Sila Pilih--');
@@ -129,11 +129,11 @@ function AduanFasilitiContent() {
   const handleReset = () => {
     setLokasiPilih('');
     setJenisBangunan('');
-    setDbNegeri('-- Sila Pilih --');
+    setDbNegeri('B - Selangor');
     setDbBangunan('--Sila Pilih--'); setDbBlok('--Sila Pilih--');
     setDbAras('--Sila Pilih--');     setDbRuang('--Sila Pilih--');
     setDbKeterangan('');
-    setLbNegeri('-- Sila Pilih --');
+    setLbNegeri('B - Selangor');
     setLbBangunan('--Sila Pilih--'); setLbBlok('--Sila Pilih--');
     setLbKatInfra('--Sila Pilih--'); setLbSubInfra('--Sila Pilih--');
     setLbKeterangan('');
@@ -256,15 +256,11 @@ function AduanFasilitiContent() {
                 <span className="aduan-section-num">2</span>
                 Lokasi dan Jenis Kerosakan
               </div>
-              <div className="aduan-section-body">
-
-                <p className="aduan-field-hint" style={{ marginBottom: 12, fontWeight: 600 }}>
-                  * Lokasi kerosakan:
-                </p>
+              <div className="aduan-section-body" style={{ backgroundColor: '#ffffff', padding: '16px', borderRadius: '4px', border: '1px solid #d8b4e2' }}>
 
                 {/* ── Step 1: Lokasi Lain radio ── */}
-                <div style={{ marginBottom: 12 }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: '0.9rem', fontWeight: 500 }} htmlFor="ef2-lokasi-lain">
+                <div style={{ marginBottom: '4px', paddingLeft: '80px' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: '0.85rem', color: '#000' }} htmlFor="ef2-lokasi-lain">
                     <input
                       id="ef2-lokasi-lain"
                       type="radio"
@@ -272,7 +268,7 @@ function AduanFasilitiContent() {
                       value="lokasi_lain"
                       checked={lokasiPilih === 'lokasi_lain'}
                       onChange={() => setLokasiPilih('lokasi_lain')}
-                      style={{ accentColor: '#7c3aed', width: 16, height: 16 }}
+                      style={{ margin: 0 }}
                     />
                     Lokasi Lain
                   </label>
@@ -280,8 +276,8 @@ function AduanFasilitiContent() {
 
                 {/* ── Step 2: Dalam Bangunan / Luar Bangunan ── */}
                 {lokasiPilih === 'lokasi_lain' && (
-                  <div style={{ display: 'flex', gap: 32, marginBottom: 20 }}>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: '0.9rem', fontWeight: 500 }} htmlFor="ef2-dalam">
+                  <div style={{ display: 'flex', paddingLeft: '80px', marginBottom: '16px' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: '0.85rem', color: '#000', width: '280px' }} htmlFor="ef2-dalam">
                       <input
                         id="ef2-dalam"
                         type="radio"
@@ -289,11 +285,11 @@ function AduanFasilitiContent() {
                         value="dalam"
                         checked={jenisBangunan === 'dalam'}
                         onChange={() => setJenisBangunan('dalam')}
-                        style={{ accentColor: '#7c3aed', width: 16, height: 16 }}
+                        style={{ margin: 0 }}
                       />
                       Dalam Bangunan
                     </label>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: '0.9rem', fontWeight: 500 }} htmlFor="ef2-luar">
+                    <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: '0.85rem', color: '#000' }} htmlFor="ef2-luar">
                       <input
                         id="ef2-luar"
                         type="radio"
@@ -301,159 +297,139 @@ function AduanFasilitiContent() {
                         value="luar"
                         checked={jenisBangunan === 'luar'}
                         onChange={() => setJenisBangunan('luar')}
-                        style={{ accentColor: '#7c3aed', width: 16, height: 16 }}
+                        style={{ margin: 0 }}
                       />
                       Luar Bangunan
                     </label>
                   </div>
                 )}
 
-                {/* ══ DALAM BANGUNAN form ══ */}
-                {lokasiPilih === 'lokasi_lain' && jenisBangunan === 'dalam' && (
-                  <div className="aduan-field-grid aduan-field-grid-2" style={{ gap: '16px 24px' }}>
-
-                    {/* Left — Lokasi */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                      <div style={{ background: '#7c3aed', color: '#fff', fontWeight: 700, fontSize: '0.8rem', padding: '8px 14px', borderRadius: 4, letterSpacing: '0.04em' }}>
-                        LOKASI LAIN
-                      </div>
-                      <div className="aduan-field">
-                        <label className="aduan-label">Negeri :*</label>
-                        <Sel id="ef2-db-negeri" value={dbNegeri} onChange={setDbNegeri} opts={NEGERI_OPTS} />
-                      </div>
-
-                      <div className="aduan-field">
-                        <label className="aduan-label">Bangunan :*</label>
-                        <Sel id="ef2-db-bangunan" value={dbBangunan} onChange={setDbBangunan} opts={BANGUNAN_OPTS} />
-                      </div>
-                      <div className="aduan-field">
-                        <label className="aduan-label">Blok :*</label>
-                        <Sel id="ef2-db-blok" value={dbBlok} onChange={setDbBlok} opts={BLOK_OPTS} />
-                      </div>
-                      <div className="aduan-field">
-                        <label className="aduan-label">Aras :</label>
-                        <Sel id="ef2-db-aras" value={dbAras} onChange={setDbAras} opts={ARAS_OPTS} />
-                      </div>
-                      <div className="aduan-field">
-                        <label className="aduan-label">Ruang :</label>
-                        <Sel id="ef2-db-ruang" value={dbRuang} onChange={setDbRuang} opts={RUANG_OPTS} />
-                      </div>
-                      <div className="aduan-field">
-                        <label className="aduan-label">Keterangan Lokasi :*</label>
-                        <textarea
-                          className="aduan-textarea"
-                          id="ef2-db-ket"
-                          rows={4}
-                          value={dbKeterangan}
-                          onChange={e => setDbKeterangan(e.target.value)}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Right — Jenis Kerosakan */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                      <div style={{ background: '#7c3aed', color: '#fff', fontWeight: 700, fontSize: '0.8rem', padding: '8px 14px', borderRadius: 4, letterSpacing: '0.04em' }}>
-                        JENIS KEROSAKAN
-                      </div>
-                      <div className="aduan-field">
-                        <label className="aduan-label">Seksyen :*</label>
-                        <Sel id="ef2-seksyen" value={seksyen} onChange={setSeksyen} opts={SEKSYEN_OPTS} />
-                      </div>
-                      <div className="aduan-field">
-                        <label className="aduan-label">Elemen :*</label>
-                        <Sel id="ef2-elemen" value={elemen} onChange={setElemen} opts={ELEMEN_OPTS} />
-                      </div>
-                      <div className="aduan-field">
-                        <label className="aduan-label">Masalah :*</label>
-                        <Sel id="ef2-masalah" value={masalah} onChange={setMasalah} opts={MASALAH_OPTS} />
-                      </div>
-                      <div className="aduan-field">
-                        <label className="aduan-label" style={{ color: '#1e88e5', lineHeight: 1.4 }}>
-                          Keterangan Kerosakan<br />(Sila isikan keterangan terperinci, cth no. telefon) :*
+                {/* ══ DALAM BANGUNAN / LUAR BANGUNAN FORM ══ */}
+                {lokasiPilih === 'lokasi_lain' && jenisBangunan && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: '20px' }}>
+                    
+                    {/* LEFT COLUMN - LOKASI LAIN */}
+                    <div style={{ width: '48%' }}>
+                      <div style={{ textAlign: 'center', fontWeight: 'bold', color: '#000', fontSize: '0.85rem', marginBottom: '8px' }}>Lokasi Lain</div>
+                      
+                      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
+                        <label style={{ width: '140px', textAlign: 'right', marginRight: '4px', color: 'blue', fontSize: '0.8rem' }}>
+                          Negeri:
                         </label>
-                        <textarea
-                          className="aduan-textarea"
-                          id="ef2-ket-kerosakan-db"
-                          rows={4}
-                          value={ketKerosakan}
-                          onChange={e => setKetKerosakan(e.target.value)}
-                        />
-                      </div>
-                    </div>
-
-                  </div>
-                )}
-
-                {/* ══ LUAR BANGUNAN form ══ */}
-                {lokasiPilih === 'lokasi_lain' && jenisBangunan === 'luar' && (
-                  <div className="aduan-field-grid aduan-field-grid-2" style={{ gap: '16px 24px' }}>
-
-                    {/* Left — Lokasi (infra) */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                      <div style={{ background: '#7c3aed', color: '#fff', fontWeight: 700, fontSize: '0.8rem', padding: '8px 14px', borderRadius: 4, letterSpacing: '0.04em' }}>
-                        LOKASI LAIN
-                      </div>
-                      <div className="aduan-field">
-                        <label className="aduan-label">Negeri :*</label>
-                        <Sel id="ef2-lb-negeri" value={lbNegeri} onChange={setLbNegeri} opts={NEGERI_OPTS} />
+                        <input type="text" disabled readOnly style={{ width: '120px', padding: '1px 2px', border: '1px solid #777', fontSize: '0.8rem', backgroundColor: '#fff', color: '#000' }} value="B - Selangor" />
                       </div>
 
-                      <div className="aduan-field">
-                        <label className="aduan-label">Bangunan :*</label>
-                        <Sel id="ef2-lb-bangunan" value={lbBangunan} onChange={setLbBangunan} opts={BANGUNAN_OPTS} />
-                      </div>
-                      <div className="aduan-field">
-                        <label className="aduan-label">Blok :*</label>
-                        <Sel id="ef2-lb-blok" value={lbBlok} onChange={setLbBlok} opts={BLOK_OPTS} />
-                      </div>
-                      <div className="aduan-field">
-                        <label className="aduan-label">Kategori Infra :*</label>
-                        <Sel id="ef2-lb-katinfra" value={lbKatInfra} onChange={setLbKatInfra} opts={KATEGORI_INFRA_OPTS} />
-                      </div>
-                      <div className="aduan-field">
-                        <label className="aduan-label">Sub Kategori Infra :*</label>
-                        <Sel id="ef2-lb-subinfra" value={lbSubInfra} onChange={setLbSubInfra} opts={SUB_KATEGORI_INFRA_OPTS} />
-                      </div>
-                      <div className="aduan-field">
-                        <label className="aduan-label">Keterangan Lokasi :*</label>
-                        <textarea
-                          className="aduan-textarea"
-                          id="ef2-lb-ket"
-                          rows={4}
-                          value={lbKeterangan}
-                          onChange={e => setLbKeterangan(e.target.value)}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Right — Jenis Kerosakan */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                      <div style={{ background: '#7c3aed', color: '#fff', fontWeight: 700, fontSize: '0.8rem', padding: '8px 14px', borderRadius: 4, letterSpacing: '0.04em' }}>
-                        JENIS KEROSAKAN
-                      </div>
-                      <div className="aduan-field">
-                        <label className="aduan-label">Seksyen :*</label>
-                        <Sel id="ef2-seksyen-lb" value={seksyen} onChange={setSeksyen} opts={SEKSYEN_OPTS} />
-                      </div>
-                      <div className="aduan-field">
-                        <label className="aduan-label">Elemen :*</label>
-                        <Sel id="ef2-elemen-lb" value={elemen} onChange={setElemen} opts={ELEMEN_OPTS} />
-                      </div>
-                      <div className="aduan-field">
-                        <label className="aduan-label">Masalah :*</label>
-                        <Sel id="ef2-masalah-lb" value={masalah} onChange={setMasalah} opts={MASALAH_OPTS} />
-                      </div>
-                      <div className="aduan-field">
-                        <label className="aduan-label" style={{ color: '#1e88e5', lineHeight: 1.4 }}>
-                          Keterangan Kerosakan<br />(Sila isikan keterangan terperinci, cth no. telefon) :*
+                      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
+                        <label style={{ width: '140px', textAlign: 'right', marginRight: '4px', color: 'blue', fontSize: '0.8rem' }}>
+                          Kampus :
                         </label>
-                        <textarea
-                          className="aduan-textarea"
-                          id="ef2-ket-kerosakan-lb"
-                          rows={4}
-                          value={ketKerosakan}
-                          onChange={e => setKetKerosakan(e.target.value)}
-                        />
+                        <input type="text" disabled readOnly style={{ width: '220px', padding: '1px 2px', border: '1px solid #777', fontSize: '0.8rem', backgroundColor: '#fff', color: '#000' }} value="B04 - Kampus Puncak Perdana" />
+                      </div>
+
+                      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
+                        <label style={{ width: '140px', textAlign: 'right', marginRight: '4px', color: 'blue', fontSize: '0.8rem' }}>
+                          Bangunan:<span style={{ color: 'red' }}>*</span>
+                        </label>
+                        <select style={{ width: '180px', padding: '1px 2px', border: '1px solid #777', fontSize: '0.8rem' }} value={jenisBangunan === 'dalam' ? dbBangunan : lbBangunan} onChange={e => jenisBangunan === 'dalam' ? setDbBangunan(e.target.value) : setLbBangunan(e.target.value)}>
+                          {BANGUNAN_OPTS.map(o => <option key={o} value={o}>{o}</option>)}
+                        </select>
+                      </div>
+
+                      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
+                        <label style={{ width: '140px', textAlign: 'right', marginRight: '4px', color: 'blue', fontSize: '0.8rem' }}>
+                          Blok:<span style={{ color: 'red' }}>*</span>
+                        </label>
+                        <select style={{ width: '100px', padding: '1px 2px', border: '1px solid #777', fontSize: '0.8rem' }} value={jenisBangunan === 'dalam' ? dbBlok : lbBlok} onChange={e => jenisBangunan === 'dalam' ? setDbBlok(e.target.value) : setLbBlok(e.target.value)}>
+                          {BLOK_OPTS.map(o => <option key={o} value={o}>{o}</option>)}
+                        </select>
+                      </div>
+
+                      {jenisBangunan === 'dalam' && (
+                        <>
+                          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
+                            <label style={{ width: '140px', textAlign: 'right', marginRight: '4px', color: 'blue', fontSize: '0.8rem' }}>
+                              Aras :
+                            </label>
+                            <select style={{ width: '100px', padding: '1px 2px', border: '1px solid #777', fontSize: '0.8rem' }} value={dbAras} onChange={e => setDbAras(e.target.value)}>
+                              {ARAS_OPTS.map(o => <option key={o} value={o}>{o}</option>)}
+                            </select>
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
+                            <label style={{ width: '140px', textAlign: 'right', marginRight: '4px', color: 'blue', fontSize: '0.8rem' }}>
+                              Ruang :
+                            </label>
+                            <select style={{ width: '100px', padding: '1px 2px', border: '1px solid #777', fontSize: '0.8rem' }} value={dbRuang} onChange={e => setDbRuang(e.target.value)}>
+                              {RUANG_OPTS.map(o => <option key={o} value={o}>{o}</option>)}
+                            </select>
+                          </div>
+                        </>
+                      )}
+
+                      {jenisBangunan === 'luar' && (
+                        <>
+                          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
+                            <label style={{ width: '140px', textAlign: 'right', marginRight: '4px', color: 'blue', fontSize: '0.8rem' }}>
+                              Kategori Infra :<span style={{ color: 'red' }}>*</span>
+                            </label>
+                            <select style={{ width: '120px', padding: '1px 2px', border: '1px solid #777', fontSize: '0.8rem' }} value={lbKatInfra} onChange={e => setLbKatInfra(e.target.value)}>
+                              {KATEGORI_INFRA_OPTS.map(o => <option key={o} value={o}>{o}</option>)}
+                            </select>
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
+                            <label style={{ width: '140px', textAlign: 'right', marginRight: '4px', color: 'blue', fontSize: '0.8rem' }}>
+                              Sub Kategori Infra :<span style={{ color: 'red' }}>*</span>
+                            </label>
+                            <select style={{ width: '120px', padding: '1px 2px', border: '1px solid #777', fontSize: '0.8rem' }} value={lbSubInfra} onChange={e => setLbSubInfra(e.target.value)}>
+                              {SUB_KATEGORI_INFRA_OPTS.map(o => <option key={o} value={o}>{o}</option>)}
+                            </select>
+                          </div>
+                        </>
+                      )}
+
+                      <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '4px' }}>
+                        <label style={{ width: '140px', textAlign: 'right', marginRight: '4px', color: 'blue', fontSize: '0.8rem', paddingTop: '2px' }}>
+                          Keterangan lokasi :<span style={{ color: 'red' }}>*</span>
+                        </label>
+                        <textarea rows={3} style={{ width: '280px', padding: '2px', border: '1px solid #a9a9a9', fontSize: '0.8rem', resize: 'vertical' }} value={jenisBangunan === 'dalam' ? dbKeterangan : lbKeterangan} onChange={e => jenisBangunan === 'dalam' ? setDbKeterangan(e.target.value) : setLbKeterangan(e.target.value)} />
+                      </div>
+                    </div>
+
+                    {/* RIGHT COLUMN - JENIS KEROSAKAN */}
+                    <div style={{ width: '48%' }}>
+                      <div style={{ textAlign: 'center', fontWeight: 'bold', color: '#000', fontSize: '0.85rem', marginBottom: '8px' }}>Jenis Kerosakan</div>
+                      
+                      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
+                        <label style={{ width: '280px', textAlign: 'right', marginRight: '4px', color: 'blue', fontSize: '0.8rem' }}>
+                          Seksyen:<span style={{ color: 'red' }}>*</span>
+                        </label>
+                        <select style={{ width: '200px', padding: '1px 2px', border: '1px solid #777', fontSize: '0.8rem' }} value={seksyen} onChange={e => setSeksyen(e.target.value)}>
+                          {SEKSYEN_OPTS.map(o => <option key={o} value={o}>{o}</option>)}
+                        </select>
+                      </div>
+
+                      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
+                        <label style={{ width: '280px', textAlign: 'right', marginRight: '4px', color: 'blue', fontSize: '0.8rem' }}>
+                          Elemen :<span style={{ color: 'red' }}>*</span>
+                        </label>
+                        <select style={{ width: '100px', padding: '1px 2px', border: '1px solid #777', fontSize: '0.8rem' }} value={elemen} onChange={e => setElemen(e.target.value)}>
+                          {ELEMEN_OPTS.map(o => <option key={o} value={o}>{o}</option>)}
+                        </select>
+                      </div>
+
+                      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
+                        <label style={{ width: '280px', textAlign: 'right', marginRight: '4px', color: 'blue', fontSize: '0.8rem' }}>
+                          Masalah:<span style={{ color: 'red' }}>*</span>
+                        </label>
+                        <select style={{ width: '100px', padding: '1px 2px', border: '1px solid #777', fontSize: '0.8rem' }} value={masalah} onChange={e => setMasalah(e.target.value)}>
+                          {MASALAH_OPTS.map(o => <option key={o} value={o}>{o}</option>)}
+                        </select>
+                      </div>
+
+                      <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '4px' }}>
+                        <label style={{ width: '280px', textAlign: 'right', marginRight: '4px', color: 'blue', fontSize: '0.8rem', paddingTop: '2px', lineHeight: '1.2' }}>
+                          Keterangan kerosakan (Sila isikan<br/>keterangan terperinci, cth<br/>no.telefon): <span style={{ color: 'red' }}>*</span>
+                        </label>
+                        <textarea rows={3} style={{ width: '280px', padding: '2px', border: '1px solid #a9a9a9', fontSize: '0.8rem', resize: 'vertical' }} value={ketKerosakan} onChange={e => setKetKerosakan(e.target.value)} />
                       </div>
                     </div>
 
@@ -464,24 +440,22 @@ function AduanFasilitiContent() {
             </div>
 
             {/* ── Actions ── */}
-            <div className="aduan-actions">
+            <div style={{ textAlign: 'center', marginTop: '20px' }}>
               <button
                 type="submit"
-                className="aduan-submit-btn"
                 disabled={loading}
                 id="ef2-hantar"
+                style={{
+                  padding: '2px 8px',
+                  backgroundColor: '#e9e9ed',
+                  border: '1px solid #777',
+                  color: '#000',
+                  fontSize: '0.85rem',
+                  cursor: 'pointer'
+                }}
               >
-                {loading ? 'Menghantar...' : 'Hantar Aduan'}
+                {loading ? 'Hantar...' : 'Hantar'}
               </button>
-              <button
-                type="button"
-                className="aduan-reset-btn"
-                onClick={handleReset}
-                id="fasiliti-reset"
-              >
-                Padam Semula
-              </button>
-              <Link href="/" className="aduan-cancel-btn" id="ef2-kembali">Batal</Link>
             </div>
 
           </form>

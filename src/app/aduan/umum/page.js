@@ -13,6 +13,9 @@ function AduanUmumForm() {
   const [form, setForm] = useState({
     title: '',
     description: '',
+    subCategory: '',
+    hantarKepada: 'jabatan',
+    jabatanDipilih: '',
   });
   const [rows, setRows] = useState([{ id: 1 }]);
   const [attachments, setAttachments] = useState({});
@@ -83,6 +86,17 @@ function AduanUmumForm() {
     }
     setLoading(true);
     setError('');
+
+    if (!form.subCategory) {
+      setError('Sila pilih Kategori Aduan.');
+      setLoading(false);
+      return;
+    }
+    if (form.hantarKepada === 'jabatan' && !form.jabatanDipilih) {
+      setError('Sila pilih Jabatan Dipilih.');
+      setLoading(false);
+      return;
+    }
     try {
       const attachmentUrls = Object.values(attachments).map((a) => a.url);
       const res = await fetch('/api/complaints', {
@@ -90,8 +104,8 @@ function AduanUmumForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title: form.title,
-          description: form.description,
-          category: 'General', // Store as General complaint
+          description: `[${form.subCategory}] Hantar Kepada: ${form.hantarKepada === 'jabatan' ? form.jabatanDipilih : 'Tidak Pasti'}\n\n${form.description}`,
+          category: 'General',
           priority: 'Medium',
           attachments: attachmentUrls,
         }),
@@ -109,6 +123,9 @@ function AduanUmumForm() {
     setForm({
       title: '',
       description: '',
+      subCategory: '',
+      hantarKepada: 'jabatan',
+      jabatanDipilih: '',
     });
     setRows([{ id: 1 }]);
     setAttachments({});
@@ -201,20 +218,74 @@ function AduanUmumForm() {
                 Maklumat Aduan
               </div>
               <div className="aduan-section-body">
-                <div className="aduan-field-grid aduan-field-grid-2">
+                <div className="aduan-field-grid aduan-field-grid-2" style={{ alignItems: 'start' }}>
                   <div className="aduan-field">
-                    <label className="aduan-label">Kategori Aduan</label>
-                    <select className="aduan-input aduan-select" value="General" disabled>
-                      <option value="General">Aduan Umum</option>
+                    <label className="aduan-label">KATEGORI ADUAN <span className="aduan-required">*</span></label>
+                    <select
+                      className="aduan-input aduan-select"
+                      required
+                      value={form.subCategory}
+                      onChange={e => setForm({ ...form, subCategory: e.target.value })}
+                    >
+                      <option value="">-- PILIH KATEGORI ADUAN --</option>
+                      <option value="ADUAN AM">ADUAN AM</option>
+                      <option value="CADANGAN">CADANGAN</option>
+                      <option value="PENGHARGAAN">PENGHARGAAN</option>
+                      <option value="PERTANYAAN">PERTANYAAN</option>
                     </select>
                   </div>
                   <div className="aduan-field">
                     <label className="aduan-label">Tarikh</label>
                     <div className="aduan-value-box">
-                      {new Date().toLocaleDateString('ms-MY', { day: '2-digit', month: 'long', year: 'numeric' })}
+                      {new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/ /g, '-')}
                     </div>
                   </div>
                 </div>
+
+                <div className="aduan-field" style={{ marginTop: '16px' }}>
+                  <label className="aduan-label">Hantar Kepada <span className="aduan-required">*</span></label>
+                  <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.9rem' }}>
+                      <input
+                        type="radio"
+                        name="hantar_kepada"
+                        value="jabatan"
+                        checked={form.hantarKepada === 'jabatan'}
+                        onChange={() => setForm({ ...form, hantarKepada: 'jabatan' })}
+                        style={{ accentColor: '#2563eb', width: '16px', height: '16px' }}
+                      />
+                      Jabatan / Fakulti / Kampus Cawangan Berkenaan
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.9rem' }}>
+                      <input
+                        type="radio"
+                        name="hantar_kepada"
+                        value="tidak_pasti"
+                        checked={form.hantarKepada === 'tidak_pasti'}
+                        onChange={() => setForm({ ...form, hantarKepada: 'tidak_pasti', jabatanDipilih: '' })}
+                        style={{ accentColor: '#2563eb', width: '16px', height: '16px' }}
+                      />
+                      Tidak Pasti
+                    </label>
+                  </div>
+                </div>
+
+                {form.hantarKepada === 'jabatan' && (
+                  <div className="aduan-field" style={{ marginTop: '16px' }}>
+                    <label className="aduan-label">Jabatan Dipilih <span className="aduan-required">*</span></label>
+                    <select
+                      className="aduan-input aduan-select"
+                      required
+                      value={form.jabatanDipilih}
+                      onChange={e => setForm({ ...form, jabatanDipilih: e.target.value })}
+                    >
+                      <option value="">-- Pilih Cawangan / Kampus / Fakulti Jabatan / Pusat Tanggungjawab --</option>
+                      {session?.user?.department && session.user.department !== 'Umum' && (
+                        <option value={session.user.department}>{session.user.department.toUpperCase()}</option>
+                      )}
+                    </select>
+                  </div>
+                )}
               </div>
             </div>
 

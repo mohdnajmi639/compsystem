@@ -32,14 +32,91 @@ const CAMPUS_OPTIONS = [
 
 const CATEGORY_OPTIONS = [
   '-CHOOSE CATEGORY-',
-  'Network / Internet',
-  'Email / Microsoft 365',
-  'Hardware / Equipment',
-  'Software / Application',
-  'Account / Password',
-  'Portal / Website',
-  'Printing',
-  'Others',
+  'APLIKASI - TURNITIN',
+  'IP TELEPHONY (UITM PUNCAK ALAM)',
+  'KESELAMATAN - ANTIVIRUS',
+  'KESELAMATAN - DOMAIN *.UITM.EDU.MY',
+  'KESELAMATAN - FIREWALL',
+  'KESELAMATAN - INSIDEN',
+  'KESELAMATAN - SMTP GATEWAY',
+  'KESELAMATAN - SSL/TLS',
+  'KESELAMATAN - WEB APPLICATION FIREWALL (WAF)',
+  'KESELAMATAN - WEB SSO',
+  'MOBILE APPS - MYSTUDENT',
+  'OPERASI - EMEL GOOGLE',
+  'OPERASI - EMEL MICROSOFT 365',
+  'OPERASI - GERAN PERKAKASAN ICT',
+  'OPERASI - KAD UITM PELAJAR/STAF',
+  'OPERASI - LAMAN WEB',
+  'OPERASI - PENGURUSAN ACARA/AKTIVITI',
+  'OPERASI - PERISIAN',
+  'OPERASI - PERKAKASAN KOMPUTER',
+  'PUSAT DATA - LOAD BALANCER',
+  'PUSAT DATA - SERVER',
+  'RANGKAIAN - BERWAYAR',
+  'RANGKAIAN - TANPA WAYAR',
+  'SISTEM - UITMKDH',
+  'SISTEM - ADUAN KORPORAT',
+  'SISTEM - AFRES',
+  'SISTEM - AIMS',
+  'SISTEM - ALUMNI (PENGURUSAN REKOD - EALUMNI)',
+  'SISTEM - ALUMNI (SOCIAL MEDIA - MYALUMNI)',
+  'SISTEM - ALUMNI (VIRTUAL CARD)',
+  'SISTEM - BENDAHARI',
+  'SISTEM - BSU (BOOKING SYSTEM UNIVERSITY)',
+  'SISTEM - COMPASS (POLIS BANTUAN)',
+  'SISTEM - COUNSELLING2U (KAUNSELING)',
+  'SISTEM - CTMS (COLLABORATIVE TEACHING MANAGEMENT)',
+  'SISTEM - EMESYUARAT',
+  'SISTEM - ENSURE (BIASISWA UITM)',
+  'SISTEM - HEP (E-JPP / VOTING)',
+  'SISTEM - HEP (KEBAJIKAN)',
+  'SISTEM - HEP (KESELAMATAN - SAMAN)',
+  'SISTEM - HEP (NR-NON RESIDENT)',
+  'SISTEM - HEP (TATATERTIB)',
+  'SISTEM - HEP (ZAKAT)',
+  'SISTEM - HR2U (APLIKASI MOBILE)',
+  'SISTEM - HR2U (WEB)',
+  'SISTEM - IAMS (INTEGRATED ART MANAGEMENT SYSTEM)',
+  'SISTEM - ICEPS',
+  'SISTEM - ILD',
+  'SISTEM - ILEARN',
+  'SISTEM - INSANI',
+  'SISTEM - INTEGRATION',
+  'SISTEM - IPSIS',
+  'SISTEM - IRPNP',
+  'SISTEM - JBPNP',
+  'SISTEM - JOBSHOP (KERJAYA)',
+  'SISTEM - JPI',
+  'SISTEM - KAD UITM',
+  'SISTEM - LOAD TEST SYSTEM',
+  'SISTEM - LOG KERJA',
+  'SISTEM - MASMED2U',
+  'SISTEM - MYATP',
+  'SISTEM - MYHEP',
+  'SISTEM - NILAMS',
+  'SISTEM - OFFICE AUTOMATION (OA)',
+  'SISTEM - OPIR',
+  'SISTEM - PLATFOM KAJISELIDIK UITM',
+  'SISTEM - PRIME (MODUL GERAN)',
+  'SISTEM - PRIME (MODUL IP)',
+  'SISTEM - PRIME (MODUL PENERBITAN)',
+  'SISTEM - PRIME (MODUL STAR RATING)',
+  'SISTEM - PTAR',
+  'SISTEM - QBS',
+  'SISTEM - SCMS (SPORT CHAMPIONSHIP MANAGEMENT SYSTEM)',
+  'SISTEM - SIMS AKADEMIK',
+  'SISTEM - SISTEM IDERMS',
+  'SISTEM - SISTEM PELAWAT',
+  'SISTEM - STARS (EPROSES)',
+  'SISTEM - STARS (PENGURUSAN MAKLUMAT)',
+  'SISTEM - STARS (PORTAL STAF)',
+  'SISTEM - STUDENT PORTAL',
+  'SISTEM - SWWEET (GREEN MATRIX)',
+  'SISTEM - TRANSPORT (PENGURUSAN KENDERAAN)',
+  'SISTEM - UAPS (POLIS BANTUAN)',
+  'SISTEM - UFUTURE',
+  'SISTEM - UHW',
 ];
 
 function AduanICTForm() {
@@ -48,6 +125,8 @@ function AduanICTForm() {
 
   const [ticketId] = useState(generateTicketId);
   const [form, setForm] = useState({
+    branch: 'UiTM Kampus Puncak Perdana',
+    location: 'UiTM Kampus Puncak Perdana',
     locationDetail: '',
     category: '-CHOOSE CATEGORY-',
     details: '',
@@ -125,8 +204,9 @@ function AduanICTForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+
     if (form.category === '-CHOOSE CATEGORY-') {
-      setError('Sila pilih kategori.');
+      setError('Sila pilih Kategori (Category).');
       return;
     }
     if (uploadingAttachment) {
@@ -141,7 +221,7 @@ function AduanICTForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title: `[ICT] ${form.category}`,
-          description: form.details,
+          description: `Branch: ${form.branch}\nLocation: ${form.location}\nLocation Detail: ${form.locationDetail}\n\nReport Details:\n${form.details}`,
           category: 'ICT',
           priority: 'Medium',
           attachments: attachment ? [attachment.url] : [],
@@ -158,6 +238,8 @@ function AduanICTForm() {
 
   const handleReset = () => {
     setForm({
+      branch: 'UiTM Kampus Puncak Perdana',
+      location: 'UiTM Kampus Puncak Perdana',
       locationDetail: '',
       category: '-CHOOSE CATEGORY-',
       details: '',
@@ -312,13 +394,14 @@ function AduanICTForm() {
               </div>
             </div>
 
-            {/* ── Bahagian 2: Maklumat Laporan ── */}
+            {/* ── Bahagian 2: Maklumat Laporan (Report Information) ── */}
             <div className="aduan-section">
               <div className="aduan-section-title">
                 <span className="aduan-section-num">2</span>
-                Maklumat Laporan
+                Maklumat Laporan (Report Information)
               </div>
-              <div className="aduan-section-body">
+              <div className="aduan-section-body" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+
                 <div className="aduan-field-grid aduan-field-grid-2">
                   <div className="aduan-field">
                     <label className="aduan-label">No. Tiket</label>
@@ -328,29 +411,38 @@ function AduanICTForm() {
                     <label className="aduan-label">Jenis Pengguna</label>
                     <div className="aduan-value-box">Pelajar</div>
                   </div>
+                </div>
 
+                <div className="aduan-field-grid aduan-field-grid-2">
                   <div className="aduan-field">
-                    <label className="aduan-label">Kategori <span className="aduan-required">*</span></label>
-                    <select
-                      className="aduan-input aduan-select"
-                      value={form.category}
-                      onChange={e => setForm({ ...form, category: e.target.value })}
-                      id="ict-category"
-                      required
-                    >
-                      {CATEGORY_OPTIONS.map(opt => (
-                        <option key={opt} value={opt}>{opt}</option>
-                      ))}
-                    </select>
+                    <label className="aduan-label">Cawangan (Branch)</label>
+                    <input
+                      type="text"
+                      className="aduan-input"
+                      value="UITM KAMPUS PUNCAK PERDANA"
+                      id="ict-branch"
+                      disabled
+                      readOnly
+                    />
+                  </div>
+                  <div className="aduan-field">
+                    <label className="aduan-label">Lokasi (Location)</label>
+                    <input
+                      type="text"
+                      className="aduan-input"
+                      value="UITM KAMPUS PUNCAK PERDANA"
+                      id="ict-location-select"
+                      disabled
+                      readOnly
+                    />
                   </div>
                 </div>
 
-                <div className="aduan-field" style={{ marginTop: 8 }}>
-                  <label className="aduan-label">Butiran Lokasi <span className="aduan-required">*</span></label>
-                  <textarea
-                    className="aduan-textarea"
+                <div className="aduan-field">
+                  <label className="aduan-label">Butiran Lokasi (Location Detail) <span className="aduan-required">*</span></label>
+                  <input
+                    className="aduan-input"
                     placeholder="Location Detail"
-                    rows={3}
                     value={form.locationDetail}
                     onChange={e => setForm({ ...form, locationDetail: e.target.value })}
                     id="ict-location"
@@ -358,8 +450,23 @@ function AduanICTForm() {
                   />
                 </div>
 
+                <div className="aduan-field" style={{ maxWidth: '50%' }}>
+                  <label className="aduan-label">Kategori (Category) <span className="aduan-required">*</span></label>
+                  <select
+                    className="aduan-input aduan-select"
+                    value={form.category}
+                    onChange={e => setForm({ ...form, category: e.target.value })}
+                    id="ict-category"
+                    required
+                  >
+                    {CATEGORY_OPTIONS.map(opt => (
+                      <option key={opt} value={opt}>{opt.toUpperCase()}</option>
+                    ))}
+                  </select>
+                </div>
+
                 <div className="aduan-field">
-                  <label className="aduan-label">Butiran Laporan <span className="aduan-required">*</span></label>
+                  <label className="aduan-label">Butiran Laporan (Report Details) <span className="aduan-required">*</span></label>
                   <textarea
                     className="aduan-textarea"
                     placeholder="Report Details"

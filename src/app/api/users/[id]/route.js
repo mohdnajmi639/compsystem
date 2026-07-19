@@ -14,7 +14,8 @@ export async function PATCH(request, { params }) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = params;
+    const resolvedParams = await params;
+    const { id } = resolvedParams;
     const body = await request.json();
     const { role, department } = body;
 
@@ -34,7 +35,7 @@ export async function PATCH(request, { params }) {
     ).select('-password');
 
     if (!user) {
-      return NextResponse.json({ error: 'Pengguna tidak dijumpai' }, { status: 404 });
+      return NextResponse.json({ error: `Pengguna tidak dijumpai (ID: ${id})` }, { status: 404 });
     }
 
     return NextResponse.json(user);

@@ -124,11 +124,8 @@ function SemakUmumContent() {
               <span className="aduan-breadcrumb-sep">›</span>
               <span className="aduan-breadcrumb-active">Semak Aduan Umum</span>
             </div>
-<<<<<<< HEAD
-=======
             <h1 className="aduan-page-title">Semak Aduan Umum</h1>
             <p className="aduan-page-desc">Senarai aduan umum yang telah anda hantar beserta status semasa.</p>
->>>>>>> 887aa1ef8f8b0b937b8bb319b21b03f7982c76ed
           </div>
         </div>
 

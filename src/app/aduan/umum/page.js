@@ -330,9 +330,9 @@ function AduanUmumForm() {
                       onChange={e => setForm({ ...form, jabatanDipilih: e.target.value })}
                     >
                       <option value="">-- Pilih Cawangan / Kampus / Fakulti Jabatan / Pusat Tanggungjawab --</option>
-                      <option value="Hal Ehwal Pelajar (HEP)">HAL EHWAL PELAJAR (HEP)</option>
-                      <option value="ICT">ICT</option>
-                      <option value="Fasiliti">FASILITI</option>
+                      <option value="Hal Ehwal Pelajar (HEP)">Hal Ehwal Pelajar (HEP)</option>
+                      <option value="ICT">Teknologi Maklumat dan Komunikasi (ICT)</option>
+                      <option value="Fasiliti">Bahagian Fasiliti</option>
                     </select>
                   </div>
                 )}

@@ -40,6 +40,7 @@ export const authOptions = {
   ],
   callbacks: {
     async jwt({ token, user }) {
+      // 1. On initial login, user object is provided
       if (user) {
         token.id = user.id;
         token.role = user.role;
@@ -47,6 +48,22 @@ export const authOptions = {
         token.studentId = user.studentId;
         token.program = user.program;
       }
+
+      // 2. Always fetch latest data from DB to keep session instantly synced
+      if (token.id) {
+        try {
+          await connectDB();
+          const dbUser = await User.findById(token.id).select('name role department');
+          if (dbUser) {
+            token.name = dbUser.name;
+            token.role = dbUser.role;
+            token.department = dbUser.department;
+          }
+        } catch (error) {
+          console.error('Error fetching latest user data in jwt callback:', error);
+        }
+      }
+
       return token;
     },
     async session({ session, token }) {

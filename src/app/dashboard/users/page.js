@@ -15,6 +15,12 @@ const DEPARTMENTS = [
   'ICT',
 ];
 
+const formatDepartment = (dept) => {
+  if (dept === 'Fasiliti') return 'Bahagian Fasiliti';
+  if (dept === 'ICT') return 'Teknologi Maklumat dan Komunikasi (ICT)';
+  return dept;
+};
+
 const roleBadge = (role) => {
   const map = {
     admin: 'badge-urgent',
@@ -32,7 +38,9 @@ export default function UsersPage() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editTarget, setEditTarget] = useState(null); // user being edited
-  const [editForm, setEditForm] = useState({ name: '', role: '', department: '' });
+  const [deleteTarget, setDeleteTarget] = useState(null); // user being deleted
+  const [deleteCountdown, setDeleteCountdown] = useState(0); // 5-second wait
+  const [editForm, setEditForm] = useState({ name: '', email: '', role: '', department: '' });
   const [toast, setToast] = useState(null); // { msg, type }
   const [search, setSearch] = useState('');
 
@@ -43,14 +51,21 @@ export default function UsersPage() {
       .catch(() => setLoading(false));
   }, []);
 
+  useEffect(() => {
+    if (deleteCountdown > 0) {
+      const timer = setTimeout(() => setDeleteCountdown(deleteCountdown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [deleteCountdown]);
+
   const openEdit = (user) => {
     setEditTarget(user);
-    setEditForm({ name: user.name || '', role: user.role, department: user.department || '' });
+    setEditForm({ name: user.name || '', email: user.email || '', role: user.role, department: user.department || '' });
   };
 
   const closeEdit = () => {
     setEditTarget(null);
-    setEditForm({ name: '', role: '', department: '' });
+    setEditForm({ name: '', email: '', role: '', department: '' });
   };
 
   const showToast = (msg, type = 'success') => {
@@ -70,7 +85,7 @@ export default function UsersPage() {
     // Optimistic update — apply change immediately to the table
     setUsers((prev) =>
       prev.map((u) =>
-        u._id === currentTargetId ? { ...u, name: currentForm.name, role: currentForm.role, department: currentForm.department } : u
+        u._id === currentTargetId ? { ...u, name: currentForm.name, email: currentForm.email, role: currentForm.role, department: currentForm.department } : u
       )
     );
     closeEdit();
@@ -88,6 +103,30 @@ export default function UsersPage() {
       showToast(`Maklumat ${currentForm.name} berjaya dikemaskini`);
     } catch (err) {
       // Revert on failure
+      setUsers(previousUsers);
+      showToast(err.message, 'error');
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    const currentTargetId = deleteTarget._id;
+    const currentTargetName = deleteTarget.name;
+    const previousUsers = users;
+
+    // Optimistic delete
+    setUsers((prev) => prev.filter((u) => u._id !== currentTargetId));
+    setDeleteTarget(null);
+    setDeleteCountdown(0);
+
+    try {
+      const res = await fetch(`/api/users/${currentTargetId}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Ralat berlaku');
+      showToast(`Akaun ${currentTargetName} berjaya dipadam`);
+    } catch (err) {
       setUsers(previousUsers);
       showToast(err.message, 'error');
     }
@@ -192,6 +231,20 @@ export default function UsersPage() {
               />
             </div>
 
+            {/* Email */}
+            <div style={{ marginBottom: '18px' }}>
+              <label style={{ display: 'block', fontSize: '0.83rem', fontWeight: 700, color: '#374151', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Emel
+              </label>
+              <input
+                className="form-input"
+                type="email"
+                value={editForm.email}
+                onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                style={{ width: '100%', padding: '10px 14px' }}
+              />
+            </div>
+
             {/* Role */}
             <div style={{ marginBottom: '18px' }}>
               <label style={{ display: 'block', fontSize: '0.83rem', fontWeight: 700, color: '#374151', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
@@ -221,7 +274,7 @@ export default function UsersPage() {
                 style={{ width: '100%' }}
               >
                 {DEPARTMENTS.map((d) => (
-                  <option key={d} value={d}>{d}</option>
+                  <option key={d} value={d}>{formatDepartment(d)}</option>
                 ))}
               </select>
             </div>
@@ -249,6 +302,77 @@ export default function UsersPage() {
                 }}
               >
                 Simpan Perubahan
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Delete Modal ──────────────────── */}
+      {deleteTarget && (
+        <div
+          style={{
+            position: 'fixed', inset: 0, zIndex: 1000,
+            background: 'rgba(0,0,0,0.45)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: '20px',
+          }}
+          onClick={(e) => { if (e.target === e.currentTarget) setDeleteTarget(null); }}
+        >
+          <div
+            style={{
+              background: '#fff',
+              borderRadius: 0,
+              padding: '32px',
+              width: '100%',
+              maxWidth: '440px',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.2)',
+              animation: 'fadeInUp 0.25s ease',
+              textAlign: 'center',
+            }}
+          >
+            <div style={{ marginBottom: '20px' }}>
+              <div
+                style={{
+                  width: '64px', height: '64px', borderRadius: '50%',
+                  background: '#fef2f2', border: '2px solid #fee2e2',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  margin: '0 auto', color: '#dc2626', fontSize: '2rem',
+                }}
+              >
+                !
+              </div>
+            </div>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#111827', marginBottom: '12px' }}>
+              Adakah anda pasti?
+            </h3>
+            <p style={{ fontSize: '0.95rem', color: '#4b5563', marginBottom: '24px', lineHeight: 1.5 }}>
+              Anda pasti mahu memadam akaun <strong>{deleteTarget.name}</strong>? Tindakan ini tidak boleh dipulihkan.
+            </p>
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button
+                onClick={() => { setDeleteTarget(null); setDeleteCountdown(0); }}
+                style={{
+                  flex: 1, padding: '12px', borderRadius: 0,
+                  border: '1.5px solid #e5e7eb', background: '#fff',
+                  color: '#374151', fontWeight: 600, cursor: 'pointer',
+                  fontSize: '0.95rem',
+                }}
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={deleteCountdown > 0}
+                style={{
+                  flex: 1, padding: '12px', borderRadius: 0,
+                  background: deleteCountdown > 0 ? '#fca5a5' : '#dc2626',
+                  border: 'none', color: '#fff', fontWeight: 700, 
+                  cursor: deleteCountdown > 0 ? 'not-allowed' : 'pointer',
+                  fontSize: '0.95rem', transition: 'background 0.2s',
+                }}
+              >
+                {deleteCountdown > 0 ? `Tunggu ${deleteCountdown}s...` : 'Ya, Padam Akaun'}
               </button>
             </div>
           </div>
@@ -324,36 +448,62 @@ export default function UsersPage() {
                       </td>
                       <td style={{ color: '#6b7280' }}>{u.email}</td>
                       <td>{roleBadge(u.role)}</td>
-                      <td style={{ color: '#374151' }}>{u.department || '-'}</td>
+                      <td style={{ color: '#374151' }}>{formatDepartment(u.department) || '-'}</td>
                       <td style={{ color: '#9ca3af', fontSize: '0.85rem', textAlign: 'right' }}>
                         {new Date(u.createdAt).toLocaleDateString('ms-MY')}
                       </td>
                       {isAdmin && (
                         <td style={{ textAlign: 'center' }}>
-                          <button
-                            onClick={() => openEdit(u)}
-                            style={{
-                              padding: '6px 16px',
-                              borderRadius: 0,
-                              border: '1.5px solid #6366f1',
-                              background: 'transparent',
-                              color: '#6366f1',
-                              fontWeight: 700,
-                              fontSize: '0.82rem',
-                              cursor: 'pointer',
-                              transition: 'all 0.18s',
-                            }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.background = '#6366f1';
-                              e.currentTarget.style.color = '#fff';
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.background = 'transparent';
-                              e.currentTarget.style.color = '#6366f1';
-                            }}
-                          >
-                            Edit
-                          </button>
+                          <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                            <button
+                              onClick={() => openEdit(u)}
+                              style={{
+                                padding: '6px 12px',
+                                borderRadius: 0,
+                                border: '1.5px solid #6366f1',
+                                background: 'transparent',
+                                color: '#6366f1',
+                                fontWeight: 700,
+                                fontSize: '0.82rem',
+                                cursor: 'pointer',
+                                transition: 'all 0.18s',
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.background = '#6366f1';
+                                e.currentTarget.style.color = '#fff';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.background = 'transparent';
+                                e.currentTarget.style.color = '#6366f1';
+                              }}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => { setDeleteTarget(u); setDeleteCountdown(5); }}
+                              style={{
+                                padding: '6px 12px',
+                                borderRadius: 0,
+                                border: '1.5px solid #ef4444',
+                                background: 'transparent',
+                                color: '#ef4444',
+                                fontWeight: 700,
+                                fontSize: '0.82rem',
+                                cursor: 'pointer',
+                                transition: 'all 0.18s',
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.background = '#ef4444';
+                                e.currentTarget.style.color = '#fff';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.background = 'transparent';
+                                e.currentTarget.style.color = '#ef4444';
+                              }}
+                            >
+                              Padam
+                            </button>
+                          </div>
                         </td>
                       )}
                     </tr>

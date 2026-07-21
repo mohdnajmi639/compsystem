@@ -7,6 +7,12 @@ import Topbar from '@/components/Topbar';
 const isImage = (url) => /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(url);
 const isPdf   = (url) => /\.pdf$/i.test(url);
 
+const formatDepartment = (dept) => {
+  if (dept === 'Fasiliti') return 'Bahagian Fasiliti';
+  if (dept === 'ICT') return 'Teknologi Maklumat dan Komunikasi (ICT)';
+  return dept;
+};
+
 function AttachmentPreview({ url }) {
   const name = url.split('/').pop();
   if (isImage(url)) {
@@ -149,7 +155,7 @@ export default function ComplaintDetailPage() {
                   </span>
                 )}
                 <span className="badge" style={{ background: '#f3f4f6', color: '#374151', border: '1px solid #e5e7eb' }}>
-                  {complaint.categoryId?.name || complaint.category || 'N/A'}
+                  {formatDepartment(complaint.categoryId?.name || complaint.category || 'N/A')}
                 </span>
               </div>
             </div>
@@ -298,7 +304,7 @@ export default function ComplaintDetailPage() {
                     <div style={{ color: '#6b7280', fontSize: '0.8rem', marginTop: '2px' }}>No. Pelajar: {complaint.submittedBy.studentId}</div>
                   )}
                   {complaint.submittedBy?.department && (
-                    <div style={{ color: '#6b7280', fontSize: '0.8rem', marginTop: '2px' }}>{complaint.submittedBy.department}</div>
+                    <div style={{ color: '#6b7280', fontSize: '0.8rem', marginTop: '2px' }}>{formatDepartment(complaint.submittedBy.department)}</div>
                   )}
                 </div>
                 
@@ -307,7 +313,7 @@ export default function ComplaintDetailPage() {
                   {complaint.assignedTo ? (
                     <>
                       <div style={{ color: '#111827', fontSize: '0.9rem', fontWeight: 600, marginBottom: '2px' }}>{complaint.assignedTo.name}</div>
-                      <div style={{ color: '#6b7280', fontSize: '0.8rem' }}>{complaint.assignedTo.department}</div>
+                      <div style={{ color: '#6b7280', fontSize: '0.8rem' }}>{formatDepartment(complaint.assignedTo.department)}</div>
                     </>
                   ) : (
                     <div style={{ color: '#9ca3af', fontSize: '0.85rem', fontStyle: 'italic' }}>Belum ditugaskan</div>
@@ -351,7 +357,7 @@ export default function ComplaintDetailPage() {
                 <label style={{ display: 'block', fontSize: '0.8rem', color: '#374151', fontWeight: 600, marginBottom: '8px' }}>Pilih Staf</label>
                 <select className="form-select" value={assignTo} onChange={e => setAssignTo(e.target.value)} style={{ marginBottom: '24px' }}>
                   <option value="">Pilih ahli staf...</option>
-                  {staffList.map(s => <option key={s._id} value={s._id}>{s.name} - {s.department}</option>)}
+                  {staffList.map(s => <option key={s._id} value={s._id}>{s.name} - {formatDepartment(s.department)}</option>)}
                 </select>
                 <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
                   <button onClick={() => setShowAssign(false)} className="btn btn-secondary btn-sm">Batal</button>

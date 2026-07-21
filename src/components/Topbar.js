@@ -24,7 +24,11 @@ export default function Topbar() {
 
   const initials = session?.user?.name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || '?';
   const role = session?.user?.role;
-  const roleLabel = role === 'admin' ? 'Pentadbir' : role === 'staff' ? 'Staf' : role;
+  let displayDept = session?.user?.department || 'Staf';
+  if (displayDept === 'Fasiliti') displayDept = 'Bahagian Fasiliti';
+  if (displayDept === 'ICT') displayDept = 'Teknologi Maklumat dan Komunikasi (ICT)';
+  
+  const roleLabel = role === 'admin' ? 'Pentadbir' : role === 'staff' ? displayDept : role;
 
   const navLinks = [
     {

@@ -19,7 +19,7 @@ function AttachmentPreview({ url }) {
             width: '100%',
             maxHeight: '200px',
             objectFit: 'cover',
-            borderRadius: '6px',
+            borderRadius: 0,
             border: '1px solid #e5e7eb',
             display: 'block',
           }}
@@ -41,7 +41,7 @@ function AttachmentPreview({ url }) {
         gap: '10px',
         padding: '12px 14px',
         border: '1px solid #e5e7eb',
-        borderRadius: '6px',
+        borderRadius: 0,
         textDecoration: 'none',
         background: '#f9fafb',
         color: '#374151',
@@ -217,7 +217,7 @@ export default function ComplaintDetailPage() {
                 {complaint.responses?.length > 0 ? (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     {complaint.responses.map((r, i) => (
-                      <div key={i} style={{ background: '#f9fafb', padding: '16px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
+                      <div key={i} style={{ background: '#f9fafb', padding: '16px', borderRadius: 0, border: '1px solid #e5e7eb' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', alignItems: 'center' }}>
                           <span style={{ fontWeight: 600, color: '#111827', fontSize: '0.85rem' }}>{r.respondedBy?.name || 'Staf'}</span>
                           <span style={{ color: '#6b7280', fontSize: '0.75rem' }}>{new Date(r.createdAt).toLocaleString('ms-MY')}</span>
@@ -227,7 +227,7 @@ export default function ComplaintDetailPage() {
                     ))}
                   </div>
                 ) : (
-                  <div style={{ padding: '32px 24px', textAlign: 'center', background: '#f9fafb', borderRadius: '8px', border: '1px dashed #e5e7eb' }}>
+                  <div style={{ padding: '32px 24px', textAlign: 'center', background: '#f9fafb', borderRadius: 0, border: '1px dashed #e5e7eb' }}>
                     <p style={{ color: '#9ca3af', fontSize: '0.85rem', margin: 0 }}>Tiada respons direkodkan setakat ini.</p>
                   </div>
                 )}
@@ -254,7 +254,7 @@ export default function ComplaintDetailPage() {
                     <span style={{ color: '#111827', fontSize: '0.9rem', fontWeight: 600 }}>{complaint.feedbackRating} / 5</span>
                   </div>
                   {complaint.feedbackComment ? (
-                    <p style={{ color: '#374151', fontSize: '0.9rem', fontStyle: 'italic', margin: 0, background: '#f9fafb', padding: '12px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>"{complaint.feedbackComment}"</p>
+                    <p style={{ color: '#374151', fontSize: '0.9rem', fontStyle: 'italic', margin: 0, background: '#f9fafb', padding: '12px', borderRadius: 0, border: '1px solid #e5e7eb' }}>"{complaint.feedbackComment}"</p>
                   ) : (
                     <p style={{ color: '#9ca3af', fontSize: '0.85rem', margin: 0 }}>Tiada komen tambahan diberikan.</p>
                   )}

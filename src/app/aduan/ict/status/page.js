@@ -17,13 +17,13 @@ function fmtDate(iso) {
 }
 
 function statusColor(s) {
-  if (!s) return '#6b7280';
+  if (!s) return 'rgba(255,255,255,0.7)';
   const lower = s.toLowerCase();
   if (lower === 'resolved')    return '#7c3aed';
   if (lower === 'in progress') return '#d97706';
   if (lower === 'pending')     return '#2563eb';
   if (lower === 'rejected')    return '#dc2626';
-  return '#6b7280';
+  return 'rgba(255,255,255,0.7)';
 }
 
 function statusBg(s) {
@@ -83,8 +83,7 @@ function StatusICTContent() {
   const [search, setSearch]         = useState('');
   const [perPage, setPerPage]       = useState(10);
   const [page, setPage]             = useState(1);
-  const [sortKey, setSortKey]       = useState('dateReport');
-  const [sortDir, setSortDir]       = useState('desc');
+  const [sortDir, setSortDir]       = useState('asc');
   const [verifyModal, setVerifyModal] = useState(null);
   const [feedbackForm, setFeedbackForm] = useState({ rating: 0, comment: '' });
   const [submittingFeedback, setSubmittingFeedback] = useState(false);
@@ -110,16 +109,7 @@ function StatusICTContent() {
       });
   }, [status]);
 
-  function handleSort(key) {
-    if (!key) return;
-    if (sortKey === key) {
-      setSortDir(d => d === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortKey(key);
-      setSortDir('asc');
-    }
-    setPage(1);
-  }
+
 
   const handleFeedbackSubmit = async () => {
     if (feedbackForm.rating === 0) return alert('Sila pilih rating (1-5 bintang).');
@@ -153,37 +143,18 @@ function StatusICTContent() {
     );
   }, [complaints, search]);
 
-  const sorted = useMemo(() => {
-    return [...filtered].sort((a, b) => {
-      let va, vb;
-      if (sortKey === 'dateReport') {
-        va = new Date(a.createdAt || 0).getTime();
-        vb = new Date(b.createdAt || 0).getTime();
-      } else if (sortKey === 'completeDate') {
-        va = new Date(a.updatedAt || 0).getTime();
-        vb = new Date(b.updatedAt || 0).getTime();
-      } else if (sortKey === 'status') {
-        va = (a.status || '').toLowerCase();
-        vb = (b.status || '').toLowerCase();
-      } else if (sortKey === 'ticketId') {
-        va = (a._id || '').toLowerCase();
-        vb = (b._id || '').toLowerCase();
-      } else {
-        va = ''; vb = '';
-      }
-      if (va < vb) return sortDir === 'asc' ? -1 : 1;
-      if (va > vb) return sortDir === 'asc' ? 1 : -1;
-      return 0;
-    });
-  }, [filtered, sortKey, sortDir]);
+  const sorted = useMemo(() => (
+    [...filtered].sort((a, b) => {
+      const va = new Date(a.createdAt || 0).getTime();
+      const vb = new Date(b.createdAt || 0).getTime();
+      return sortDir === 'desc' ? vb - va : va - vb;
+    })
+  ), [filtered, sortDir]);
 
   const totalPages = Math.max(1, Math.ceil(sorted.length / perPage));
   const pageRows   = sorted.slice((page - 1) * perPage, page * perPage);
 
-  function SortIcon({ colKey }) {
-    if (sortKey !== colKey) return <span style={{ opacity: 0.35, marginLeft: 4 }}>⇅</span>;
-    return <span style={{ color: '#7c3aed', marginLeft: 4 }}>{sortDir === 'asc' ? '↑' : '↓'}</span>;
-  }
+
 
   if (status === 'loading') {
     return (
@@ -226,7 +197,7 @@ function StatusICTContent() {
               <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <select
-                    style={{ padding: '7px 10px', border: '1.5px solid #d1d5db', borderRadius: 4, fontSize: '0.85rem', color: '#374151', background: '#fff', outline: 'none' }}
+                    style={{ padding: '7px 10px', border: '1.5px solid rgba(255,255,255,0.3)', borderRadius: 0, fontSize: '0.85rem', color: '#ffffff', background: 'rgba(255,255,255,0.1)', outline: 'none' }}
                     value={perPage}
                     onChange={e => { setPerPage(Number(e.target.value)); setPage(1); }}
                     id="sts-per-page"
@@ -235,12 +206,19 @@ function StatusICTContent() {
                       <option key={n} value={n}>{n}</option>
                     ))}
                   </select>
-                  <span style={{ fontSize: '0.82rem', color: '#6b7280' }}>rekod per halaman</span>
+                  <span style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.7)' }}>rekod per halaman</span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ fontSize: '0.82rem', color: '#6b7280' }}>Cari:</span>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <button
+                    onClick={() => setSortDir(d => d === 'desc' ? 'asc' : 'desc')}
+                    id="sts-sort"
+                    style={{ padding: '7px 14px', fontSize: '0.8rem', border: '1.5px solid rgba(255,255,255,0.3)', borderRadius: 0, background: 'rgba(255,255,255,0.1)', color: '#ffffff', cursor: 'pointer' }}
+                  >
+                    Tarikh {sortDir === 'desc' ? '↓' : '↑'}
+                  </button>
+                  <span style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.7)' }}>Cari:</span>
                   <input
-                    style={{ padding: '7px 12px', border: '1.5px solid #d1d5db', borderRadius: 4, fontSize: '0.85rem', color: '#374151', background: '#fff', outline: 'none', minWidth: 200 }}
+                    style={{ padding: '7px 12px', border: '1.5px solid rgba(255,255,255,0.3)', borderRadius: 0, fontSize: '0.85rem', color: '#ffffff', background: 'rgba(255,255,255,0.1)', outline: 'none', minWidth: 200 }}
                     type="text"
                     placeholder="Search..."
                     value={search}
@@ -254,21 +232,18 @@ function StatusICTContent() {
               <div style={{ overflowX: 'auto', width: '100%' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }} id="sts-complaints-table">
                   <thead>
-                    <tr style={{ background: '#f5f3ff' }}>
+                    <tr style={{ background: 'rgba(255,255,255,0.1)' }}>
                       {COLUMNS.map(col => (
                         <th
                           key={col.key}
-                          onClick={() => col.sortable && handleSort(col.key)}
                           style={{
                             padding: '10px 12px', textAlign: 'left', fontWeight: 700,
                             fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.04em',
-                            color: '#374151', borderBottom: '2px solid #e5e7eb',
-                            cursor: col.sortable ? 'pointer' : 'default',
-                            whiteSpace: 'nowrap', userSelect: 'none',
+                            color: '#ffffff', borderBottom: '2px solid rgba(255,255,255,0.2)',
+                            whiteSpace: 'nowrap',
                           }}
                         >
                           {col.label}
-                          {col.sortable && <SortIcon colKey={col.key} />}
                         </th>
                       ))}
                     </tr>
@@ -282,46 +257,46 @@ function StatusICTContent() {
                       </tr>
                     ) : pageRows.length === 0 ? (
                       <tr>
-                        <td colSpan={COLUMNS.length} style={{ padding: 32, textAlign: 'center', color: '#9ca3af', fontSize: '0.88rem' }}>
+                        <td colSpan={COLUMNS.length} style={{ padding: 32, textAlign: 'center', color: 'rgba(255,255,255,0.7)', fontSize: '0.88rem' }}>
                           Tiada rekod dijumpai.
                         </td>
                       </tr>
                     ) : pageRows.map((c, idx) => {
-                      const globalIdx = (page - 1) * perPage + idx + 1;
+                      const globalIdx = sortDir === 'desc' ? sorted.length - ((page - 1) * perPage + idx) : (page - 1) * perPage + idx + 1;
                       const staffCharge = c.assignedTo?.name || '—';
                       const staffDuty   = c.assignedTo?.name || '—';
                       const ticketShort = c._id?.slice(-12).toUpperCase() || '—';
                       const isResolved  = c.status === 'Resolved';
                       return (
-                        <tr key={c._id} style={{ background: idx % 2 === 0 ? '#fff' : '#fafafa', borderBottom: '1px solid #f3f4f6' }}>
-                          <td style={{ padding: '9px 12px', textAlign: 'center', color: '#6b7280' }}>{globalIdx}</td>
-                          <td style={{ padding: '9px 12px', color: '#5b21b6', fontWeight: 700, whiteSpace: 'nowrap' }}>
+                        <tr key={c._id} style={{ background: idx % 2 === 0 ? 'rgba(255,255,255,0.05)' : 'transparent', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                          <td style={{ padding: '9px 12px', textAlign: 'center', color: 'rgba(255,255,255,0.7)' }}>{globalIdx}</td>
+                          <td style={{ padding: '9px 12px', color: '#ffffff', fontWeight: 700, whiteSpace: 'nowrap' }}>
                             {`A${ticketShort}`}
                           </td>
-                          <td style={{ padding: '9px 12px', whiteSpace: 'nowrap', color: '#374151' }}>{fmtDate(c.createdAt)}</td>
-                          <td style={{ padding: '9px 12px', color: '#374151' }}>{staffCharge}</td>
-                          <td style={{ padding: '9px 12px', color: '#374151' }}>{staffDuty}</td>
-                          <td style={{ padding: '9px 12px', maxWidth: 200, color: '#374151' }}>
+                          <td style={{ padding: '9px 12px', whiteSpace: 'nowrap', color: '#ffffff' }}>{fmtDate(c.createdAt)}</td>
+                          <td style={{ padding: '9px 12px', color: '#ffffff' }}>{staffCharge}</td>
+                          <td style={{ padding: '9px 12px', color: '#ffffff' }}>{staffDuty}</td>
+                          <td style={{ padding: '9px 12px', maxWidth: 200, color: '#ffffff' }}>
                             <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                               {c.description || c.title || '—'}
                             </div>
                           </td>
-                          <td style={{ padding: '9px 12px', fontSize: '0.75rem', color: '#374151', whiteSpace: 'nowrap' }}>
+                          <td style={{ padding: '9px 12px', fontSize: '0.75rem', color: '#ffffff', whiteSpace: 'nowrap' }}>
                             {categoryLabel(c.category, c.title)}
                           </td>
-                          <td style={{ padding: '9px 12px', fontSize: '0.75rem', color: '#374151', whiteSpace: 'nowrap' }}>
+                          <td style={{ padding: '9px 12px', fontSize: '0.75rem', color: '#ffffff', whiteSpace: 'nowrap' }}>
                             {subCategory(c.title)}
                           </td>
                           <td style={{ padding: '9px 12px', whiteSpace: 'nowrap' }}>
                             <span style={{
                               color: statusColor(c.status), fontWeight: 700,
                               background: statusBg(c.status),
-                              padding: '3px 9px', borderRadius: 4, fontSize: '0.75rem',
+                              padding: '3px 9px', borderRadius: 0, fontSize: '0.75rem',
                             }}>
                               {(c.status || '—').toUpperCase()}
                             </span>
                           </td>
-                          <td style={{ padding: '9px 12px', whiteSpace: 'nowrap', color: '#374151' }}>
+                          <td style={{ padding: '9px 12px', whiteSpace: 'nowrap', color: '#ffffff' }}>
                             {isResolved ? fmtDate(c.updatedAt) : '—'}
                           </td>
                           <td style={{ padding: '9px 12px', textAlign: 'center' }}>
@@ -346,7 +321,7 @@ function StatusICTContent() {
 
               {/* Pagination */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, paddingTop: 4 }}>
-                <span style={{ fontSize: '0.82rem', color: '#6b7280' }}>
+                <span style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.7)' }}>
                   {sorted.length === 0
                     ? 'Tiada rekod'
                     : `Menunjukkan ${(page - 1) * perPage + 1} hingga ${Math.min(page * perPage, sorted.length)} daripada ${sorted.length} rekod`
@@ -357,7 +332,7 @@ function StatusICTContent() {
                     onClick={() => setPage(p => Math.max(1, p - 1))}
                     disabled={page === 1}
                     id="sts-prev"
-                    style={{ padding: '5px 12px', border: '1px solid #d1d5db', borderRadius: 4, background: '#fff', color: '#374151', cursor: page === 1 ? 'not-allowed' : 'pointer', opacity: page === 1 ? 0.5 : 1, fontSize: '0.85rem' }}
+                    style={{ padding: '5px 12px', border: '1px solid rgba(255,255,255,0.3)', borderRadius: 0, background: 'rgba(255,255,255,0.1)', color: '#ffffff', cursor: page === 1 ? 'not-allowed' : 'pointer', opacity: page === 1 ? 0.5 : 1, fontSize: '0.85rem' }}
                   >‹</button>
                   {Array.from({ length: totalPages }, (_, i) => i + 1)
                     .filter(p => p === 1 || p === totalPages || Math.abs(p - page) <= 1)
@@ -368,17 +343,17 @@ function StatusICTContent() {
                     }, [])
                     .map((p, i) =>
                       p === '...'
-                        ? <span key={`e-${i}`} style={{ padding: '5px 8px', color: '#6b7280' }}>…</span>
+                        ? <span key={`e-${i}`} style={{ padding: '5px 8px', color: 'rgba(255,255,255,0.7)' }}>…</span>
                         : (
                           <button
                             key={p}
                             onClick={() => setPage(p)}
                             id={`sts-page-${p}`}
                             style={{
-                              padding: '5px 10px', border: '1px solid', borderRadius: 4,
+                              padding: '5px 10px', border: '1px solid', borderRadius: 0,
                               background: page === p ? '#7c3aed' : '#fff',
                               borderColor: page === p ? '#7c3aed' : '#d1d5db',
-                              color: page === p ? '#fff' : '#374151',
+                              color: page === p ? '#fff' : '#ffffff',
                               cursor: 'pointer', fontWeight: page === p ? 700 : 400,
                               fontSize: '0.85rem',
                             }}
@@ -390,7 +365,7 @@ function StatusICTContent() {
                     onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                     disabled={page === totalPages}
                     id="sts-next"
-                    style={{ padding: '5px 12px', border: '1px solid #d1d5db', borderRadius: 4, background: '#fff', color: '#374151', cursor: page === totalPages ? 'not-allowed' : 'pointer', opacity: page === totalPages ? 0.5 : 1, fontSize: '0.85rem' }}
+                    style={{ padding: '5px 12px', border: '1px solid rgba(255,255,255,0.3)', borderRadius: 0, background: 'rgba(255,255,255,0.1)', color: '#ffffff', cursor: page === totalPages ? 'not-allowed' : 'pointer', opacity: page === totalPages ? 0.5 : 1, fontSize: '0.85rem' }}
                   >›</button>
                 </div>
               </div>
@@ -415,7 +390,7 @@ function StatusICTContent() {
         >
           <div
             onClick={e => e.stopPropagation()}
-            style={{ background: '#fff', borderRadius: 0, padding: 28, maxWidth: 480, width: '90%', boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}
+            style={{ background: '#ffffff', borderRadius: 0, padding: 28, maxWidth: 480, width: '90%', boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}
           >
             <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#1f2937', marginBottom: 16 }}>Verify Complaint</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -425,13 +400,13 @@ function StatusICTContent() {
                 { label: 'Details', value: verifyModal.description || verifyModal.title || '—' },
               ].map(({ label, value }) => (
                 <div key={label} style={{ display: 'flex', gap: 12, fontSize: '0.85rem' }}>
-                  <span style={{ minWidth: 80, fontWeight: 700, color: '#374151' }}>{label}</span>
-                  <span style={{ color: '#6b7280', flex: 1 }}>{value}</span>
+                  <span style={{ minWidth: 80, fontWeight: 700, color: '#1f2937' }}>{label}</span>
+                  <span style={{ color: '#4b5563', flex: 1 }}>{value}</span>
                 </div>
               ))}
               {verifyModal.attachments && verifyModal.attachments.length > 0 && (
                 <div style={{ display: 'flex', gap: 12, fontSize: '0.85rem', alignItems: 'flex-start', marginTop: 4 }}>
-                  <span style={{ minWidth: 80, fontWeight: 700, color: '#374151' }}>Lampiran</span>
+                  <span style={{ minWidth: 80, fontWeight: 700, color: '#1f2937' }}>Lampiran</span>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
                     {verifyModal.attachments.map((url, i) => {
                       const isImage = /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(url);
@@ -445,7 +420,7 @@ function StatusICTContent() {
                 </div>
               )}
               <div style={{ display: 'flex', gap: 12, fontSize: '0.85rem' }}>
-                <span style={{ minWidth: 80, fontWeight: 700, color: '#374151' }}>Status</span>
+                <span style={{ minWidth: 80, fontWeight: 700, color: '#1f2937' }}>Status</span>
                 <span style={{ color: statusColor(verifyModal.status), fontWeight: 700 }}>
                   {(verifyModal.status || '—').toUpperCase()}
                 </span>
@@ -454,8 +429,8 @@ function StatusICTContent() {
 
             {/* Feedback Section */}
             {verifyModal.status === 'Resolved' && (
-              <div style={{ marginTop: 20, padding: 16, border: '1px solid #e5e7eb', background: '#f9fafb' }}>
-                <h4 style={{ margin: '0 0 12px 0', fontSize: '0.9rem', color: '#111827' }}>Pengesahan & Penilaian Pemohon</h4>
+              <div style={{ marginTop: 20, padding: 16, border: '1px solid #e5e7eb', background: 'rgba(255,255,255,0.05)' }}>
+                <h4 style={{ margin: '0 0 12px 0', fontSize: '0.9rem', color: '#1f2937' }}>Pengesahan & Penilaian Pemohon</h4>
                 
                 {verifyModal.feedbackRating ? (
                   <div style={{ fontSize: '0.85rem' }}>
@@ -485,7 +460,7 @@ function StatusICTContent() {
                       value={feedbackForm.comment}
                       onChange={e => setFeedbackForm({ ...feedbackForm, comment: e.target.value })}
                       placeholder="Sila masukkan ulasan anda (pilihan)..."
-                      style={{ width: '100%', padding: '8px 12px', borderRadius: 0, border: '1px solid #d1d5db', fontSize: '0.85rem', minHeight: 60, marginBottom: 12 }}
+                      style={{ width: '100%', padding: '8px 12px', borderRadius: 0, border: '1px solid rgba(255,255,255,0.3)', fontSize: '0.85rem', minHeight: 60, marginBottom: 12 }}
                     />
                     <button
                       onClick={handleFeedbackSubmit}
@@ -510,7 +485,7 @@ function StatusICTContent() {
               <button
                 onClick={() => setVerifyModal(null)}
                 id="sts-modal-close"
-                style={{ padding: '9px 20px', background: '#fff', color: '#374151', border: '1.5px solid #d1d5db', borderRadius: 0, fontWeight: 600, cursor: 'pointer', fontSize: '0.88rem' }}
+                style={{ padding: '9px 20px', background: 'rgba(255,255,255,0.1)', color: '#1f2937', border: '1.5px solid rgba(255,255,255,0.3)', borderRadius: 0, fontWeight: 600, cursor: 'pointer', fontSize: '0.88rem' }}
               >
                 Close
               </button>
@@ -527,14 +502,7 @@ function AduanNav({ session }) {
     <nav className="lp-nav">
       <div className="lp-nav-inner">
         <Link href="/" className="lp-logo" id="aduan-nav-logo">
-          <span className="lp-logo-circle">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="10" stroke="#fff" strokeWidth="2"/>
-              <circle cx="12" cy="12" r="4" fill="#fff"/>
-              <path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="#fff" strokeWidth="2" strokeLinecap="round"/>
-            </svg>
-          </span>
-          <span className="lp-logo-text">ADUAN</span>
+          <img src="/images/logo aduan.png" alt="Aduan Logo" style={{height: 32, width: 'auto'}} />
         </Link>
         <div className="lp-nav-links">
           <Link href="/" className="lp-nav-link" id="anav-anjung">Anjung</Link>
@@ -565,7 +533,7 @@ function AduanFooter() {
           <strong>Penafian dan Notis Privasi:</strong>{' '}
           Sistem ini disediakan untuk pengurusan aduan rasmi UiTM. Semua data yang dikemukakan adalah sulit dan hanya untuk kegunaan dalaman universiti.
         </p>
-        <p className="lp-footer-copy">© Pejabat Komunikasi Strategik, UiTM 2025</p>
+        <p className="lp-footer-copy">© Pejabat Komunikasi Strategik, UiTM 2026</p>
       </div>
     </footer>
   );

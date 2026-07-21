@@ -9,10 +9,10 @@ const DEPARTMENTS = [
   'Fakulti Pengurusan Maklumat (FPM)',
   'Fakulti Filem, Teater dan Animasi (FiTA)',
   'Umum',
-  'System Admin',
-  'Facilities',
-  'Student Affairs',
-  'IT',
+  'Admin Sistem',
+  'Fasiliti',
+  'Hal Ehwal Pelajar (HEP)',
+  'ICT',
 ];
 
 const roleBadge = (role) => {
@@ -32,7 +32,7 @@ export default function UsersPage() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editTarget, setEditTarget] = useState(null); // user being edited
-  const [editForm, setEditForm] = useState({ role: '', department: '' });
+  const [editForm, setEditForm] = useState({ name: '', role: '', department: '' });
   const [toast, setToast] = useState(null); // { msg, type }
   const [search, setSearch] = useState('');
 
@@ -45,12 +45,12 @@ export default function UsersPage() {
 
   const openEdit = (user) => {
     setEditTarget(user);
-    setEditForm({ role: user.role, department: user.department || '' });
+    setEditForm({ name: user.name || '', role: user.role, department: user.department || '' });
   };
 
   const closeEdit = () => {
     setEditTarget(null);
-    setEditForm({ role: '', department: '' });
+    setEditForm({ name: '', role: '', department: '' });
   };
 
   const showToast = (msg, type = 'success') => {
@@ -61,26 +61,31 @@ export default function UsersPage() {
   const handleSave = async () => {
     if (!editTarget) return;
 
-    // Optimistic update — apply change immediately to the table
+    // Capture state before closing the modal
+    const currentTargetId = editTarget._id;
+    const currentForm = { ...editForm };
+    const currentTargetName = editTarget.name; // For fallback/reference
     const previousUsers = users;
+
+    // Optimistic update — apply change immediately to the table
     setUsers((prev) =>
       prev.map((u) =>
-        u._id === editTarget._id ? { ...u, role: editForm.role, department: editForm.department } : u
+        u._id === currentTargetId ? { ...u, name: currentForm.name, role: currentForm.role, department: currentForm.department } : u
       )
     );
     closeEdit();
 
     try {
-      const res = await fetch(`/api/users/${editTarget._id}`, {
+      const res = await fetch(`/api/users/${currentTargetId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(editForm),
+        body: JSON.stringify(currentForm),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Ralat berlaku');
       // Sync with actual server data
-      setUsers((prev) => prev.map((u) => (u._id === editTarget._id ? data : u)));
-      showToast(`Maklumat ${editTarget.name} berjaya dikemaskini`);
+      setUsers((prev) => prev.map((u) => (u._id === currentTargetId ? data : u)));
+      showToast(`Maklumat ${currentForm.name} berjaya dikemaskini`);
     } catch (err) {
       // Revert on failure
       setUsers(previousUsers);
@@ -171,6 +176,20 @@ export default function UsersPage() {
               >
                 ×
               </button>
+            </div>
+
+            {/* Name */}
+            <div style={{ marginBottom: '18px' }}>
+              <label style={{ display: 'block', fontSize: '0.83rem', fontWeight: 700, color: '#374151', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Nama Penuh
+              </label>
+              <input
+                className="form-input"
+                type="text"
+                value={editForm.name}
+                onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                style={{ width: '100%', padding: '10px 14px' }}
+              />
             </div>
 
             {/* Role */}

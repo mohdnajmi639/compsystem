@@ -1,4 +1,11 @@
 import mongoose from 'mongoose';
+import dns from 'dns';
+
+// Fix for Laragon/Windows local dev: override DNS to avoid loopback resolver
+// failing to resolve MongoDB Atlas SRV records (querySrv ECONNREFUSED).
+// DNS_SERVER can be set in .env.local; fallback is 8.8.8.8.
+const dnsServer = process.env.DNS_SERVER || '8.8.8.8';
+dns.setServers([dnsServer]);
 
 const MONGODB_URI = process.env.MONGODB_URI;
 

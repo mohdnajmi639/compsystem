@@ -27,9 +27,14 @@ export async function GET(request) {
       query.submittedBy = session.user.id;
     }
 
-    // Staff can see assigned complaints
+    // Staff can see:
+    //  1. Complaints explicitly assigned to them
+    //  2. Unassigned complaints (assignedTo: null) — "tidak pasti" or pending assignment
     if (session.user.role === 'staff') {
-      query.assignedTo = session.user.id;
+      query.$or = [
+        { assignedTo: session.user.id },
+        { assignedTo: null },
+      ];
     }
 
     // Apply filters
@@ -59,8 +64,9 @@ export async function POST(request) {
     }
 
     const body = await request.json();
-    const { title, description, category, priority, attachments } = body;
+    const { title, description, category, priority, attachments, targetDepartment } = body;
 
+    // ── Create the complaint (unassigned first) ──
     const complaint = await Complaint.create({
       title,
       description,
@@ -68,17 +74,46 @@ export async function POST(request) {
       priority: priority || 'Medium',
       submittedBy: session.user.id,
       attachments: attachments || [],
+      assignedTo: null,
     });
 
-    // Notify admins about new complaint
     const User = (await import('@/models/User')).default;
+
+    // ── Auto-assign to staff based on targetDepartment ──
+    // If targetDepartment is provided and is not 'tidak_pasti', find a matching staff member.
+    if (targetDepartment && targetDepartment !== 'tidak_pasti') {
+      const matchingStaff = await User.find({ role: 'staff', department: targetDepartment });
+
+      if (matchingStaff.length > 0) {
+        // Pick a random staff member from the matching pool
+        const assignedStaff = matchingStaff[Math.floor(Math.random() * matchingStaff.length)];
+
+        // Update the complaint with the assigned staff
+        complaint.assignedTo = assignedStaff._id;
+        await complaint.save();
+
+        // Notify the assigned staff member
+        await Notification.create({
+          userId: assignedStaff._id,
+          title: 'Aduan Baharu Ditugaskan',
+          message: `Aduan "${title}" telah ditugaskan kepada anda untuk diselesaikan.`,
+          type: 'new_assignment',
+          relatedComplaint: complaint._id,
+        });
+      }
+      // If no matching staff found for the department, complaint remains unassigned (null)
+      // and will be visible to all staff until an admin manually assigns it.
+    }
+    // If targetDepartment is 'tidak_pasti' or not provided, assignedTo stays null.
+    // All staff will be able to see it in their dashboard.
+
+    // ── Always notify admins about every new complaint ──
     const admins = await User.find({ role: 'admin' });
-    
     for (const admin of admins) {
       await Notification.create({
         userId: admin._id,
-        title: 'New Complaint Submitted',
-        message: `A new complaint "${title}" has been submitted.`,
+        title: 'Aduan Baharu Diterima',
+        message: `Aduan baharu "${title}" telah dihantar${complaint.assignedTo ? ' dan telah ditugaskan secara automatik.' : ' (belum ditugaskan).'}`,
         type: 'new_complaint',
         relatedComplaint: complaint._id,
       });

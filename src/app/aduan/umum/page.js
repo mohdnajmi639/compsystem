@@ -123,6 +123,10 @@ function AduanUmumForm() {
     }
     try {
       const attachmentUrls = Object.values(attachments).map((a) => a.url);
+      // Determine targetDepartment for auto-assignment:
+      // - If user selected a specific jabatan → use that department name
+      // - If user selected 'tidak_pasti' → send 'tidak_pasti'; backend leaves it unassigned so all staff can see it
+      const targetDepartment = form.hantarKepada === 'jabatan' ? form.jabatanDipilih : 'tidak_pasti';
       const res = await fetch('/api/complaints', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -132,6 +136,7 @@ function AduanUmumForm() {
           category: 'General',
           priority: 'Medium',
           attachments: attachmentUrls,
+          targetDepartment,
         }),
       });
       const data = await res.json();
@@ -325,9 +330,9 @@ function AduanUmumForm() {
                       onChange={e => setForm({ ...form, jabatanDipilih: e.target.value })}
                     >
                       <option value="">-- Pilih Cawangan / Kampus / Fakulti Jabatan / Pusat Tanggungjawab --</option>
-                      {session?.user?.department && session.user.department !== 'Umum' && (
-                        <option value={session.user.department}>{session.user.department.toUpperCase()}</option>
-                      )}
+                      <option value="Hal Ehwal Pelajar (HEP)">HAL EHWAL PELAJAR (HEP)</option>
+                      <option value="ICT">ICT</option>
+                      <option value="Fasiliti">FASILITI</option>
                     </select>
                   </div>
                 )}

@@ -133,8 +133,9 @@ function AduanICTForm() {
     alternateEmail: '',
     handphone: '',
   });
-  const [attachment, setAttachment] = useState(null);      // { name, url }
-  const [uploadingAttachment, setUploadingAttachment] = useState(false);
+  const [rows, setRows] = useState([{ id: 1 }]);
+  const [attachments, setAttachments] = useState({});
+  const [uploadingRowId, setUploadingRowId] = useState(null);
   const [fileErrorModal, setFileErrorModal] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -146,9 +147,10 @@ function AduanICTForm() {
     }
   }, [status, router]);
 
-  const handleFileChange = async (e) => {
+  const handleRowFileChange = async (rowId, e) => {
     const file = e.target.files[0];
     if (!file) return;
+
     const allowed = ['image/jpeg', 'image/jpg', 'image/png'];
     if (!allowed.includes(file.type)) {
       const msg = 'Format tidak dibenarkan. Sila pilih fail Imej (jpg, png) sahaja.';
@@ -158,6 +160,7 @@ function AduanICTForm() {
       e.target.value = '';
       return;
     }
+
     if (file.size > 5 * 1024 * 1024) {
       const msg = 'Saiz fail melebihi 5MB. Sila pilih fail yang lebih kecil.';
       setError(msg);
@@ -166,8 +169,9 @@ function AduanICTForm() {
       e.target.value = '';
       return;
     }
+
+    setUploadingRowId(rowId);
     setError('');
-    setUploadingAttachment(true);
 
     const reader = new FileReader();
     reader.onload = async (event) => {
@@ -178,27 +182,38 @@ function AduanICTForm() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ file: base64, name: file.name }),
         });
-        if (!res.ok) throw new Error('Gagal memuat naik fail.');
+
+        if (!res.ok) throw new Error(`Gagal memuat naik fail: ${file.name}`);
+
         const data = await res.json();
-        setAttachment({ name: file.name, url: data.url });
+        setAttachments((prev) => ({
+          ...prev,
+          [rowId]: { name: file.name, url: data.url }
+        }));
       } catch (err) {
         setError(err.message || 'Ralat berlaku ketika memuat naik fail.');
-        e.target.value = '';
       } finally {
-        setUploadingAttachment(false);
+        setUploadingRowId(null);
       }
     };
     reader.onerror = () => {
       setError('Gagal membaca fail.');
-      setUploadingAttachment(false);
+      setUploadingRowId(null);
     };
     reader.readAsDataURL(file);
   };
 
-  const handleRemoveAttachment = () => {
-    setAttachment(null);
-    const input = document.getElementById('ict-attachment-input');
-    if (input) input.value = '';
+  const handleRemoveRow = (rowId) => {
+    setRows((prev) => prev.filter((r) => r.id !== rowId));
+    setAttachments((prev) => {
+      const next = { ...prev };
+      delete next[rowId];
+      return next;
+    });
+  };
+
+  const handleAddRow = () => {
+    setRows((prev) => [...prev, { id: Date.now() }]);
   };
 
   const handleSubmit = async (e) => {
@@ -209,13 +224,15 @@ function AduanICTForm() {
       setError('Sila pilih Kategori (Category).');
       return;
     }
-    if (uploadingAttachment) {
-      setError('Sila tunggu fail selesai dimuat naik.');
+    const uploadingCount = rows.filter(r => uploadingRowId === r.id).length;
+    if (uploadingCount > 0) {
+      setError('Sila tunggu sehingga semua fail selesai dimuat naik.');
       return;
     }
     setLoading(true);
     setError('');
     try {
+      const attachmentUrls = Object.values(attachments).map((a) => a.url);
       const res = await fetch('/api/complaints', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -224,7 +241,8 @@ function AduanICTForm() {
           description: `Branch: ${form.branch}\nLocation: ${form.location}\nLocation Detail: ${form.locationDetail}\n\nReport Details:\n${form.details}`,
           category: 'ICT',
           priority: 'Medium',
-          attachments: attachment ? [attachment.url] : [],
+          attachments: attachmentUrls,
+          targetDepartment: 'ICT',
         }),
       });
       const data = await res.json();
@@ -246,10 +264,9 @@ function AduanICTForm() {
       alternateEmail: '',
       handphone: '',
     });
-    setAttachment(null);
+    setRows([{ id: 1 }]);
+    setAttachments({});
     setError('');
-    const input = document.getElementById('ict-attachment-input');
-    if (input) input.value = '';
   };
 
   if (status === 'loading') {
@@ -484,41 +501,70 @@ function AduanICTForm() {
             <div className="aduan-section">
               <div className="aduan-section-title">
                 <span className="aduan-section-num">3</span>
-                Lampiran
+                Senarai Lampiran
               </div>
-              <div className="aduan-section-body">
-                <p className="aduan-field-hint">
-                  Format Imej (jpg, png) sahaja. Saiz maksimum 5MB.
+              <div className="aduan-section-body" style={{ gap: '16px' }}>
+                <p className="aduan-field-hint" style={{ marginBottom: 4 }}>
+                  Sertakan dokumen seperti surat, sertifikasi, kronologi atau mana-mana bukti lain yang menyokong aduan anda.
+                  <br /><em>Format diterima: JPG, PNG (Maks. 5MB setiap fail)</em>
                 </p>
-                <div className="aduan-field">
-                  <label className="aduan-label">Pilih Fail</label>
-                  <input
-                    id="ict-attachment-input"
-                    type="file"
-                    accept=".jpg,.jpeg,.png"
-                    onChange={handleFileChange}
-                    className="aduan-input"
-                    disabled={uploadingAttachment}
-                  />
+
+                {/* List of File Input Rows */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%' }}>
+                  {rows.map((row, idx) => (
+                    <div key={row.id} style={{ display: 'flex', gap: '12px', alignItems: 'center', width: '100%', flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#374151', minWidth: '90px' }}>
+                        FAIL {idx + 1}
+                      </span>
+                      <input
+                        type="file"
+                        className="aduan-input"
+                        style={{ flex: 1, minWidth: '220px' }}
+                        accept=".jpg,.jpeg,.png"
+                        onChange={(e) => handleRowFileChange(row.id, e)}
+                        disabled={uploadingRowId === row.id}
+                      />
+                      {uploadingRowId === row.id && (
+                        <span style={{ fontSize: '0.8rem', color: '#6b7280' }}>Memuat naik...</span>
+                      )}
+                      {attachments[row.id] && (
+                        <span style={{ fontSize: '0.8rem', color: '#16a34a', fontWeight: 600 }}>✓ Berjaya</span>
+                      )}
+                      {rows.length > 1 && (
+                        <button
+                          type="button"
+                          className="aduan-reset-btn"
+                          style={{ padding: '9px 16px', fontSize: '0.8rem', margin: 0, height: '40px' }}
+                          onClick={() => handleRemoveRow(row.id)}
+                        >
+                          Hapus
+                        </button>
+                      )}
+                    </div>
+                  ))}
                 </div>
-                {uploadingAttachment && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8, color: '#6b7280', fontSize: '0.85rem' }}>
-                    <span className="spinner" style={{ width: 14, height: 14, borderWidth: 2 }} />
-                    Memuat naik fail...
-                  </div>
-                )}
-                {attachment && !uploadingAttachment && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 8 }}>
-                    <span className="aduan-file-chip">{attachment.name}</span>
-                    <button
-                      type="button"
-                      className="aduan-reset-btn"
-                      style={{ padding: '6px 14px', fontSize: '0.8rem', margin: 0 }}
-                      onClick={handleRemoveAttachment}
-                      id="ict-remove-attachment"
-                    >
-                      Hapus
-                    </button>
+
+                {/* Add Row Button */}
+                <button
+                  type="button"
+                  className="aduan-attach-btn"
+                  onClick={handleAddRow}
+                  style={{ alignSelf: 'flex-start' }}
+                >
+                  + Tambah Lampiran
+                </button>
+
+                {/* Selected Files Summary List */}
+                {Object.keys(attachments).length > 0 && (
+                  <div style={{ marginTop: '8px', width: '100%' }}>
+                    <label className="aduan-label" style={{ marginBottom: '8px', display: 'block' }}>Senarai Fail Terpilih</label>
+                    <div className="aduan-file-list" style={{ width: '100%' }}>
+                      {Object.entries(attachments).map(([rowId, fileInfo]) => (
+                        <span key={rowId} className="aduan-file-chip">
+                          📎 {fileInfo.name}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
@@ -529,7 +575,7 @@ function AduanICTForm() {
               <button
                 type="submit"
                 className="aduan-submit-btn"
-                disabled={loading}
+                disabled={loading || uploadingRowId !== null}
                 id="ict-submit"
               >
                 {loading ? 'Menghantar...' : 'Hantar Aduan'}

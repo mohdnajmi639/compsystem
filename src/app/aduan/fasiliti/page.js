@@ -115,6 +115,7 @@ function AduanFasilitiContent() {
           category: 'Facility',
           priority: 'Medium',
           attachments: [],
+          targetDepartment: 'Fasiliti',
         }),
       });
       const data = await res.json();

@@ -17,7 +17,7 @@ export async function PATCH(request, { params }) {
     const resolvedParams = await params;
     const { id } = resolvedParams;
     const body = await request.json();
-    const { role, department } = body;
+    const { role, department, name } = body;
 
     const allowedRoles = ['student', 'staff', 'admin', 'public'];
     if (role && !allowedRoles.includes(role)) {
@@ -27,6 +27,7 @@ export async function PATCH(request, { params }) {
     const updateFields = {};
     if (role !== undefined) updateFields.role = role;
     if (department !== undefined) updateFields.department = department;
+    if (name !== undefined) updateFields.name = name;
 
     const user = await User.findByIdAndUpdate(
       id,

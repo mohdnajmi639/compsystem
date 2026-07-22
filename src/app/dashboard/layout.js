@@ -25,7 +25,7 @@ export default function DashboardLayout({ children }) {
   }
 
   return (
-    <div className="db-layout">
+    <div className="db-layout lp-auth-root">
       <div className="db-main">
         {children}
       </div>

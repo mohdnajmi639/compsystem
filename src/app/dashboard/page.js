@@ -36,48 +36,48 @@ export default function DashboardPage() {
     <>
       <Topbar />
       <div className="page-content">
-        <h1 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#111827', marginBottom: '24px' }}>Dashboard Utama</h1>
+        <h1 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#ffffff', marginBottom: '24px' }}>Dashboard Utama</h1>
 
         {/* ── Welcome bar ── */}
         <div style={{
-          background: 'linear-gradient(135deg, #3b0764 0%, #5b21b6 60%, #7c3aed 100%)',
+          background: '#ffffff', border: '1px solid #e5e7eb', boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
           borderRadius: 0, padding: '24px 28px', marginBottom: 24,
           display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12,
         }}>
           <div>
-            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'rgba(255,255,255,0.7)', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 4 }}>
+            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#6b7280', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 4 }}>
               Selamat datang
             </div>
-            <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#fff' }}>
+            <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#111827' }}>
               {session?.user?.name}
             </div>
-            <div style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.7)', marginTop: 3 }}>
+            <div style={{ fontSize: '0.82rem', color: '#6b7280', marginTop: 3 }}>
               {role === 'admin' ? 'Pentadbir Sistem' : 'Staf'}
             </div>
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
             <style>{`
               .hero-btn-users {
-                background: rgba(255,255,255,0.15) !important;
-                color: #fff !important;
-                border: 1px solid rgba(255,255,255,0.3) !important;
+                background: #f9fafb !important;
+                color: #374151 !important;
+                border: 1px solid #e5e7eb !important;
                 transition: background 0.15s, border-color 0.15s !important;
                 border-radius: 0 !important;
               }
               .hero-btn-users:hover {
-                background: rgba(255,255,255,0.25) !important;
-                border-color: rgba(255,255,255,0.4) !important;
+                background: #f3f4f6 !important;
+                border-color: #d1d5db !important;
               }
               .hero-btn-analytics {
-                background: #fff !important;
-                color: #5b21b6 !important;
+                background: #7c3aed !important;
+                color: #fff !important;
                 font-weight: 700 !important;
                 transition: background 0.15s, opacity 0.15s !important;
                 border-radius: 0 !important;
                 border: none !important;
               }
               .hero-btn-analytics:hover {
-                background: #f3f4f6 !important;
+                background: #6d28d9 !important;
               }
             `}</style>
             {role === 'admin' && (
@@ -101,7 +101,7 @@ export default function DashboardPage() {
         </div>
 
         {/* ── Single Unified Stats Bar ── */}
-        <div className="glass-panel" style={{ display: 'flex', padding: 0, margin: '0 0 24px 0', overflow: 'hidden', flexWrap: 'wrap', border: 'none', background: 'rgba(255, 255, 255, 0.45)' }}>
+        <div style={{ display: 'flex', padding: 0, margin: '0 0 24px 0', overflow: 'hidden', flexWrap: 'wrap', border: '1px solid #e5e7eb', background: '#ffffff', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
           {[
             { label: 'Jumlah Aduan', value: total, color: '#7c3aed', bg: '#f5f3ff' },
             { label: 'Menunggu', value: pending, color: '#ea580c', bg: '#fff7ed' },
@@ -124,13 +124,13 @@ export default function DashboardPage() {
         </div>
 
         {/* ── Recent Complaints Data Table ── */}
-        <div className="glass-panel" style={{ padding: 0, overflow: 'hidden', border: 'none', background: 'rgba(255, 255, 255, 0.45)' }}>
+        <div style={{ padding: 0, overflow: 'hidden', border: '1px solid #e5e7eb', background: '#ffffff', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 24px', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
             <div>
               <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#111827', margin: 0 }}>Aduan Terkini</h3>
               <p style={{ fontSize: '0.78rem', color: '#6b7280', margin: '4px 0 0 0' }}>5 aduan terkini dalam sistem</p>
             </div>
-            <Link href="/dashboard/complaints" className="glass-btn" style={{ padding: '6px 14px', fontSize: '0.8rem' }} id="dash-view-all">
+            <Link href="/dashboard/complaints" className="btn btn-secondary" style={{ padding: '6px 14px', fontSize: '0.8rem' }} id="dash-view-all">
               Lihat Semua →
             </Link>
           </div>
@@ -147,8 +147,8 @@ export default function DashboardPage() {
               <p style={{ margin: 0, fontSize: '0.9rem' }}>Belum ada aduan dalam sistem.</p>
             </div>
           ) : (
-            <div className="glass-table-container" style={{ margin: 0, borderRadius: 0, border: 'none' }}>
-              <table className="glass-table">
+            <div className="table-container" style={{ margin: 0, borderRadius: 0, border: 'none' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr>
                     <th>ID / Tajuk</th>

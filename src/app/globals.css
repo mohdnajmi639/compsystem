@@ -1637,7 +1637,6 @@ select option {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background: #f4f5f7;
   font-family: 'Inter', system-ui, sans-serif;
 }
 
@@ -1646,7 +1645,8 @@ select option {
   display: flex; justify-content: space-between; align-items: center;
   padding: 0 28px;
   height: 60px;
-  background: linear-gradient(135deg, #3b0764 0%, #5b21b6 60%, #7c3aed 100%);
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
   position: sticky; top: 0; z-index: 50;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
@@ -1666,7 +1666,7 @@ select option {
 }
 .db-topbar-brand-name {
   font-size: 1.1rem; font-weight: 800;
-  color: #fff; letter-spacing: 0.08em;
+  color: #111827; letter-spacing: 0.08em;
 }
 
 /* Horizontal Nav */
@@ -1677,19 +1677,19 @@ select option {
   display: flex; align-items: center; gap: 8px;
   padding: 8px 14px;
   font-size: 0.85rem; font-weight: 500;
-  color: rgba(255,255,255,0.7);
+  color: #4b5563;
   text-decoration: none;
   transition: color 0.15s, background 0.15s;
   border-radius: 0;
 }
 .db-topbar-nav-link:hover {
-  color: #fff;
-  background: rgba(255,255,255,0.1);
+  color: #111827;
+  background: #f3f4f6;
 }
 .db-topbar-nav-active {
-  color: #fff;
+  color: #7c3aed;
   font-weight: 700;
-  background: rgba(255,255,255,0.15);
+  background: #f3e8ff;
 }
 .db-topbar-nav-icon {
   display: flex; align-items: center; flex-shrink: 0;
@@ -1704,10 +1704,10 @@ select option {
   display: flex; align-items: center; justify-content: center;
   width: 36px; height: 36px;
   border-radius: 0;
-  color: rgba(255,255,255,0.8); text-decoration: none;
+  color: #4b5563; text-decoration: none;
   transition: background 0.15s, color 0.15s;
 }
-.db-topbar-notif:hover { background: rgba(255,255,255,0.1); color: #fff; }
+.db-topbar-notif:hover { background: #f3f4f6; color: #111827; }
 .db-topbar-notif-badge {
   position: absolute; top: 2px; right: 2px;
   width: 17px; height: 17px;
@@ -1721,20 +1721,20 @@ select option {
 .db-topbar-user-btn {
   display: flex; align-items: center; gap: 8px;
   padding: 5px 10px 5px 5px;
-  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+  background: #ffffff; border: 1px solid #e5e7eb;
   border-radius: 0; cursor: pointer; font-family: inherit;
   transition: background 0.15s;
 }
-.db-topbar-user-btn:hover { background: rgba(255,255,255,0.2); }
+.db-topbar-user-btn:hover { background: #f9fafb; }
 .db-topbar-avatar {
   width: 28px; height: 28px; border-radius: 0;
-  background: #fff;
+  background: #f3e8ff;
   display: flex; align-items: center; justify-content: center;
   font-size: 0.72rem; font-weight: 700; color: #5b21b6; flex-shrink: 0;
 }
 .db-topbar-user-text { display: flex; flex-direction: column; align-items: flex-start; }
-.db-topbar-user-name { font-size: 0.8rem; font-weight: 700; color: #fff; line-height: 1.2; }
-.db-topbar-user-role { font-size: 0.65rem; color: rgba(255,255,255,0.7); line-height: 1; }
+.db-topbar-user-name { font-size: 0.8rem; font-weight: 700; color: #111827; line-height: 1.2; }
+.db-topbar-user-role { font-size: 0.65rem; color: #6b7280; line-height: 1; }
 /* Dropdown */
 .db-topbar-dropdown {
   position: absolute; right: 0; top: calc(100% + 8px);

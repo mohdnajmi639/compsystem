@@ -20,7 +20,7 @@ export default function AnalyticsPage() {
     <>
       <Topbar title="Analitik" />
       <div className="page-content">
-        <h1 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#111827', marginBottom: '24px' }}>Analitik Sistem</h1>
+        <h1 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#ffffff', marginBottom: '24px' }}>Analitik Sistem</h1>
         
         {/* Unified Stats Bar */}
         <div className="card" style={{ display: 'flex', padding: 0, marginBottom: 24, overflow: 'hidden', flexWrap: 'wrap' }}>

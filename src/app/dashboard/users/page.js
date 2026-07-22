@@ -381,7 +381,7 @@ export default function UsersPage() {
 
       {/* ── Page Content ──────────────────── */}
       <div className="page-content">
-        <h1 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#111827', marginBottom: '24px' }}>
+        <h1 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#ffffff', marginBottom: '24px' }}>
           Pengurusan Pengguna
         </h1>
 

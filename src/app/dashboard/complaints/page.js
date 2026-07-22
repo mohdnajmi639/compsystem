@@ -35,7 +35,7 @@ export default function ComplaintsPage() {
     <>
       <Topbar title="Complaints" />
       <div className="page-content">
-        <h1 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#111827', marginBottom: '24px' }}>Senarai Aduan</h1>
+        <h1 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#ffffff', marginBottom: '24px' }}>Senarai Aduan</h1>
         <div className="card complaints-header">
           <div className="filters">
             <select className="form-select" style={{ width: 'auto' }} value={filters.status} onChange={e => setFilters({...filters, status: e.target.value})}>

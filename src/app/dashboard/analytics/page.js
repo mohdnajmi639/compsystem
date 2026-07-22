@@ -20,7 +20,19 @@ export default function AnalyticsPage() {
     <>
       <Topbar title="Analitik" />
       <div className="page-content">
-        <h1 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#ffffff', marginBottom: '24px' }}>Analitik Sistem</h1>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+          <h1 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#ffffff', margin: 0 }} className="print-title">Analitik Sistem</h1>
+          <button 
+            onClick={() => window.print()}
+            style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', background: '#7c3aed', color: '#fff', border: 'none', fontWeight: 600, cursor: 'pointer', transition: 'opacity 0.2s' }}
+            onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
+            onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+            className="print-hide"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Muat Turun PDF
+          </button>
+        </div>
         
         {/* Unified Stats Bar */}
         <div className="card" style={{ display: 'flex', padding: 0, marginBottom: 24, overflow: 'hidden', flexWrap: 'wrap' }}>

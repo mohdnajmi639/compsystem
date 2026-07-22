@@ -3613,3 +3613,18 @@ input.form-input::placeholder, textarea.form-textarea::placeholder, input[type="
   transform: translateY(-3px);
 }
 
+
+
+/* -- Print Styles for PDF Download -- */
+@media print {
+  .db-sidebar, .db-topbar, .print-hide { display: none !important; }
+  .db-main { margin: 0 !important; width: 100% !important; background: #fff !important; }
+  .lp-auth-root, .db-layout { background: #fff !important; min-height: auto !important; }
+  .page-content { padding: 0 !important; max-width: 100% !important; }
+  .card { box-shadow: none !important; border: 1px solid #e5e7eb !important; break-inside: avoid; margin-bottom: 24px !important; }
+  body { background: #fff !important; color: #000 !important; }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  .print-title { color: #000 !important; }
+  canvas { max-width: 100% !important; height: auto !important; }
+}
+

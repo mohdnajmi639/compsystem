@@ -22,7 +22,7 @@ export default function NotificationsPage() {
     <>
       <Topbar title="Pemberitahuan" />
       <div className="page-content">
-        <h1 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#111827', marginBottom: '24px' }}>Pemberitahuan</h1>
+        <h1 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#ffffff', marginBottom: '24px' }}>Pemberitahuan</h1>
         
         <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 24px', borderBottom: '1px solid #e5e7eb', background: '#f9fafb' }}>

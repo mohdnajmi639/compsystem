@@ -312,7 +312,7 @@ function AduanFasilitiContent() {
                     
                     {/* LEFT COLUMN - LOKASI LAIN */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                      <h3 style={{ color: '#ffffff', fontSize: '1.05rem', borderBottom: '1px solid rgba(255,255,255,0.2)', paddingBottom: '8px', marginBottom: '8px' }}>Lokasi Lain</h3>
+                      <h3 style={{ color: '#111827', fontSize: '1.05rem', borderBottom: '1px solid #e5e7eb', paddingBottom: '8px', marginBottom: '8px' }}>Lokasi Lain</h3>
                       
                       <div className="aduan-field">
                         <label className="aduan-label">Negeri</label>
@@ -380,7 +380,7 @@ function AduanFasilitiContent() {
 
                     {/* RIGHT COLUMN - JENIS KEROSAKAN */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                      <h3 style={{ color: '#ffffff', fontSize: '1.05rem', borderBottom: '1px solid rgba(255,255,255,0.2)', paddingBottom: '8px', marginBottom: '8px' }}>Jenis Kerosakan</h3>
+                      <h3 style={{ color: '#111827', fontSize: '1.05rem', borderBottom: '1px solid #e5e7eb', paddingBottom: '8px', marginBottom: '8px' }}>Jenis Kerosakan</h3>
                       
                       <div className="aduan-field">
                         <label className="aduan-label">Seksyen <span className="aduan-required">*</span></label>
@@ -460,7 +460,7 @@ function AduanNav({ session }) {
     <nav className="lp-nav">
       <div className="lp-nav-inner">
         <Link href="/" className="lp-logo" id="aduan-nav-logo">
-          <img src="/images/logo aduan.png" alt="Aduan Logo" style={{height: 32, width: 'auto'}} />
+          <img src="/images/logo aduan2.png" alt="Aduan Logo" style={{height: 32, width: 'auto'}} />
         </Link>
         <div className="lp-nav-links">
           <Link href="/" className="lp-nav-link" id="anav-anjung">Anjung</Link>

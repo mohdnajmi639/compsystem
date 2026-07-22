@@ -19,7 +19,7 @@ export default async function PanduanPage() {
       <nav className="lp-nav">
         <div className="lp-nav-inner">
           <Link href="/" className="lp-logo" id="panduan-site-logo">
-            <img src="/images/logo aduan.png" alt="Aduan Logo" style={{height: 32, width: 'auto'}} />
+            <img src="/images/logo aduan2.png" alt="Aduan Logo" style={{height: 32, width: 'auto'}} />
           </Link>
 
           <div className="lp-nav-links">
@@ -44,16 +44,16 @@ export default async function PanduanPage() {
 
       {/* ── PANDUAN CONTENT ── */}
       <main className="glass-panel" style={{ flex: 1, padding: '48px 24px', maxWidth: '1100px', margin: '48px auto', width: '90%' }}>
-        <h1 style={{ fontSize: '1.5rem', fontWeight: '500', color: '#ffffff', marginBottom: '16px' }}>
+        <h1 style={{ fontSize: '1.5rem', fontWeight: '500', color: '#111827', marginBottom: '16px' }}>
           Senarai Dokumen Rujukan
         </h1>
-        <ol style={{ paddingLeft: '24px', color: '#ffffff' }}>
+        <ol style={{ paddingLeft: '24px', color: '#374151' }}>
           <li style={{ paddingLeft: '8px' }}>
             <a 
               href="/documents/pekeliling_am_bil_2_2022.pdf" 
               target="_blank" 
               rel="noopener noreferrer"
-              style={{ color: '#93c5fd', textDecoration: 'underline', fontSize: '1rem' }}
+              style={{ color: '#2563eb', textDecoration: 'underline', fontSize: '1rem' }}
             >
               Pekeliling Am Bilangan 2 Tahun 2022 - Penambahbaikan Pengurusan Aduan Awam
             </a>

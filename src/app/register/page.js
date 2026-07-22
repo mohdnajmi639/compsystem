@@ -93,7 +93,7 @@ function RegisterForm() {
       <nav className="lp-nav">
         <div className="lp-nav-inner">
           <Link href="/" className="lp-logo" id="auth-logo">
-            <img src="/images/logo aduan.png" alt="Aduan Logo" style={{height: 32, width: 'auto'}} />
+            <img src="/images/logo aduan2.png" alt="Aduan Logo" style={{height: 32, width: 'auto'}} />
           </Link>
           <div className="lp-nav-links">
             <Link href="/" className="lp-nav-link" id="nav-anjung">Anjung</Link>
@@ -113,7 +113,7 @@ function RegisterForm() {
       <div className="lp-auth-body">
         <div className="lp-auth-card lp-auth-card-wide">
           <div className="lp-auth-header">
-            <img src="/images/logo aduan.png" alt="Aduan Logo" style={{height: 48, width: 'auto', marginBottom: 16}} />
+            <img src="/images/logo aduan2.png" alt="Aduan Logo" style={{height: 48, width: 'auto', marginBottom: 16}} />
             <h1 className="lp-auth-title">Daftar Akaun</h1>
             <p className="lp-auth-subtitle">Cipta akaun untuk mengemukakan aduan</p>
           </div>

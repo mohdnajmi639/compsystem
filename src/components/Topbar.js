@@ -56,7 +56,7 @@ export default function Topbar() {
       <div className="db-topbar-left">
         {/* Brand */}
         <Link href="/dashboard" className="db-topbar-brand">
-          <img src="/images/logo aduan.png" alt="Aduan Logo" style={{height: 32, width: 'auto'}} />
+          <img src="/images/logo aduan2.png" alt="Aduan Logo" style={{height: 32, width: 'auto'}} />
         </Link>
 
         {/* Navigation Links */}

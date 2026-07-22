@@ -24,7 +24,7 @@ export default async function Home() {
       <nav className="lp-nav">
         <div className="lp-nav-inner">
           <Link href="/" className="lp-logo" id="site-logo">
-            <img src="/images/logo aduan.png" alt="Aduan Logo" style={{height: 32, width: 'auto'}} />
+            <img src="/images/logo aduan2.png" alt="Aduan Logo" style={{height: 32, width: 'auto'}} />
           </Link>
 
           <div className="lp-nav-links">

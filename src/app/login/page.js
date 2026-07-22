@@ -43,7 +43,7 @@ function LoginForm() {
       <nav className="lp-nav">
         <div className="lp-nav-inner">
           <Link href="/" className="lp-logo" id="auth-logo">
-            <img src="/images/logo aduan.png" alt="Aduan Logo" style={{height: 32, width: 'auto'}} />
+            <img src="/images/logo aduan2.png" alt="Aduan Logo" style={{height: 32, width: 'auto'}} />
           </Link>
           <div className="lp-nav-links">
             <Link href="/" className="lp-nav-link" id="nav-anjung">Anjung</Link>
@@ -63,7 +63,7 @@ function LoginForm() {
       <div className="lp-auth-body">
         <div className="lp-auth-card">
           <div className="lp-auth-header">
-            <img src="/images/logo aduan.png" alt="Aduan Logo" style={{height: 48, width: 'auto', marginBottom: 16}} />
+            <img src="/images/logo aduan2.png" alt="Aduan Logo" style={{height: 48, width: 'auto', marginBottom: 16}} />
             <h1 className="lp-auth-title">Log Masuk</h1>
             <p className="lp-auth-subtitle">Sila log masuk dengan akaun pelajar anda</p>
           </div>

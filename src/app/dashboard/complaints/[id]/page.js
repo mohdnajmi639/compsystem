@@ -131,8 +131,8 @@ export default function ComplaintDetailPage() {
     <>
       <Topbar title="Butiran Aduan" />
       <div className="page-content" style={{ maxWidth: '1200px', margin: '0 auto' }}>
-        <h1 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#111827', marginBottom: '24px' }}>Butiran Aduan</h1>
-        <button onClick={() => router.back()} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', marginBottom: '20px', background: 'transparent', border: 'none', color: '#6b7280', fontSize: '0.9rem', fontWeight: 600, cursor: 'pointer' }}>
+        <h1 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#ffffff', marginBottom: '24px' }}>Butiran Aduan</h1>
+        <button onClick={() => router.back()} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', marginBottom: '20px', background: 'transparent', border: 'none', color: '#ffffff', fontSize: '0.9rem', fontWeight: 600, cursor: 'pointer', opacity: 0.9 }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
           Kembali
         </button>

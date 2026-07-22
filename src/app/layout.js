@@ -7,6 +7,9 @@ import PageTransition from '@/components/PageTransition';
 export const metadata = {
   title: 'E-Aduan UiTM',
   description: 'Submit, track, and resolve university complaints efficiently.',
+  icons: {
+    icon: '/images/favicon3.png',
+  },
 };
 
 export default function RootLayout({ children }) {

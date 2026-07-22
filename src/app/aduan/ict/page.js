@@ -612,7 +612,7 @@ function AduanNav({ session }) {
     <nav className="lp-nav">
       <div className="lp-nav-inner">
         <Link href="/" className="lp-logo" id="aduan-nav-logo">
-          <img src="/images/logo aduan.png" alt="Aduan Logo" style={{height: 32, width: 'auto'}} />
+          <img src="/images/logo aduan2.png" alt="Aduan Logo" style={{height: 32, width: 'auto'}} />
         </Link>
         <div className="lp-nav-links">
           <Link href="/" className="lp-nav-link" id="anav-anjung">Anjung</Link>

@@ -101,7 +101,7 @@ export default function DashboardPage() {
         </div>
 
         {/* ── Single Unified Stats Bar ── */}
-        <div className="card" style={{ display: 'flex', padding: 0, marginBottom: 24, overflow: 'hidden', flexWrap: 'wrap' }}>
+        <div className="glass-panel" style={{ display: 'flex', padding: 0, margin: '0 0 24px 0', overflow: 'hidden', flexWrap: 'wrap', border: 'none', background: 'rgba(255, 255, 255, 0.45)' }}>
           {[
             { label: 'Jumlah Aduan', value: total, color: '#7c3aed', bg: '#f5f3ff' },
             { label: 'Menunggu', value: pending, color: '#ea580c', bg: '#fff7ed' },
@@ -124,13 +124,13 @@ export default function DashboardPage() {
         </div>
 
         {/* ── Recent Complaints Data Table ── */}
-        <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 24px', borderBottom: '1px solid #e5e7eb' }}>
+        <div className="glass-panel" style={{ padding: 0, overflow: 'hidden', border: 'none', background: 'rgba(255, 255, 255, 0.45)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 24px', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
             <div>
               <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#111827', margin: 0 }}>Aduan Terkini</h3>
-              <p style={{ fontSize: '0.78rem', color: '#9ca3af', margin: '4px 0 0 0' }}>5 aduan terkini dalam sistem</p>
+              <p style={{ fontSize: '0.78rem', color: '#6b7280', margin: '4px 0 0 0' }}>5 aduan terkini dalam sistem</p>
             </div>
-            <Link href="/dashboard/complaints" className="btn btn-secondary btn-sm" id="dash-view-all">
+            <Link href="/dashboard/complaints" className="glass-btn" style={{ padding: '6px 14px', fontSize: '0.8rem' }} id="dash-view-all">
               Lihat Semua →
             </Link>
           </div>
@@ -147,8 +147,8 @@ export default function DashboardPage() {
               <p style={{ margin: 0, fontSize: '0.9rem' }}>Belum ada aduan dalam sistem.</p>
             </div>
           ) : (
-            <div className="table-container">
-              <table>
+            <div className="glass-table-container" style={{ margin: 0, borderRadius: 0, border: 'none' }}>
+              <table className="glass-table">
                 <thead>
                   <tr>
                     <th>ID / Tajuk</th>

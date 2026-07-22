@@ -17,13 +17,13 @@ function fmtDate(iso) {
 }
 
 function statusColor(s) {
-  if (!s) return '#6b7280';
+  if (!s) return 'rgba(255,255,255,0.7)';
   const lower = s.toLowerCase();
   if (lower === 'resolved')    return '#7c3aed';
   if (lower === 'in progress') return '#d97706';
   if (lower === 'pending')     return '#2563eb';
   if (lower === 'rejected')    return '#dc2626';
-  return '#6b7280';
+  return 'rgba(255,255,255,0.7)';
 }
 
 function statusBg(s) {
@@ -56,7 +56,7 @@ function SemakUmumContent() {
   const [search, setSearch]         = useState('');
   const [perPage, setPerPage]       = useState(10);
   const [page, setPage]             = useState(1);
-  const [sortDir, setSortDir]       = useState('desc');
+  const [sortDir, setSortDir]       = useState('asc');
   const [selected, setSelected]     = useState(null);
   const [feedbackForm, setFeedbackForm] = useState({ rating: 0, comment: '' });
   const [submittingFeedback, setSubmittingFeedback] = useState(false);
@@ -175,26 +175,26 @@ function SemakUmumContent() {
               <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <select
-                    style={{ padding: '7px 10px', border: '1.5px solid #d1d5db', borderRadius: 0, fontSize: '0.85rem', color: '#374151', background: '#fff', outline: 'none' }}
+                    style={{ padding: '7px 10px', border: '1.5px solid rgba(255,255,255,0.3)', borderRadius: 0, fontSize: '0.85rem', color: '#ffffff', background: 'rgba(255,255,255,0.1)', outline: 'none' }}
                     value={perPage}
                     onChange={e => { setPerPage(Number(e.target.value)); setPage(1); }}
                     id="semak-umum-per-page"
                   >
                     {[5, 10, 25, 50].map(n => <option key={n} value={n}>{n}</option>)}
                   </select>
-                  <span style={{ fontSize: '0.82rem', color: '#6b7280' }}>rekod per halaman</span>
+                  <span style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.7)' }}>rekod per halaman</span>
                 </div>
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                   <button
                     onClick={() => setSortDir(d => d === 'desc' ? 'asc' : 'desc')}
                     id="semak-umum-sort"
-                    style={{ padding: '7px 14px', fontSize: '0.8rem', border: '1.5px solid #d1d5db', borderRadius: 0, background: '#fff', color: '#374151', cursor: 'pointer' }}
+                    style={{ padding: '7px 14px', fontSize: '0.8rem', border: '1.5px solid rgba(255,255,255,0.3)', borderRadius: 0, background: 'rgba(255,255,255,0.1)', color: '#ffffff', cursor: 'pointer' }}
                   >
                     Tarikh {sortDir === 'desc' ? '↓' : '↑'}
                   </button>
-                  <span style={{ fontSize: '0.82rem', color: '#6b7280' }}>Cari:</span>
+                  <span style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.7)' }}>Cari:</span>
                   <input
-                    style={{ padding: '7px 12px', border: '1.5px solid #d1d5db', borderRadius: 0, fontSize: '0.85rem', color: '#374151', background: '#fff', outline: 'none', minWidth: 180 }}
+                    style={{ padding: '7px 12px', border: '1.5px solid rgba(255,255,255,0.3)', borderRadius: 0, fontSize: '0.85rem', color: '#ffffff', background: 'rgba(255,255,255,0.1)', outline: 'none', minWidth: 180 }}
                     type="text"
                     placeholder="Cari aduan..."
                     value={search}
@@ -205,15 +205,15 @@ function SemakUmumContent() {
               </div>
 
               {/* Table */}
-              <div style={{ overflowX: 'auto', width: '100%' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.83rem' }} id="semak-umum-table">
+              <div className="glass-table-container">
+                <table className="glass-table" id="semak-umum-table">
                   <thead>
-                    <tr style={{ background: '#f5f3ff' }}>
+                    <tr>
                       {['Bil', 'Tarikh Hantar', 'Tajuk Aduan', 'Status', 'Tarikh Selesai', 'Tindakan'].map(label => (
                         <th key={label} style={{
                           padding: '10px 12px', textAlign: 'left', fontWeight: 700,
                           fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.04em',
-                          color: '#374151', borderBottom: '2px solid #e5e7eb', whiteSpace: 'nowrap',
+                          color: '#ffffff', borderBottom: '2px solid rgba(255,255,255,0.2)', whiteSpace: 'nowrap',
                         }}>
                           {label}
                         </th>
@@ -229,21 +229,21 @@ function SemakUmumContent() {
                       </tr>
                     ) : pageRows.length === 0 ? (
                       <tr>
-                        <td colSpan={6} style={{ padding: 32, textAlign: 'center', color: '#9ca3af', fontSize: '0.88rem' }}>
+                        <td colSpan={6} style={{ padding: 32, textAlign: 'center', color: 'rgba(255,255,255,0.7)', fontSize: '0.88rem' }}>
                           {search ? 'Tiada rekod sepadan dengan carian.' : 'Tiada aduan umum ditemui.'}
                         </td>
                       </tr>
                     ) : pageRows.map((c, idx) => {
-                      const globalIdx = (page - 1) * perPage + idx + 1;
+                      const globalIdx = sortDir === 'desc' ? sorted.length - ((page - 1) * perPage + idx) : (page - 1) * perPage + idx + 1;
                       const isResolved = c.status === 'Resolved';
                       return (
-                        <tr key={c._id} style={{ background: idx % 2 === 0 ? '#fff' : '#fafafa', borderBottom: '1px solid #f3f4f6' }}>
-                          <td style={{ padding: '9px 12px', textAlign: 'center', color: '#6b7280' }}>{globalIdx}</td>
-                          <td style={{ padding: '9px 12px', whiteSpace: 'nowrap', color: '#374151' }}>{fmtDate(c.createdAt)}</td>
+                        <tr key={c._id}>
+                          <td style={{ padding: '9px 12px', textAlign: 'center', color: 'rgba(255,255,255,0.7)' }}>{globalIdx}</td>
+                          <td style={{ padding: '9px 12px', whiteSpace: 'nowrap', color: '#ffffff' }}>{fmtDate(c.createdAt)}</td>
                           <td style={{ padding: '9px 12px', maxWidth: 280 }}>
-                            <div style={{ fontWeight: 600, fontSize: '0.85rem', color: '#1f2937', marginBottom: 2 }}>{c.title}</div>
+                            <div style={{ fontWeight: 600, fontSize: '0.85rem', color: '#ffffff', marginBottom: 2 }}>{c.title}</div>
                             {c.description && (
-                              <div style={{ fontSize: '0.75rem', color: '#6b7280', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 260 }}>
+                              <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.7)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 260 }}>
                                 {c.description}
                               </div>
                             )}
@@ -257,18 +257,15 @@ function SemakUmumContent() {
                               {statusLabel(c.status).toUpperCase()}
                             </span>
                           </td>
-                          <td style={{ padding: '9px 12px', whiteSpace: 'nowrap', color: '#374151' }}>
+                          <td style={{ padding: '9px 12px', whiteSpace: 'nowrap', color: '#ffffff' }}>
                             {isResolved ? fmtDate(c.updatedAt) : '—'}
                           </td>
                           <td style={{ padding: '9px 12px', textAlign: 'center' }}>
                             <button
                               onClick={() => { setSelected(c); setFeedbackForm({ rating: 0, comment: '' }); }}
                               id={`semak-umum-detail-${c._id}`}
-                              style={{
-                                padding: '5px 12px', background: '#7c3aed', color: '#fff',
-                                border: 'none', borderRadius: 0, fontSize: '0.75rem', fontWeight: 700,
-                                cursor: 'pointer',
-                              }}
+                              className="glass-btn glass-btn-primary"
+                              style={{ padding: '5px 12px', fontSize: '0.75rem' }}
                             >
                               {(isResolved && !c.feedbackRating) ? 'Sahkan' : 'Lihat'}
                             </button>
@@ -282,7 +279,7 @@ function SemakUmumContent() {
 
               {/* Pagination */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, paddingTop: 4 }}>
-                <span style={{ fontSize: '0.82rem', color: '#6b7280' }}>
+                <span style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.7)' }}>
                   {sorted.length === 0
                     ? 'Tiada rekod'
                     : `Menunjukkan ${(page - 1) * perPage + 1} hingga ${Math.min(page * perPage, sorted.length)} daripada ${sorted.length} rekod`
@@ -291,7 +288,7 @@ function SemakUmumContent() {
                 <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                   <button
                     onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} id="semak-umum-prev"
-                    style={{ padding: '5px 12px', border: '1px solid #d1d5db', borderRadius: 0, background: '#fff', color: '#374151', cursor: page === 1 ? 'not-allowed' : 'pointer', opacity: page === 1 ? 0.5 : 1, fontSize: '0.85rem' }}
+                    style={{ padding: '5px 12px', border: '1px solid rgba(255,255,255,0.3)', borderRadius: 0, background: 'rgba(255,255,255,0.1)', color: '#ffffff', cursor: page === 1 ? 'not-allowed' : 'pointer', opacity: page === 1 ? 0.5 : 1, fontSize: '0.85rem' }}
                   >‹</button>
                   {Array.from({ length: totalPages }, (_, i) => i + 1)
                     .filter(p => p === 1 || p === totalPages || Math.abs(p - page) <= 1)
@@ -302,7 +299,7 @@ function SemakUmumContent() {
                     }, [])
                     .map((p, i) =>
                       p === '...'
-                        ? <span key={`e-${i}`} style={{ padding: '5px 8px', color: '#6b7280' }}>…</span>
+                        ? <span key={`e-${i}`} style={{ padding: '5px 8px', color: 'rgba(255,255,255,0.7)' }}>…</span>
                         : (
                           <button
                             key={p} onClick={() => setPage(p)} id={`semak-umum-page-${p}`}
@@ -310,7 +307,7 @@ function SemakUmumContent() {
                               padding: '5px 10px', border: '1px solid', borderRadius: 0,
                               background: page === p ? '#7c3aed' : '#fff',
                               borderColor: page === p ? '#7c3aed' : '#d1d5db',
-                              color: page === p ? '#fff' : '#374151',
+                              color: page === p ? '#fff' : '#ffffff',
                               cursor: 'pointer', fontWeight: page === p ? 700 : 400, fontSize: '0.85rem',
                             }}
                           >{p}</button>
@@ -319,7 +316,7 @@ function SemakUmumContent() {
                   }
                   <button
                     onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} id="semak-umum-next"
-                    style={{ padding: '5px 12px', border: '1px solid #d1d5db', borderRadius: 0, background: '#fff', color: '#374151', cursor: page === totalPages ? 'not-allowed' : 'pointer', opacity: page === totalPages ? 0.5 : 1, fontSize: '0.85rem' }}
+                    style={{ padding: '5px 12px', border: '1px solid rgba(255,255,255,0.3)', borderRadius: 0, background: 'rgba(255,255,255,0.1)', color: '#ffffff', cursor: page === totalPages ? 'not-allowed' : 'pointer', opacity: page === totalPages ? 0.5 : 1, fontSize: '0.85rem' }}
                   >›</button>
                 </div>
               </div>
@@ -344,7 +341,7 @@ function SemakUmumContent() {
         >
           <div
             onClick={e => e.stopPropagation()}
-            style={{ background: '#fff', borderRadius: 0, padding: 28, maxWidth: 520, width: '90%', boxShadow: '0 20px 60px rgba(0,0,0,0.2)', maxHeight: '85vh', overflowY: 'auto' }}
+            style={{ background: '#ffffff', borderRadius: 0, padding: 28, maxWidth: 520, width: '90%', boxShadow: '0 20px 60px rgba(0,0,0,0.2)', maxHeight: '85vh', overflowY: 'auto' }}
           >
             <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#1f2937', marginBottom: 16 }}>Butiran Aduan</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -353,12 +350,12 @@ function SemakUmumContent() {
                 { label: 'Tarikh Hantar', value: fmtDate(selected.createdAt) },
               ].map(({ label, value }) => (
                 <div key={label} style={{ display: 'flex', gap: 12, fontSize: '0.85rem' }}>
-                  <span style={{ minWidth: 120, fontWeight: 700, color: '#374151' }}>{label}</span>
-                  <span style={{ color: '#6b7280', flex: 1 }}>{value}</span>
+                  <span style={{ minWidth: 120, fontWeight: 700, color: '#1f2937' }}>{label}</span>
+                  <span style={{ color: '#4b5563', flex: 1 }}>{value}</span>
                 </div>
               ))}
               <div style={{ display: 'flex', gap: 12, fontSize: '0.85rem' }}>
-                <span style={{ minWidth: 120, fontWeight: 700, color: '#374151' }}>Status</span>
+                <span style={{ minWidth: 120, fontWeight: 700, color: '#1f2937' }}>Status</span>
                 <span style={{
                   color: statusColor(selected.status), fontWeight: 700,
                   background: statusBg(selected.status),
@@ -369,13 +366,13 @@ function SemakUmumContent() {
               </div>
               {selected.description && (
                 <div style={{ display: 'flex', gap: 12, fontSize: '0.85rem', alignItems: 'flex-start' }}>
-                  <span style={{ minWidth: 120, fontWeight: 700, color: '#374151' }}>Keterangan</span>
-                  <span style={{ color: '#6b7280', flex: 1, whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{selected.description}</span>
+                  <span style={{ minWidth: 120, fontWeight: 700, color: '#1f2937' }}>Keterangan</span>
+                  <span style={{ color: '#4b5563', flex: 1, whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{selected.description}</span>
                 </div>
               )}
               {selected.attachments && selected.attachments.length > 0 && (
                 <div style={{ display: 'flex', gap: 12, fontSize: '0.85rem', alignItems: 'flex-start', marginTop: 4 }}>
-                  <span style={{ minWidth: 120, fontWeight: 700, color: '#374151' }}>Lampiran</span>
+                  <span style={{ minWidth: 120, fontWeight: 700, color: '#1f2937' }}>Lampiran</span>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
                     {selected.attachments.map((url, i) => {
                       const isImage = /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(url);
@@ -391,10 +388,10 @@ function SemakUmumContent() {
             </div>
             {selected.responses && selected.responses.length > 0 && (
               <div style={{ marginTop: 16 }}>
-                <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#374151', marginBottom: 8 }}>Maklum Balas:</div>
+                <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#1f2937', marginBottom: 8 }}>Maklum Balas:</div>
                 {selected.responses.map((r, i) => (
                   <div key={i} style={{
-                    background: '#f5f3ff', borderRadius: 0, padding: '10px 14px',
+                    background: 'rgba(255,255,255,0.1)', borderRadius: 0, padding: '10px 14px',
                     marginBottom: 8, fontSize: '0.85rem', color: '#4a0070',
                   }}>
                     <div style={{ fontWeight: 600, marginBottom: 4 }}>{r.author?.name || 'Pentadbir'} · {fmtDate(r.createdAt)}</div>
@@ -406,8 +403,8 @@ function SemakUmumContent() {
             
             {/* Feedback Section */}
             {selected.status === 'Resolved' && (
-              <div style={{ marginTop: 20, padding: 16, border: '1px solid #e5e7eb', background: '#f9fafb' }}>
-                <h4 style={{ margin: '0 0 12px 0', fontSize: '0.9rem', color: '#111827' }}>Pengesahan & Penilaian Pemohon</h4>
+              <div style={{ marginTop: 20, padding: 16, border: '1px solid #e5e7eb', background: 'rgba(255,255,255,0.05)' }}>
+                <h4 style={{ margin: '0 0 12px 0', fontSize: '0.9rem', color: '#1f2937' }}>Pengesahan & Penilaian Pemohon</h4>
                 
                 {selected.feedbackRating ? (
                   <div style={{ fontSize: '0.85rem' }}>
@@ -437,7 +434,7 @@ function SemakUmumContent() {
                       value={feedbackForm.comment}
                       onChange={e => setFeedbackForm({ ...feedbackForm, comment: e.target.value })}
                       placeholder="Sila masukkan ulasan anda (pilihan)..."
-                      style={{ width: '100%', padding: '8px 12px', borderRadius: 0, border: '1px solid #d1d5db', fontSize: '0.85rem', minHeight: 60, marginBottom: 12 }}
+                      style={{ width: '100%', padding: '8px 12px', borderRadius: 0, border: '1px solid rgba(255,255,255,0.3)', fontSize: '0.85rem', minHeight: 60, marginBottom: 12 }}
                     />
                     <button
                       onClick={handleFeedbackSubmit}
@@ -498,14 +495,7 @@ function AduanNav({ session }) {
     <nav className="lp-nav">
       <div className="lp-nav-inner">
         <Link href="/" className="lp-logo" id="aduan-nav-logo">
-          <span className="lp-logo-circle">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="10" stroke="#fff" strokeWidth="2"/>
-              <circle cx="12" cy="12" r="4" fill="#fff"/>
-              <path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="#fff" strokeWidth="2" strokeLinecap="round"/>
-            </svg>
-          </span>
-          <span className="lp-logo-text">ADUAN</span>
+          <img src="/images/logo aduan.png" alt="Aduan Logo" style={{height: 32, width: 'auto'}} />
         </Link>
         <div className="lp-nav-links">
           <Link href="/" className="lp-nav-link" id="anav-anjung">Anjung</Link>
@@ -536,7 +526,7 @@ function AduanFooter() {
           <strong>Penafian dan Notis Privasi:</strong>{' '}
           Sistem ini disediakan untuk pengurusan aduan rasmi UiTM. Semua data yang dikemukakan adalah sulit dan hanya untuk kegunaan dalaman universiti.
         </p>
-        <p className="lp-footer-copy">© Pejabat Komunikasi Strategik, UiTM 2025</p>
+        <p className="lp-footer-copy">© Pejabat Komunikasi Strategik, UiTM 2026</p>
       </div>
     </footer>
   );

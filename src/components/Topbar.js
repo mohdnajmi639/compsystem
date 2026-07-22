@@ -56,14 +56,7 @@ export default function Topbar() {
       <div className="db-topbar-left">
         {/* Brand */}
         <Link href="/dashboard" className="db-topbar-brand">
-          <div className="db-topbar-logo-circle">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="10" stroke="#fff" strokeWidth="2"/>
-              <circle cx="12" cy="12" r="4" fill="#fff"/>
-              <path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="#fff" strokeWidth="2" strokeLinecap="round"/>
-            </svg>
-          </div>
-          <span className="db-topbar-brand-name">ADUAN</span>
+          <img src="/images/logo aduan.png" alt="Aduan Logo" style={{height: 32, width: 'auto'}} />
         </Link>
 
         {/* Navigation Links */}

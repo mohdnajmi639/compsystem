@@ -257,11 +257,11 @@ function AduanFasilitiContent() {
                 <span className="aduan-section-num">2</span>
                 Lokasi dan Jenis Kerosakan
               </div>
-              <div className="aduan-section-body" style={{ backgroundColor: '#ffffff', padding: '16px', borderRadius: 0, border: '1px solid #d8b4e2' }}>
+              <div className="aduan-section-body">
 
                 {/* ── Step 1: Lokasi Lain radio ── */}
-                <div style={{ marginBottom: '4px', paddingLeft: '80px' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: '0.85rem', color: '#000' }} htmlFor="ef2-lokasi-lain">
+                <div className="aduan-field" style={{ marginBottom: '16px' }}>
+                  <label className="aduan-radio-label">
                     <input
                       id="ef2-lokasi-lain"
                       type="radio"
@@ -269,7 +269,6 @@ function AduanFasilitiContent() {
                       value="lokasi_lain"
                       checked={lokasiPilih === 'lokasi_lain'}
                       onChange={() => setLokasiPilih('lokasi_lain')}
-                      style={{ margin: 0 }}
                     />
                     Lokasi Lain
                   </label>
@@ -277,89 +276,79 @@ function AduanFasilitiContent() {
 
                 {/* ── Step 2: Dalam Bangunan / Luar Bangunan ── */}
                 {lokasiPilih === 'lokasi_lain' && (
-                  <div style={{ display: 'flex', paddingLeft: '80px', marginBottom: '16px' }}>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: '0.85rem', color: '#000', width: '280px' }} htmlFor="ef2-dalam">
-                      <input
-                        id="ef2-dalam"
-                        type="radio"
-                        name="jenis_bangunan"
-                        value="dalam"
-                        checked={jenisBangunan === 'dalam'}
-                        onChange={() => setJenisBangunan('dalam')}
-                        style={{ margin: 0 }}
-                      />
-                      Dalam Bangunan
-                    </label>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: '0.85rem', color: '#000' }} htmlFor="ef2-luar">
-                      <input
-                        id="ef2-luar"
-                        type="radio"
-                        name="jenis_bangunan"
-                        value="luar"
-                        checked={jenisBangunan === 'luar'}
-                        onChange={() => setJenisBangunan('luar')}
-                        style={{ margin: 0 }}
-                      />
-                      Luar Bangunan
-                    </label>
+                  <div className="aduan-field-grid aduan-field-grid-2" style={{ marginBottom: '24px' }}>
+                    <div className="aduan-field">
+                      <label className="aduan-radio-label">
+                        <input
+                          id="ef2-dalam"
+                          type="radio"
+                          name="jenis_bangunan"
+                          value="dalam"
+                          checked={jenisBangunan === 'dalam'}
+                          onChange={() => setJenisBangunan('dalam')}
+                        />
+                        Dalam Bangunan
+                      </label>
+                    </div>
+                    <div className="aduan-field">
+                      <label className="aduan-radio-label">
+                        <input
+                          id="ef2-luar"
+                          type="radio"
+                          name="jenis_bangunan"
+                          value="luar"
+                          checked={jenisBangunan === 'luar'}
+                          onChange={() => setJenisBangunan('luar')}
+                        />
+                        Luar Bangunan
+                      </label>
+                    </div>
                   </div>
                 )}
 
                 {/* ══ DALAM BANGUNAN / LUAR BANGUNAN FORM ══ */}
                 {lokasiPilih === 'lokasi_lain' && jenisBangunan && (
-                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: '20px' }}>
+                  <div className="aduan-field-grid aduan-field-grid-2">
                     
                     {/* LEFT COLUMN - LOKASI LAIN */}
-                    <div style={{ width: '48%' }}>
-                      <div style={{ textAlign: 'center', fontWeight: 'bold', color: '#000', fontSize: '0.85rem', marginBottom: '8px' }}>Lokasi Lain</div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                      <h3 style={{ color: '#ffffff', fontSize: '1.05rem', borderBottom: '1px solid rgba(255,255,255,0.2)', paddingBottom: '8px', marginBottom: '8px' }}>Lokasi Lain</h3>
                       
-                      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
-                        <label style={{ width: '140px', textAlign: 'right', marginRight: '4px', color: '#000', fontSize: '0.8rem' }}>
-                          Negeri:
-                        </label>
-                        <input type="text" disabled readOnly style={{ width: '120px', padding: '7px 10px', border: '1px solid #d1d5db', fontSize: '0.8rem', backgroundColor: '#fff', color: '#000' }} value="B - Selangor" />
+                      <div className="aduan-field">
+                        <label className="aduan-label">Negeri</label>
+                        <div className="aduan-value-box">B - Selangor</div>
                       </div>
 
-                      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
-                        <label style={{ width: '140px', textAlign: 'right', marginRight: '4px', color: '#000', fontSize: '0.8rem' }}>
-                          Kampus :
-                        </label>
-                        <input type="text" disabled readOnly style={{ width: '220px', padding: '7px 10px', border: '1px solid #d1d5db', fontSize: '0.8rem', backgroundColor: '#fff', color: '#000' }} value="B04 - Kampus Puncak Perdana" />
+                      <div className="aduan-field">
+                        <label className="aduan-label">Kampus</label>
+                        <div className="aduan-value-box">B04 - Kampus Puncak Perdana</div>
                       </div>
 
-                      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
-                        <label style={{ width: '140px', textAlign: 'right', marginRight: '4px', color: '#000', fontSize: '0.8rem' }}>
-                          Bangunan:<span style={{ color: 'red' }}>*</span>
-                        </label>
-                        <select style={{ width: '180px', padding: '7px 10px', border: '1px solid #d1d5db', fontSize: '0.8rem' }} value={jenisBangunan === 'dalam' ? dbBangunan : lbBangunan} onChange={e => jenisBangunan === 'dalam' ? setDbBangunan(e.target.value) : setLbBangunan(e.target.value)}>
+                      <div className="aduan-field">
+                        <label className="aduan-label">Bangunan <span className="aduan-required">*</span></label>
+                        <select className="aduan-input aduan-select" value={jenisBangunan === 'dalam' ? dbBangunan : lbBangunan} onChange={e => jenisBangunan === 'dalam' ? setDbBangunan(e.target.value) : setLbBangunan(e.target.value)}>
                           {BANGUNAN_OPTS.map(o => <option key={o} value={o}>{o}</option>)}
                         </select>
                       </div>
 
-                      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
-                        <label style={{ width: '140px', textAlign: 'right', marginRight: '4px', color: '#000', fontSize: '0.8rem' }}>
-                          Blok:<span style={{ color: 'red' }}>*</span>
-                        </label>
-                        <select style={{ width: '100px', padding: '7px 10px', border: '1px solid #d1d5db', fontSize: '0.8rem' }} value={jenisBangunan === 'dalam' ? dbBlok : lbBlok} onChange={e => jenisBangunan === 'dalam' ? setDbBlok(e.target.value) : setLbBlok(e.target.value)}>
+                      <div className="aduan-field">
+                        <label className="aduan-label">Blok <span className="aduan-required">*</span></label>
+                        <select className="aduan-input aduan-select" value={jenisBangunan === 'dalam' ? dbBlok : lbBlok} onChange={e => jenisBangunan === 'dalam' ? setDbBlok(e.target.value) : setLbBlok(e.target.value)}>
                           {BLOK_OPTS.map(o => <option key={o} value={o}>{o}</option>)}
                         </select>
                       </div>
 
                       {jenisBangunan === 'dalam' && (
                         <>
-                          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
-                            <label style={{ width: '140px', textAlign: 'right', marginRight: '4px', color: '#000', fontSize: '0.8rem' }}>
-                              Aras :
-                            </label>
-                            <select style={{ width: '100px', padding: '7px 10px', border: '1px solid #d1d5db', fontSize: '0.8rem' }} value={dbAras} onChange={e => setDbAras(e.target.value)}>
+                          <div className="aduan-field">
+                            <label className="aduan-label">Aras</label>
+                            <select className="aduan-input aduan-select" value={dbAras} onChange={e => setDbAras(e.target.value)}>
                               {ARAS_OPTS.map(o => <option key={o} value={o}>{o}</option>)}
                             </select>
                           </div>
-                          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
-                            <label style={{ width: '140px', textAlign: 'right', marginRight: '4px', color: '#000', fontSize: '0.8rem' }}>
-                              Ruang :
-                            </label>
-                            <select style={{ width: '100px', padding: '7px 10px', border: '1px solid #d1d5db', fontSize: '0.8rem' }} value={dbRuang} onChange={e => setDbRuang(e.target.value)}>
+                          <div className="aduan-field">
+                            <label className="aduan-label">Ruang</label>
+                            <select className="aduan-input aduan-select" value={dbRuang} onChange={e => setDbRuang(e.target.value)}>
                               {RUANG_OPTS.map(o => <option key={o} value={o}>{o}</option>)}
                             </select>
                           </div>
@@ -368,69 +357,58 @@ function AduanFasilitiContent() {
 
                       {jenisBangunan === 'luar' && (
                         <>
-                          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
-                            <label style={{ width: '140px', textAlign: 'right', marginRight: '4px', color: '#000', fontSize: '0.8rem' }}>
-                              Kategori Infra :<span style={{ color: 'red' }}>*</span>
-                            </label>
-                            <select style={{ width: '120px', padding: '7px 10px', border: '1px solid #d1d5db', fontSize: '0.8rem' }} value={lbKatInfra} onChange={e => setLbKatInfra(e.target.value)}>
+                          <div className="aduan-field">
+                            <label className="aduan-label">Kategori Infra <span className="aduan-required">*</span></label>
+                            <select className="aduan-input aduan-select" value={lbKatInfra} onChange={e => setLbKatInfra(e.target.value)}>
                               {KATEGORI_INFRA_OPTS.map(o => <option key={o} value={o}>{o}</option>)}
                             </select>
                           </div>
-                          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
-                            <label style={{ width: '140px', textAlign: 'right', marginRight: '4px', color: '#000', fontSize: '0.8rem' }}>
-                              Sub Kategori Infra :<span style={{ color: 'red' }}>*</span>
-                            </label>
-                            <select style={{ width: '120px', padding: '7px 10px', border: '1px solid #d1d5db', fontSize: '0.8rem' }} value={lbSubInfra} onChange={e => setLbSubInfra(e.target.value)}>
+                          <div className="aduan-field">
+                            <label className="aduan-label">Sub Kategori Infra <span className="aduan-required">*</span></label>
+                            <select className="aduan-input aduan-select" value={lbSubInfra} onChange={e => setLbSubInfra(e.target.value)}>
                               {SUB_KATEGORI_INFRA_OPTS.map(o => <option key={o} value={o}>{o}</option>)}
                             </select>
                           </div>
                         </>
                       )}
 
-                      <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '4px' }}>
-                        <label style={{ width: '140px', textAlign: 'right', marginRight: '4px', color: '#000', fontSize: '0.8rem', paddingTop: '2px' }}>
-                          Keterangan lokasi :<span style={{ color: 'red' }}>*</span>
-                        </label>
-                        <textarea rows={3} style={{ width: '280px', padding: '8px 10px', border: '1px solid #d1d5db', fontSize: '0.8rem', resize: 'vertical' }} value={jenisBangunan === 'dalam' ? dbKeterangan : lbKeterangan} onChange={e => jenisBangunan === 'dalam' ? setDbKeterangan(e.target.value) : setLbKeterangan(e.target.value)} />
+                      <div className="aduan-field">
+                        <label className="aduan-label">Keterangan lokasi <span className="aduan-required">*</span></label>
+                        <textarea className="aduan-textarea" rows={3} value={jenisBangunan === 'dalam' ? dbKeterangan : lbKeterangan} onChange={e => jenisBangunan === 'dalam' ? setDbKeterangan(e.target.value) : setLbKeterangan(e.target.value)} />
                       </div>
                     </div>
 
                     {/* RIGHT COLUMN - JENIS KEROSAKAN */}
-                    <div style={{ width: '48%' }}>
-                      <div style={{ textAlign: 'center', fontWeight: 'bold', color: '#000', fontSize: '0.85rem', marginBottom: '8px' }}>Jenis Kerosakan</div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                      <h3 style={{ color: '#ffffff', fontSize: '1.05rem', borderBottom: '1px solid rgba(255,255,255,0.2)', paddingBottom: '8px', marginBottom: '8px' }}>Jenis Kerosakan</h3>
                       
-                      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
-                        <label style={{ width: '280px', textAlign: 'right', marginRight: '4px', color: '#000', fontSize: '0.8rem' }}>
-                          Seksyen:<span style={{ color: 'red' }}>*</span>
-                        </label>
-                        <select style={{ width: '200px', padding: '7px 10px', border: '1px solid #d1d5db', fontSize: '0.8rem' }} value={seksyen} onChange={e => setSeksyen(e.target.value)}>
+                      <div className="aduan-field">
+                        <label className="aduan-label">Seksyen <span className="aduan-required">*</span></label>
+                        <select className="aduan-input aduan-select" value={seksyen} onChange={e => setSeksyen(e.target.value)}>
                           {SEKSYEN_OPTS.map(o => <option key={o} value={o}>{o}</option>)}
                         </select>
                       </div>
 
-                      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
-                        <label style={{ width: '280px', textAlign: 'right', marginRight: '4px', color: '#000', fontSize: '0.8rem' }}>
-                          Elemen :<span style={{ color: 'red' }}>*</span>
-                        </label>
-                        <select style={{ width: '100px', padding: '7px 10px', border: '1px solid #d1d5db', fontSize: '0.8rem' }} value={elemen} onChange={e => setElemen(e.target.value)}>
+                      <div className="aduan-field">
+                        <label className="aduan-label">Elemen <span className="aduan-required">*</span></label>
+                        <select className="aduan-input aduan-select" value={elemen} onChange={e => setElemen(e.target.value)}>
                           {ELEMEN_OPTS.map(o => <option key={o} value={o}>{o}</option>)}
                         </select>
                       </div>
 
-                      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
-                        <label style={{ width: '280px', textAlign: 'right', marginRight: '4px', color: '#000', fontSize: '0.8rem' }}>
-                          Masalah:<span style={{ color: 'red' }}>*</span>
-                        </label>
-                        <select style={{ width: '100px', padding: '7px 10px', border: '1px solid #d1d5db', fontSize: '0.8rem' }} value={masalah} onChange={e => setMasalah(e.target.value)}>
+                      <div className="aduan-field">
+                        <label className="aduan-label">Masalah <span className="aduan-required">*</span></label>
+                        <select className="aduan-input aduan-select" value={masalah} onChange={e => setMasalah(e.target.value)}>
                           {MASALAH_OPTS.map(o => <option key={o} value={o}>{o}</option>)}
                         </select>
                       </div>
 
-                      <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '4px' }}>
-                        <label style={{ width: '280px', textAlign: 'right', marginRight: '4px', color: '#000', fontSize: '0.8rem', paddingTop: '2px', lineHeight: '1.2' }}>
-                          Keterangan kerosakan (Sila isikan<br/>keterangan terperinci, cth<br/>no.telefon): <span style={{ color: 'red' }}>*</span>
+                      <div className="aduan-field">
+                        <label className="aduan-label">
+                          Keterangan kerosakan
+                          <div className="aduan-field-hint">(Sila isikan keterangan terperinci, cth no.telefon) <span className="aduan-required">*</span></div>
                         </label>
-                        <textarea rows={3} style={{ width: '280px', padding: '8px 10px', border: '1px solid #d1d5db', fontSize: '0.8rem', resize: 'vertical' }} value={ketKerosakan} onChange={e => setKetKerosakan(e.target.value)} />
+                        <textarea className="aduan-textarea" rows={5} value={ketKerosakan} onChange={e => setKetKerosakan(e.target.value)} />
                       </div>
                     </div>
 
@@ -441,15 +419,24 @@ function AduanFasilitiContent() {
             </div>
 
             {/* ── Actions ── */}
-            <div style={{ textAlign: 'center', marginTop: '20px' }}>
+            <div className="aduan-actions">
               <button
                 type="submit"
+                className="aduan-submit-btn"
                 disabled={loading}
                 id="ef2-hantar"
-                className="btn btn-primary" style={{ padding: '10px 24px', fontWeight: 600, fontSize: '0.9rem' }}
+
               >
-                {loading ? 'Hantar...' : 'Hantar'}
+                {loading ? 'Hantar...' : 'Hantar Aduan'}
               </button>
+              <button
+                type="button"
+                className="aduan-reset-btn"
+                onClick={handleReset}
+              >
+                Padam Semula
+              </button>
+
             </div>
 
           </form>
@@ -473,14 +460,7 @@ function AduanNav({ session }) {
     <nav className="lp-nav">
       <div className="lp-nav-inner">
         <Link href="/" className="lp-logo" id="aduan-nav-logo">
-          <span className="lp-logo-circle">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="10" stroke="#fff" strokeWidth="2"/>
-              <circle cx="12" cy="12" r="4" fill="#fff"/>
-              <path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="#fff" strokeWidth="2" strokeLinecap="round"/>
-            </svg>
-          </span>
-          <span className="lp-logo-text">ADUAN</span>
+          <img src="/images/logo aduan.png" alt="Aduan Logo" style={{height: 32, width: 'auto'}} />
         </Link>
         <div className="lp-nav-links">
           <Link href="/" className="lp-nav-link" id="anav-anjung">Anjung</Link>
@@ -511,7 +491,7 @@ function AduanFooter() {
           <strong>Penafian dan Notis Privasi:</strong>{' '}
           Sistem ini disediakan untuk pengurusan aduan rasmi UiTM. Semua data yang dikemukakan adalah sulit dan hanya untuk kegunaan dalaman universiti.
         </p>
-        <p className="lp-footer-copy">© Pejabat Komunikasi Strategik, UiTM 2025</p>
+        <p className="lp-footer-copy">© Pejabat Komunikasi Strategik, UiTM 2026</p>
       </div>
     </footer>
   );

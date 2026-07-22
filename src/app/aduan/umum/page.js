@@ -464,7 +464,7 @@ function AduanUmumForm() {
               >
                 Padam Semula
               </button>
-              <Link href="/" className="aduan-cancel-btn">Batal</Link>
+
             </div>
 
           </form>
@@ -488,14 +488,7 @@ function AduanNav({ session }) {
     <nav className="lp-nav">
       <div className="lp-nav-inner">
         <Link href="/" className="lp-logo" id="aduan-nav-logo">
-          <span className="lp-logo-circle">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="10" stroke="#fff" strokeWidth="2" />
-              <circle cx="12" cy="12" r="4" fill="#fff" />
-              <path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-          </span>
-          <span className="lp-logo-text">ADUAN</span>
+          <img src="/images/logo aduan.png" alt="Aduan Logo" style={{height: 32, width: 'auto'}} />
         </Link>
         <div className="lp-nav-links">
           <Link href="/" className="lp-nav-link" id="anav-anjung">Anjung</Link>
@@ -526,7 +519,7 @@ function AduanFooter() {
           <strong>Penafian dan Notis Privasi:</strong>{' '}
           Sistem ini disediakan untuk pengurusan aduan rasmi UiTM. Semua data yang dikemukakan adalah sulit dan hanya untuk kegunaan dalaman universiti.
         </p>
-        <p className="lp-footer-copy">© Pejabat Komunikasi Strategik, UiTM 2025</p>
+        <p className="lp-footer-copy">© Pejabat Komunikasi Strategik, UiTM 2026</p>
       </div>
     </footer>
   );

@@ -5,7 +5,7 @@ import HomeUserMenu from '@/components/HomeUserMenu';
 import { NavDropdownAduan, NavDropdownSemak } from '@/components/NavDropdown';
 
 export const metadata = {
-  title: 'Soalan Lazim | Sistem Aduan UiTM',
+  title: 'Soalan Lazim | E-Aduan UiTM',
   description: 'Soalan Lazim (FAQ) berkaitan Sistem e-Aduan UiTM — jawapan kepada soalan-soalan yang kerap ditanya.',
 };
 
@@ -172,20 +172,13 @@ export default async function FaqPage() {
   const session = await getServerSession(authOptions);
 
   return (
-    <div className="lp-root">
+    <div className="lp-auth-root">
 
       {/* ── NAVBAR ── */}
       <nav className="lp-nav">
         <div className="lp-nav-inner">
           <Link href="/" className="lp-logo" id="faq-site-logo">
-            <span className="lp-logo-circle">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="12" r="10" stroke="#fff" strokeWidth="2"/>
-                <circle cx="12" cy="12" r="4" fill="#fff"/>
-                <path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="#fff" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
-            </span>
-            <span className="lp-logo-text">ADUAN</span>
+            <img src="/images/logo aduan.png" alt="Aduan Logo" style={{height: 32, width: 'auto'}} />
           </Link>
 
           <div className="lp-nav-links">
@@ -199,7 +192,6 @@ export default async function FaqPage() {
           </div>
 
           <div className="lp-nav-end">
-
             {session ? (
               <HomeUserMenu session={session} />
             ) : (
@@ -211,7 +203,7 @@ export default async function FaqPage() {
 
       {/* ── FAQ CONTENT ── */}
       <main className="faq-main">
-        <div className="faq-container">
+        <div className="faq-container glass-panel" style={{ margin: '48px auto' }}>
 
           <h1 className="faq-title">Soalan Lazim</h1>
 
@@ -264,7 +256,7 @@ export default async function FaqPage() {
             <strong>Penafian dan Notis Privasi:</strong>{' '}
             Sistem ini disediakan untuk pengurusan aduan rasmi UiTM. Semua data yang dikemukakan adalah sulit dan hanya untuk kegunaan dalaman universiti. Sistem ini dipantau secara berterusan dan sebarang penyalahgunaan boleh dikenakan tindakan undang-undang atau tatatertib.
           </p>
-          <p className="lp-footer-copy">© Pejabat Komunikasi Strategik, UiTM 2025</p>
+          <p className="lp-footer-copy">© Pejabat Komunikasi Strategik, UiTM 2026</p>
         </div>
       </footer>
 

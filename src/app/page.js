@@ -6,7 +6,7 @@ import HomeUserMenu from '@/components/HomeUserMenu';
 import { NavDropdownAduan, NavDropdownSemak } from '@/components/NavDropdown';
 
 export const metadata = {
-  title: 'Sistem Aduan | Pengurusan Aduan Universiti',
+  title: 'E-Aduan UiTM',
   description: 'Ada aduan? Salurkan aduan anda mengikut kategori yang sesuai di bawah.',
 };
 
@@ -18,20 +18,13 @@ export default async function Home() {
   };
 
   return (
-    <div className="lp-root">
+    <div className="lp-auth-root">
 
       {/* ── NAVBAR ── */}
       <nav className="lp-nav">
         <div className="lp-nav-inner">
           <Link href="/" className="lp-logo" id="site-logo">
-            <span className="lp-logo-circle">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="12" r="10" stroke="#fff" strokeWidth="2"/>
-                <circle cx="12" cy="12" r="4" fill="#fff"/>
-                <path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="#fff" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
-            </span>
-            <span className="lp-logo-text">ADUAN</span>
+            <img src="/images/logo aduan.png" alt="Aduan Logo" style={{height: 32, width: 'auto'}} />
           </Link>
 
           <div className="lp-nav-links">
@@ -161,7 +154,7 @@ export default async function Home() {
             <strong>Penafian dan Notis Privasi:</strong>{' '}
             Sistem ini disediakan untuk pengurusan aduan rasmi UiTM. Semua data yang dikemukakan adalah sulit dan hanya untuk kegunaan dalaman universiti. Sistem ini dipantau secara berterusan dan sebarang penyalahgunaan boleh dikenakan tindakan undang-undang atau tatatertib.
           </p>
-          <p className="lp-footer-copy">© Pejabat Komunikasi Strategik, UiTM 2025</p>
+          <p className="lp-footer-copy">© Pejabat Komunikasi Strategik, UiTM 2026</p>
         </div>
       </footer>
 

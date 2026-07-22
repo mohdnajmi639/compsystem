@@ -1325,17 +1325,10 @@ select option {
 }
 
 .lp-auth-card {
-<<<<<<< HEAD
-  background:#fff;
-  border:1px solid #e5e7eb;
-  border-radius: 0;
-  box-shadow:0 4px 32px rgba(91,33,182,0.08);
-=======
   background: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 0;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.1);
->>>>>>> test3
   padding:40px;
   width:100%; max-width:460px;
 }
@@ -1375,11 +1368,7 @@ select option {
 }
 .lp-auth-input {
   padding:10px 13px;
-<<<<<<< HEAD
-  border:1.5px solid #d1d5db;
-=======
   border:1px solid #d1d5db;
->>>>>>> test3
   border-radius: 0;
   font-family:inherit; font-size:0.9rem;
   color:#111827; background:#ffffff;
@@ -1404,13 +1393,8 @@ select option {
   background: linear-gradient(135deg, #7c3aed, #5b21b6);
   border: none;
   color:#fff; font-size:1rem; font-weight:700;
-<<<<<<< HEAD
   border:none; border-radius: 0; cursor:pointer;
-  transition:opacity 0.18s, transform 0.18s;
-=======
-  border-radius: 0; cursor:pointer;
   transition:all 0.3s ease;
->>>>>>> test3
   font-family:inherit;
   box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
 }
@@ -1472,11 +1456,7 @@ select option {
   max-width:860px;
   padding:0;
   overflow:hidden;
-<<<<<<< HEAD
-  border:1px solid #d1d5db;
-=======
   border:1px solid rgba(255, 255, 255, 0.4);
->>>>>>> test3
   border-radius: 0;
   margin-bottom:24px;
   background: rgba(255, 255, 255, 0.15);
@@ -1488,14 +1468,9 @@ select option {
   display:inline-flex; align-items:center; gap:8px;
   margin-bottom:18px;
   padding:7px 16px; border-radius: 0;
-<<<<<<< HEAD
-  background:rgba(124,58,237,0.12);
-  font-size:0.82rem; font-weight:600; color:#5b21b6;
-=======
   background:rgba(255, 255, 255, 0.15);
   font-size:0.82rem; font-weight:600; color:#ffffff;
   border: 1px solid rgba(255, 255, 255, 0.3);
->>>>>>> test3
 }
 .nc-category-dot {
   width:8px; height:8px; border-radius:50%;
@@ -1543,13 +1518,6 @@ select option {
   color:#ffffff; font-weight:700;
 }
 .nc-input {
-<<<<<<< HEAD
-  padding:9px 12px;
-  border:1px solid #d1d5db; border-radius: 0;
-  font-family:inherit; font-size:0.9rem; color:#111827;
-  background:#fff; outline:none;
-  transition:border-color 0.18s, box-shadow 0.18s;
-=======
   padding:10px 13px;
   border:1.5px solid rgba(255, 255, 255, 0.3);
   border-radius: 0;
@@ -1559,7 +1527,6 @@ select option {
   -webkit-backdrop-filter: blur(12px);
   transition:all 0.2s;
   outline:none;
->>>>>>> test3
 }
 .nc-input::placeholder { color: rgba(255, 255, 255, 0.5); }
 .nc-input:focus {
@@ -1577,15 +1544,9 @@ select option {
 }
 .nc-textarea {
   padding:10px 12px;
-<<<<<<< HEAD
-  border:1px solid #d1d5db; border-radius: 0;
-  font-family:inherit; font-size:0.9rem; color:#111827;
-  background:#fff; outline:none; resize:vertical;
-=======
   border:1px solid rgba(255, 255, 255, 0.3); border-radius: 0;
   font-family:inherit; font-size:0.9rem; color:#ffffff;
   background:rgba(255, 255, 255, 0.1); outline:none; resize:vertical;
->>>>>>> test3
   transition:border-color 0.18s, box-shadow 0.18s;
   min-height:140px;
   backdrop-filter: blur(12px);
@@ -1612,11 +1573,7 @@ select option {
   padding:8px 18px;
   background:rgba(255, 255, 255, 0.2);
   color:#fff; font-size:0.82rem; font-weight:700;
-<<<<<<< HEAD
-  border:none; border-radius: 0; cursor:pointer;
-=======
   border:1px solid rgba(255, 255, 255, 0.4); border-radius: 0; cursor:pointer;
->>>>>>> test3
   white-space:nowrap; font-family:inherit;
   transition:background 0.18s;
 }
@@ -1627,13 +1584,8 @@ select option {
 }
 .nc-submit-btn {
   padding:12px 36px;
-<<<<<<< HEAD
-  background:#2563eb;
-  color:#fff; font-size:0.95rem; font-weight:700;
-=======
   background:#ffffff;
   color:#1e1b4b; font-size:0.95rem; font-weight:700;
->>>>>>> test3
   border:none; border-radius: 0; cursor:pointer;
   font-family:inherit; transition:opacity 0.18s, transform 0.18s;
 }
@@ -1641,29 +1593,18 @@ select option {
 .nc-submit-btn:disabled { opacity:0.6; cursor:not-allowed; }
 .nc-cancel-btn {
   padding:12px 28px;
-<<<<<<< HEAD
-  background:transparent; border:1.5px solid #d1d5db;
-  color:#374151; font-size:0.9rem; font-weight:600;
-=======
   background:rgba(255, 255, 255, 0.1); border:1.5px solid rgba(255, 255, 255, 0.3);
   color:#ffffff; font-size:0.9rem; font-weight:600;
->>>>>>> test3
   border-radius: 0; cursor:pointer; font-family:inherit;
   transition:background 0.18s;
 }
 .nc-cancel-btn:hover { background:rgba(255, 255, 255, 0.2); }
 .nc-disclaimer {
   max-width:860px;
-<<<<<<< HEAD
-  font-size:0.78rem; color:#6b7280; line-height:1.75;
-  padding:16px; background:#f9fafb;
-  border:1px solid #e5e7eb; border-radius: 0;
-=======
   font-size:0.78rem; color:rgba(255, 255, 255, 0.7); line-height:1.75;
   padding:16px; background:rgba(255, 255, 255, 0.1);
   border:1px solid rgba(255, 255, 255, 0.2); border-radius: 0;
   backdrop-filter: blur(12px);
->>>>>>> test3
 }
 .nc-disclaimer strong { color:#ffffff; }
 

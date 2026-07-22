@@ -1925,6 +1925,9 @@ select option {
   border-color: #7c3aed;
   box-shadow: 0 0 0 3px rgba(124,58,237,0.1);
 }
+input.form-input::placeholder, textarea.form-textarea::placeholder, input[type="text"].form-input::placeholder {
+  color: #9ca3af !important;
+}
 .form-textarea { min-height: 120px; resize: vertical; }
 
 /* ── Users table ── */

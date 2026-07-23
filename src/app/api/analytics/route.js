@@ -17,10 +17,18 @@ export async function GET() {
 
     // Total counts
     const totalComplaints = await Complaint.countDocuments();
-    const pendingComplaints = await Complaint.countDocuments({ status: 'Pending' });
-    const inProgressComplaints = await Complaint.countDocuments({ status: 'In Progress' });
-    const resolvedComplaints = await Complaint.countDocuments({ status: 'Resolved' });
-    const rejectedComplaints = await Complaint.countDocuments({ status: 'Rejected' });
+    const pendingComplaints = await Complaint.countDocuments({
+      status: 'Pending',
+    });
+    const inProgressComplaints = await Complaint.countDocuments({
+      status: 'In Progress',
+    });
+    const resolvedComplaints = await Complaint.countDocuments({
+      status: 'Resolved',
+    });
+    const rejectedComplaints = await Complaint.countDocuments({
+      status: 'Rejected',
+    });
     const totalUsers = await User.countDocuments();
     const totalStudents = await User.countDocuments({ role: 'student' });
     const totalStaff = await User.countDocuments({ role: 'staff' });
@@ -55,23 +63,24 @@ export async function GET() {
     ]);
 
     // Resolution rate
-    const resolutionRate = totalComplaints > 0
-      ? ((resolvedComplaints / totalComplaints) * 100).toFixed(1)
-      : 0;
+    const resolutionRate =
+      totalComplaints > 0
+        ? ((resolvedComplaints / totalComplaints) * 100).toFixed(1)
+        : 0;
 
     // Average feedback rating
     const feedbackData = await Complaint.aggregate([
-      { $match: { 'feedback.rating': { $exists: true, $ne: null } } },
-      { $group: { _id: null, avgRating: { $avg: '$feedback.rating' } } },
+      { $match: { feedbackRating: { $exists: true, $ne: null } } },
+      { $group: { _id: null, avgRating: { $avg: '$feedbackRating' } } },
     ]);
 
-    const avgRating = feedbackData.length > 0 ? feedbackData[0].avgRating.toFixed(1) : 'N/A';
+    const avgRating =
+      feedbackData.length > 0 ? feedbackData[0].avgRating.toFixed(1) : 'N/A';
 
-    // Recent complaints
+    // Recent complaints (all complaints for the table/PDF)
     const recentComplaints = await Complaint.find()
       .populate('submittedBy', 'name email')
-      .sort({ createdAt: -1 })
-      .limit(5);
+      .sort({ createdAt: -1 });
 
     return NextResponse.json({
       overview: {

@@ -3,9 +3,10 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import connectDB from '@/lib/mongodb';
 import Complaint from '@/models/Complaint';
+import ComplaintResponse from '@/models/ComplaintResponse';
 import Notification from '@/models/Notification';
 
-// GET single complaint
+// GET single complaint + its responses
 export async function GET(request, { params }) {
   try {
     await connectDB();
@@ -15,17 +16,31 @@ export async function GET(request, { params }) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const id = params.id;
+    const unwrappedParams = await params;
+    const id = unwrappedParams.id;
+
     const complaint = await Complaint.findById(id)
       .populate('submittedBy', 'name email studentId department')
       .populate('assignedTo', 'name email department')
-      .populate('responses.respondedBy', 'name email role');
+      .populate('categoryId', 'name');
 
     if (!complaint) {
-      return NextResponse.json({ error: 'Complaint not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Complaint not found' },
+        { status: 404 },
+      );
     }
 
-    return NextResponse.json(complaint);
+    // Fetch responses from the separate collection
+    const responses = await ComplaintResponse.find({ complaintId: id })
+      .populate('respondedBy', 'name email role')
+      .sort({ createdAt: 1 });
+
+    // Attach responses to the complaint object
+    const complaintObj = complaint.toObject();
+    complaintObj.responses = responses;
+
+    return NextResponse.json(complaintObj);
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
@@ -41,21 +56,24 @@ export async function PUT(request, { params }) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const id = params.id;
+    const unwrappedParams = await params;
+    const id = unwrappedParams.id;
     const body = await request.json();
     const { status, assignedTo, response, priority, feedback } = body;
 
     const complaint = await Complaint.findById(id);
 
     if (!complaint) {
-      return NextResponse.json({ error: 'Complaint not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Complaint not found' },
+        { status: 404 },
+      );
     }
 
     // Update status
     if (status) {
       complaint.status = status;
 
-      // Notify student about status change
       await Notification.create({
         userId: complaint.submittedBy,
         title: 'Complaint Status Updated',
@@ -69,7 +87,6 @@ export async function PUT(request, { params }) {
     if (assignedTo) {
       complaint.assignedTo = assignedTo;
 
-      // Notify assigned staff
       await Notification.create({
         userId: assignedTo,
         title: 'New Complaint Assigned',
@@ -79,14 +96,15 @@ export async function PUT(request, { params }) {
       });
     }
 
-    // Add response
+    // Add response — saved to separate ComplaintResponse collection
     if (response) {
-      complaint.responses.push({
+      await ComplaintResponse.create({
+        complaintId: id,
         message: response,
         respondedBy: session.user.id,
+        status: status || complaint.status,
       });
 
-      // Notify student about new response
       if (session.user.id !== complaint.submittedBy.toString()) {
         await Notification.create({
           userId: complaint.submittedBy,
@@ -103,25 +121,34 @@ export async function PUT(request, { params }) {
       complaint.priority = priority;
     }
 
-    // Add feedback (students only)
+    // Add feedback (students only) — stored as flat fields
     if (feedback) {
-      complaint.feedback = feedback;
+      complaint.feedbackRating = feedback.rating;
+      complaint.feedbackComment = feedback.comment;
     }
 
     await complaint.save();
 
+    // Refetch with populated fields and attach responses
     const updated = await Complaint.findById(id)
       .populate('submittedBy', 'name email studentId department')
       .populate('assignedTo', 'name email department')
-      .populate('responses.respondedBy', 'name email role');
+      .populate('categoryId', 'name');
 
-    return NextResponse.json(updated);
+    const responses = await ComplaintResponse.find({ complaintId: id })
+      .populate('respondedBy', 'name email role')
+      .sort({ createdAt: 1 });
+
+    const updatedObj = updated.toObject();
+    updatedObj.responses = responses;
+
+    return NextResponse.json(updatedObj);
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
-// DELETE complaint
+// DELETE complaint + its responses
 export async function DELETE(request, { params }) {
   try {
     await connectDB();
@@ -131,8 +158,11 @@ export async function DELETE(request, { params }) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const id = params.id;
+    const unwrappedParams = await params;
+    const id = unwrappedParams.id;
+
     await Complaint.findByIdAndDelete(id);
+    await ComplaintResponse.deleteMany({ complaintId: id });
     await Notification.deleteMany({ relatedComplaint: id });
 
     return NextResponse.json({ message: 'Complaint deleted successfully' });

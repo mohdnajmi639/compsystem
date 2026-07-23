@@ -2,10 +2,12 @@
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import Topbar from '@/components/Topbar';
 
 export default function DashboardPage() {
   const { data: session } = useSession();
+  const router = useRouter();
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
   const role = session?.user?.role;
@@ -90,13 +92,22 @@ export default function DashboardPage() {
                 Pengguna
               </Link>
             )}
-            <Link href="/dashboard/analytics" className="btn hero-btn-analytics" id="dash-analytics">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
-                <line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/>
-              </svg>
-              Analitik
-            </Link>
+            {role === 'admin' ? (
+              <Link href="/dashboard/analytics" className="btn hero-btn-analytics" id="dash-analytics">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
+                  <line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/>
+                </svg>
+                Analitik
+              </Link>
+            ) : (
+              <Link href="/dashboard/complaints" className="btn hero-btn-analytics" id="dash-complaints">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line>
+                </svg>
+                Senarai Aduan
+              </Link>
+            )}
           </div>
         </div>
 
@@ -160,12 +171,14 @@ export default function DashboardPage() {
                 </thead>
                 <tbody>
                   {complaints.slice(0, 5).map(c => (
-                    <tr key={c._id}>
+                    <tr 
+                      key={c._id}
+                      className="complaint-row"
+                      onClick={() => router.push(`/dashboard/complaints/${c._id}`)}
+                    >
                       <td>
-                        <Link href={`/dashboard/complaints/${c._id}`} style={{ textDecoration: 'none', display: 'block' }}>
-                          <div style={{ color: '#111827', fontSize: '0.92rem', fontWeight: 700, marginBottom: '2px' }}>{c.title}</div>
-                          <div style={{ color: '#6b7280', fontSize: '0.75rem' }}>#{c._id.slice(-6).toUpperCase()}</div>
-                        </Link>
+                        <div style={{ color: '#111827', fontSize: '0.92rem', fontWeight: 700, marginBottom: '2px' }}>{c.title}</div>
+                        <div style={{ color: '#6b7280', fontSize: '0.75rem' }}>#{c._id.slice(-6).toUpperCase()}</div>
                       </td>
                       <td>
                         {statusBadge(c.status)}
@@ -189,6 +202,21 @@ export default function DashboardPage() {
         </div>
 
       </div>
+
+      <style>{`
+        .complaint-row {
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+        .complaint-row:hover {
+          background-color: #f3e8ff !important;
+          box-shadow: 0 0 12px rgba(124, 58, 237, 0.15);
+          transform: translateY(-1px);
+        }
+        .complaint-row:hover td {
+          background-color: transparent !important;
+        }
+      `}</style>
     </>
   );
 }

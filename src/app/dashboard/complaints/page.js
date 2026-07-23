@@ -2,19 +2,20 @@
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import Topbar from '@/components/Topbar';
 
 export default function ComplaintsPage() {
   const { data: session } = useSession();
+  const router = useRouter();
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState({ status: '', category: '', priority: '' });
+  const [filters, setFilters] = useState({ status: '', category: '' });
 
   useEffect(() => {
     const params = new URLSearchParams();
     if (filters.status) params.set('status', filters.status);
     if (filters.category) params.set('category', filters.category);
-    if (filters.priority) params.set('priority', filters.priority);
     fetch(`/api/complaints?${params}`, { cache: 'no-store' })
       .then(r => r.json())
       .then(d => { setComplaints(Array.isArray(d) ? d : []); setLoading(false); })
@@ -46,10 +47,6 @@ export default function ComplaintsPage() {
               <option value="">Semua Kategori</option>
               <option value="General">Aduan Umum</option><option value="ICT">Aduan ICT</option><option value="Facility">Aduan Fasiliti</option>
             </select>
-            <select className="form-select" style={{ width: 'auto' }} value={filters.priority} onChange={e => setFilters({...filters, priority: e.target.value})}>
-              <option value="">Semua Keutamaan</option>
-              <option>Low</option><option>Medium</option><option>High</option><option>Urgent</option>
-            </select>
           </div>
         </div>
 
@@ -68,7 +65,6 @@ export default function ComplaintsPage() {
                   <tr>
                     <th>ID / Tajuk</th>
                     <th>Status</th>
-                    <th>Keutamaan</th>
                     <th>Kategori</th>
                     <th>Pengadu</th>
                     <th style={{ textAlign: 'right' }}>Tarikh</th>
@@ -76,24 +72,17 @@ export default function ComplaintsPage() {
                 </thead>
                 <tbody>
                   {complaints.map(c => (
-                    <tr key={c._id}>
+                    <tr 
+                      key={c._id} 
+                      className="complaint-row"
+                      onClick={() => router.push(`/dashboard/complaints/${c._id}`)}
+                    >
                       <td>
-                        <Link href={`/dashboard/complaints/${c._id}`} style={{ textDecoration: 'none', display: 'block' }}>
-                          <div style={{ color: '#111827', fontSize: '0.92rem', fontWeight: 700, marginBottom: '2px' }}>{c.title}</div>
-                          <div style={{ color: '#6b7280', fontSize: '0.75rem' }}>#{c._id.slice(-6).toUpperCase()}</div>
-                        </Link>
+                        <div style={{ color: '#111827', fontSize: '0.92rem', fontWeight: 700, marginBottom: '2px' }}>{c.title}</div>
+                        <div style={{ color: '#6b7280', fontSize: '0.75rem' }}>#{c._id.slice(-6).toUpperCase()}</div>
                       </td>
                       <td>
                         {statusBadge(c.status)}
-                      </td>
-                      <td>
-                        {c.priority ? (
-                          <span className={`badge badge-${c.priority.toLowerCase()}`}>
-                            {c.priority}
-                          </span>
-                        ) : (
-                          <span style={{ color: '#9ca3af' }}>-</span>
-                        )}
                       </td>
                       <td>
                         <span style={{ color: '#374151', fontSize: '0.85rem' }}>{c.category}</span>
@@ -113,6 +102,21 @@ export default function ComplaintsPage() {
           )}
         </div>
       </div>
+
+      <style>{`
+        .complaint-row {
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+        .complaint-row:hover {
+          background-color: #f3e8ff !important;
+          box-shadow: 0 0 12px rgba(124, 58, 237, 0.15);
+          transform: translateY(-1px);
+        }
+        .complaint-row:hover td {
+          background-color: transparent !important;
+        }
+      `}</style>
     </>
   );
 }

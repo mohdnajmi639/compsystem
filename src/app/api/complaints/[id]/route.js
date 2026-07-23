@@ -96,6 +96,7 @@ export async function PUT(request, { params }) {
         complaintId: id,
         message: response,
         respondedBy: session.user.id,
+        status: status || complaint.status,
       });
 
       if (session.user.id !== complaint.submittedBy.toString()) {

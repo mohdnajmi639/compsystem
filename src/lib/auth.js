@@ -26,6 +26,10 @@ export const authOptions = {
           throw new Error('Invalid password');
         }
 
+        if (user.role === 'staff' && !user.isApproved) {
+          throw new Error('Akaun anda sedang menunggu kelulusan pentadbir (Admin).');
+        }
+
         return {
           id: user._id.toString(),
           name: user.name,

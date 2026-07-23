@@ -15,6 +15,10 @@ const ComplaintResponseSchema = new mongoose.Schema({
     ref: 'User',
     required: true,
   },
+  status: {
+    type: String,
+    enum: ['Pending', 'In Progress', 'Resolved', 'Rejected'],
+  },
 }, {
   timestamps: true,
 });

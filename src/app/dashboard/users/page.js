@@ -21,7 +21,10 @@ const formatDepartment = (dept) => {
   return dept;
 };
 
-const roleBadge = (role) => {
+const roleBadge = (role, isApproved) => {
+  if (role === 'staff' && isApproved === false) {
+    return <span className={`badge badge-urgent`} style={{ background: '#fef2f2', color: '#dc2626', border: '1px solid #fca5a5' }}>Menunggu Kelulusan</span>;
+  }
   const map = {
     admin: 'badge-urgent',
     staff: 'badge-pending',
@@ -104,6 +107,22 @@ export default function UsersPage() {
     } catch (err) {
       // Revert on failure
       setUsers(previousUsers);
+      showToast(err.message, 'error');
+    }
+  };
+
+  const handleApprove = async (userToApprove) => {
+    try {
+      const res = await fetch(`/api/users/${userToApprove._id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isApproved: true }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Ralat berlaku');
+      setUsers((prev) => prev.map((u) => (u._id === userToApprove._id ? data : u)));
+      showToast(`Akaun ${userToApprove.name} berjaya diluluskan`);
+    } catch (err) {
       showToast(err.message, 'error');
     }
   };
@@ -447,7 +466,7 @@ export default function UsersPage() {
                         </div>
                       </td>
                       <td style={{ color: '#6b7280' }}>{u.email}</td>
-                      <td>{roleBadge(u.role)}</td>
+                      <td>{roleBadge(u.role, u.isApproved)}</td>
                       <td style={{ color: '#374151' }}>{formatDepartment(u.department) || '-'}</td>
                       <td style={{ color: '#9ca3af', fontSize: '0.85rem', textAlign: 'right' }}>
                         {new Date(u.createdAt).toLocaleDateString('ms-MY')}
@@ -455,54 +474,51 @@ export default function UsersPage() {
                       {isAdmin && (
                         <td style={{ textAlign: 'center' }}>
                           <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                            <button
-                              onClick={() => openEdit(u)}
-                              style={{
-                                padding: '6px 12px',
-                                borderRadius: 0,
-                                border: '1.5px solid #6366f1',
-                                background: 'transparent',
-                                color: '#6366f1',
-                                fontWeight: 700,
-                                fontSize: '0.82rem',
-                                cursor: 'pointer',
-                                transition: 'all 0.18s',
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.background = '#6366f1';
-                                e.currentTarget.style.color = '#fff';
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.background = 'transparent';
-                                e.currentTarget.style.color = '#6366f1';
-                              }}
-                            >
-                              Edit
-                            </button>
-                            <button
-                              onClick={() => { setDeleteTarget(u); setDeleteCountdown(5); }}
-                              style={{
-                                padding: '6px 12px',
-                                borderRadius: 0,
-                                border: '1.5px solid #ef4444',
-                                background: 'transparent',
-                                color: '#ef4444',
-                                fontWeight: 700,
-                                fontSize: '0.82rem',
-                                cursor: 'pointer',
-                                transition: 'all 0.18s',
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.background = '#ef4444';
-                                e.currentTarget.style.color = '#fff';
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.background = 'transparent';
-                                e.currentTarget.style.color = '#ef4444';
-                              }}
-                            >
-                              Padam
-                            </button>
+                            {u.role === 'staff' && u.isApproved === false ? (
+                              <>
+                                <button
+                                  onClick={() => handleApprove(u)}
+                                  style={{ padding: '6px 12px', borderRadius: 0, border: '1.5px solid #16a34a', background: 'transparent', color: '#16a34a', fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer', transition: 'all 0.18s' }}
+                                  onMouseEnter={(e) => { e.currentTarget.style.background = '#16a34a'; e.currentTarget.style.color = '#fff'; }}
+                                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#16a34a'; }}
+                                >
+                                  Luluskan
+                                </button>
+                                <button
+                                  onClick={() => { setDeleteTarget(u); setDeleteCountdown(5); }}
+                                  style={{ padding: '6px 12px', borderRadius: 0, border: '1.5px solid #ef4444', background: 'transparent', color: '#ef4444', fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer', transition: 'all 0.18s' }}
+                                  onMouseEnter={(e) => { e.currentTarget.style.background = '#ef4444'; e.currentTarget.style.color = '#fff'; }}
+                                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#ef4444'; }}
+                                >
+                                  Tolak & Padam
+                                </button>
+                              </>
+                            ) : (
+                              <>
+                                <button
+                                  onClick={() => openEdit(u)}
+                                  style={{
+                                    padding: '6px 12px', borderRadius: 0, border: '1.5px solid #6366f1', background: 'transparent',
+                                    color: '#6366f1', fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer', transition: 'all 0.18s'
+                                  }}
+                                  onMouseEnter={(e) => { e.currentTarget.style.background = '#6366f1'; e.currentTarget.style.color = '#fff'; }}
+                                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#6366f1'; }}
+                                >
+                                  Edit
+                                </button>
+                                <button
+                                  onClick={() => { setDeleteTarget(u); setDeleteCountdown(5); }}
+                                  style={{
+                                    padding: '6px 12px', borderRadius: 0, border: '1.5px solid #ef4444', background: 'transparent',
+                                    color: '#ef4444', fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer', transition: 'all 0.18s'
+                                  }}
+                                  onMouseEnter={(e) => { e.currentTarget.style.background = '#ef4444'; e.currentTarget.style.color = '#fff'; }}
+                                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#ef4444'; }}
+                                >
+                                  Padam
+                                </button>
+                              </>
+                            )}
                           </div>
                         </td>
                       )}

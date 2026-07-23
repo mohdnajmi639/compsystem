@@ -18,6 +18,7 @@ function RegisterForm() {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const departments = [
     'Fakulti Pengurusan Maklumat (FPM)',
@@ -69,16 +70,20 @@ function RegisterForm() {
           name: form.name,
           email: form.email,
           password: form.password,
-          studentId: category === 'public' ? '' : form.studentId,
+          studentId: category === 'public' || category === 'staff' ? '' : form.studentId,
           department: category === 'public' ? 'Umum' : form.department,
-          program: category === 'public' ? '' : form.program,
-          role: category === 'public' ? 'public' : 'student'
+          program: category === 'public' || category === 'staff' ? '' : form.program,
+          role: category === 'public' ? 'public' : (category === 'staff' ? 'staff' : 'student')
         }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
-      // Redirect to login with the callbackUrl preserved
-      router.push(callbackUrl ? `/login?callbackUrl=${encodeURIComponent(callbackUrl)}&registered=1` : '/login?registered=1');
+      
+      if (category === 'staff') {
+        setSubmitted(true);
+      } else {
+        router.push(callbackUrl ? `/login?callbackUrl=${encodeURIComponent(callbackUrl)}&registered=1` : '/login?registered=1');
+      }
     } catch (err) {
       setError(err.message);
     }
@@ -86,6 +91,65 @@ function RegisterForm() {
   };
 
   const loginUrl = callbackUrl ? `/login?callbackUrl=${encodeURIComponent(callbackUrl)}` : '/login';
+
+  if (submitted) {
+    return (
+      <div className="lp-auth-root">
+        {/* Navbar */}
+        <nav className="lp-nav">
+          <div className="lp-nav-inner">
+            <Link href="/" className="lp-logo" id="auth-logo">
+              <img src="/images/logo aduan2.png" alt="Aduan Logo" style={{height: 32, width: 'auto'}} />
+            </Link>
+            <div className="lp-nav-links">
+              <Link href="/" className="lp-nav-link" id="nav-anjung">Anjung</Link>
+              <NavDropdownAduan />
+              <NavDropdownSemak />
+              <Link href="/panduan" className="lp-nav-link" id="nav-panduan">Panduan</Link>
+              <Link href="/faq" className="lp-nav-link" id="nav-faq">Soalan Lazim</Link>
+            </div>
+            <div className="lp-nav-end">
+              <Link href={loginUrl} className="lp-login-btn" id="login-nav-btn">Log Masuk</Link>
+            </div>
+          </div>
+        </nav>
+
+        {/* Auth Body */}
+        <div className="lp-auth-body">
+          <div className="lp-auth-card lp-auth-card-wide" style={{ textAlign: 'center', padding: '48px 32px' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
+              <div style={{
+                width: '80px', height: '80px', borderRadius: '50%',
+                background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center'
+              }}>
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </div>
+            </div>
+            <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#111827', marginBottom: '16px' }}>Pendaftaran Berjaya</h2>
+            <p style={{ color: '#4b5563', lineHeight: 1.6, marginBottom: '32px', fontSize: '1.05rem' }}>
+              Akaun staf anda telah berjaya didaftarkan. Sila tunggu kelulusan daripada pentadbir (Admin) dalam masa 24 jam sebelum anda boleh log masuk dan menggunakan sistem ini.
+            </p>
+            <Link href={loginUrl} className="lp-auth-btn" style={{ display: 'inline-block', width: 'auto', padding: '12px 32px' }}>
+              Kembali ke Log Masuk
+            </Link>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <footer className="lp-footer">
+          <div className="lp-footer-inner">
+            <p className="lp-footer-text">
+              <strong>Penafian dan Notis Privasi:</strong>{' '}
+              Sistem ini disediakan untuk pengurusan aduan rasmi UiTM. Semua data yang dikemukakan adalah sulit dan hanya untuk kegunaan dalaman universiti.
+            </p>
+            <p className="lp-footer-copy">© Pejabat Komunikasi Strategik, UiTM 2026</p>
+          </div>
+        </footer>
+      </div>
+    );
+  }
 
   return (
     <div className="lp-auth-root">
@@ -128,9 +192,20 @@ function RegisterForm() {
                 className="lp-auth-input lp-auth-select"
                 style={{ textAlign: 'center', textAlignLast: 'center' }}
                 value={category}
-                onChange={e => setCategory(e.target.value)}
+                onChange={e => {
+                  const newCategory = e.target.value;
+                  setCategory(newCategory);
+                  if (newCategory === 'staff') {
+                    setForm({ ...form, department: 'Fasiliti' });
+                  } else if (newCategory === 'student') {
+                    setForm({ ...form, department: departments[0], program: departmentPrograms[departments[0]][0] });
+                  } else {
+                    setForm({ ...form, department: 'Umum', program: '' });
+                  }
+                }}
               >
                 <option value="student">Pelajar UiTM</option>
+                <option value="staff">Staf UiTM</option>
                 <option value="public">Orang Awam / Umum</option>
               </select>
             </div>
@@ -163,7 +238,7 @@ function RegisterForm() {
             </div>
 
             <div className="lp-auth-field">
-              <label className="lp-auth-label">{category === 'student' ? 'E-mel Pelajar' : 'E-mel'}</label>
+              <label className="lp-auth-label">{category === 'student' ? 'E-mel Pelajar' : category === 'staff' ? 'E-mel Staf' : 'E-mel'}</label>
               <input
                 id="reg-email"
                 className="lp-auth-input"
@@ -200,6 +275,22 @@ function RegisterForm() {
                   </select>
                 </div>
               </>
+            )}
+
+            {category === 'staff' && (
+              <div className="lp-auth-field">
+                <label className="lp-auth-label">Jabatan / Bahagian</label>
+                <select
+                  id="reg-department-staff"
+                  className="lp-auth-input lp-auth-select"
+                  value={form.department}
+                  onChange={e => setForm({...form, department: e.target.value})}
+                >
+                  <option value="Fasiliti">Bahagian Fasiliti</option>
+                  <option value="ICT">Teknologi Maklumat dan Komunikasi (ICT)</option>
+                  <option value="Hal Ehwal Pelajar (HEP)">Hal Ehwal Pelajar (HEP)</option>
+                </select>
+              </div>
             )}
 
             <div className="lp-auth-row">

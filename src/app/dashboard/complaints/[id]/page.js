@@ -83,6 +83,8 @@ export default function ComplaintDetailPage() {
   const [staffList, setStaffList] = useState([]);
   const [showAssign, setShowAssign] = useState(false);
   const [assignTo, setAssignTo] = useState('');
+  const [showResolveModal, setShowResolveModal] = useState(false);
+  const [resolveMessage, setResolveMessage] = useState('');
   const [feedbackRating, setFeedbackRating] = useState(0);
   const [feedbackComment, setFeedbackComment] = useState('');
   const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
@@ -95,7 +97,7 @@ export default function ComplaintDetailPage() {
 
   useEffect(() => {
     fetch(`/api/complaints/${id}`).then(r => r.json()).then(d => { setComplaint(d); setLoading(false); }).catch(() => setLoading(false));
-    if (role === 'admin') fetch('/api/users').then(r => r.json()).then(d => setStaffList(Array.isArray(d) ? d.filter(u => u.role === 'staff') : [])).catch(() => {});
+    if (role === 'admin' || role === 'staff') fetch('/api/users').then(r => r.json()).then(d => setStaffList(Array.isArray(d) ? d.filter(u => u.role === 'staff') : [])).catch(() => {});
   }, [id, role]);
 
   const updateComplaint = async (body) => {
@@ -114,6 +116,17 @@ export default function ComplaintDetailPage() {
 
   const handleStatusChange = async (newStatus) => { await updateComplaint({ status: newStatus }); };
   const handleAssign = async () => { if (assignTo) { await updateComplaint({ assignedTo: assignTo }); setShowAssign(false); } };
+
+  const handleResolveSubmit = async (e) => {
+    e.preventDefault();
+    if (!resolveMessage.trim()) {
+      showToast('Sila berikan keterangan penyelesaian', 'error');
+      return;
+    }
+    await updateComplaint({ status: 'Resolved', response: resolveMessage });
+    setShowResolveModal(false);
+    setResolveMessage('');
+  };
   const handleFeedback = async () => { if (feedbackRating > 0) await updateComplaint({ feedback: { rating: feedbackRating, comment: feedbackComment } }); };
 
   const statusBadgeClass = (s) => {
@@ -149,11 +162,6 @@ export default function ComplaintDetailPage() {
                 <span className={`badge ${statusBadgeClass(complaint.status)}`}>
                   {complaint.status}
                 </span>
-                {complaint.priority && (
-                  <span className={`badge badge-${complaint.priority.toLowerCase()}`}>
-                    Priority: {complaint.priority}
-                  </span>
-                )}
                 <span className="badge" style={{ background: '#f3f4f6', color: '#374151', border: '1px solid #e5e7eb' }}>
                   {formatDepartment(complaint.categoryId?.name || complaint.category || 'N/A')}
                 </span>
@@ -177,11 +185,16 @@ export default function ComplaintDetailPage() {
                       Mula Proses
                     </button>
                   )}
-                  {complaint.status === 'In Progress' && <button onClick={() => handleStatusChange('Resolved')} className="btn btn-sm" style={{ background: '#10b981', color: '#fff', border: 'none' }}>Tandai Selesai</button>}
+                  {complaint.status === 'In Progress' && <button onClick={() => setShowResolveModal(true)} className="btn btn-sm" style={{ background: '#10b981', color: '#fff', border: 'none' }}>Tanda Selesai</button>}
                   <button onClick={() => handleStatusChange('Rejected')} className="btn btn-danger btn-sm">Tolak</button>
                 </>
               )}
-              {role === 'admin' && <button onClick={() => setShowAssign(true)} className="btn btn-secondary btn-sm">Tugaskan Staf</button>}
+              {role === 'staff' && !complaint.assignedTo && complaint.status === 'Pending' && (
+                <button onClick={() => updateComplaint({ assignedTo: session.user.id })} className="btn btn-secondary btn-sm" style={{ background: '#3b82f6', color: '#fff', border: 'none' }}>Ambil Aduan</button>
+              )}
+              {(role === 'admin' || (role === 'staff' && !complaint.assignedTo)) && (
+                <button onClick={() => setShowAssign(true)} className="btn btn-secondary btn-sm">Tugaskan Staf</button>
+              )}
             </div>
           </div>
         </div>
@@ -243,8 +256,15 @@ export default function ComplaintDetailPage() {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     {complaint.responses.map((r, i) => (
                       <div key={i} style={{ background: '#f9fafb', padding: '16px', borderRadius: 0, border: '1px solid #e5e7eb' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', alignItems: 'center' }}>
-                          <span style={{ fontWeight: 600, color: '#111827', fontSize: '0.85rem' }}>{r.respondedBy?.name || 'Staf'}</span>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ fontWeight: 600, color: '#111827', fontSize: '0.85rem' }}>{r.respondedBy?.name || 'Staf'}</span>
+                            {r.status && (
+                              <span style={{ fontSize: '0.7rem', fontWeight: 600, background: r.status === 'Resolved' ? '#10b981' : '#3b82f6', color: '#fff', padding: '2px 6px', borderRadius: '4px', textTransform: 'uppercase' }}>
+                                {r.status === 'Resolved' ? 'Selesai' : 'Dalam Proses'}
+                              </span>
+                            )}
+                          </div>
                           <span style={{ color: '#6b7280', fontSize: '0.75rem' }}>{new Date(r.createdAt).toLocaleString('ms-MY')}</span>
                         </div>
                         <p style={{ color: '#374151', fontSize: '0.9rem', margin: 0, whiteSpace: 'pre-wrap', lineHeight: 1.5 }}>{r.message}</p>
@@ -364,6 +384,32 @@ export default function ComplaintDetailPage() {
                   <button onClick={handleAssign} className="btn btn-primary btn-sm">Simpan Tugasan</button>
                 </div>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Resolve Modal */}
+        {showResolveModal && (
+          <div className="modal-overlay" onClick={() => setShowResolveModal(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div className="card" onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: '420px', padding: 0 }}>
+              <div style={{ padding: '20px 24px', borderBottom: '1px solid #e5e7eb', background: '#f9fafb' }}>
+                <h2 style={{ fontSize: '1.1rem', color: '#111827', margin: 0, fontWeight: 700 }}>Sahkan Penyelesaian</h2>
+              </div>
+              <form onSubmit={handleResolveSubmit} style={{ padding: '24px' }}>
+                <label style={{ display: 'block', fontSize: '0.8rem', color: '#374151', fontWeight: 600, marginBottom: '8px' }}>Keterangan / Tindakan Penyelesaian</label>
+                <textarea 
+                  className="form-textarea" 
+                  value={resolveMessage} 
+                  onChange={e => setResolveMessage(e.target.value)} 
+                  placeholder="Sila nyatakan tindakan yang telah diambil..." 
+                  style={{ marginBottom: '24px', minHeight: '100px' }} 
+                  required
+                />
+                <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                  <button type="button" onClick={() => setShowResolveModal(false)} className="btn btn-secondary btn-sm">Batal</button>
+                  <button type="submit" className="btn btn-primary btn-sm" style={{ background: '#10b981', border: 'none' }}>Sahkan Selesai</button>
+                </div>
+              </form>
             </div>
           </div>
         )}

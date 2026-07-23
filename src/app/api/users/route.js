@@ -20,7 +20,7 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const query = session.user.role === 'admin' ? {} : { role: 'student' };
+    const query = session.user.role === 'admin' ? {} : { role: { $in: ['student', 'staff'] } };
     const users = await User.find(query).select('-password').sort({ createdAt: -1 });
 
     return NextResponse.json(users);
@@ -53,6 +53,7 @@ export async function POST(request) {
       studentId,
       department: department || 'General',
       program: program || '',
+      isApproved: role === 'staff' ? false : true,
     });
 
     const userObj = user.toObject();

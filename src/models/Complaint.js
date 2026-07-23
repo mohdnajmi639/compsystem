@@ -18,6 +18,10 @@ const ComplaintSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Category',
     },
+    targetDepartment: {
+      type: String,
+      default: 'tidak_pasti',
+    },
     priority: {
       type: String,
       enum: ['Low', 'Medium', 'High', 'Urgent'],

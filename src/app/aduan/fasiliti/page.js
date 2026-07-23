@@ -11,13 +11,12 @@ import HomeUserMenu from '@/components/HomeUserMenu';
 ══════════════════════════════════════ */
 const NEGERI_OPTS = ['-- Sila Pilih --','Johor','Kedah','Kelantan','Melaka','Negeri Sembilan','Pahang','Perak','Perlis','Pulau Pinang','Sabah','Sarawak','Selangor','Terengganu','W.P. Kuala Lumpur','W.P. Labuan','W.P. Putrajaya'];
 const KAMPUS_OPTS = ['--Sila Pilih--','UiTM Shah Alam','UiTM Kampus Puncak Perdana','UiTM Kampus Puncak Alam','UiTM Kampus Dengkil','UiTM Kampus Arau','UiTM Kampus Kota Bharu','UiTM Kampus Kuantan','UiTM Kampus Dungun','UiTM Kampus Johor Bahru','UiTM Kampus Alor Gajah'];
-const BANGUNAN_OPTS = ['--Sila Pilih--','B0410 - Blok Akademik','B0407 - Dewan Makan','B0401 - Kolej Blok 1','B0402 - Kolej Blok 2','B0403 - Kolej Blok 3','B0404 - Kolej Blok 4','B0405 - Kolej Blok 5','B0408 - Kolej Blok 6','B0411 - Perhentian Bas','B0409 - Pos Pengawal Kolej','B0406 - Surau'];
-const BLOK_OPTS = ['--Sila Pilih--','Blok A','Blok B','Blok C','Blok D','Blok E','Blok F'];
+const BANGUNAN_OPTS = ['--Sila Pilih--','Blok Akademik','Jasmine 1','Jasmine 2','Jasmine 3','Jasmine 4','Jasmine 5','Surau','Dewan Makan','Pos Pengawal Kolej','Perhentian Bas'];
 const ARAS_OPTS = ['--Sila Pilih--','Aras 1','Aras 2','Aras 3','Aras 4','Aras 5'];
 const RUANG_OPTS = ['--Sila Pilih--','Bilik Darjah','Makmal','Pejabat','Tandas','Koridor','Parkir','Padang'];
 const KATEGORI_INFRA_OPTS = ['--Sila Pilih--','Elektrik','Awam / Sivil','Mekanikal','Landskap','Telekomunikasi','Pembetungan','Paving / Perkerasan'];
 const SUB_KATEGORI_INFRA_OPTS = ['--Sila Pilih--','Lampu Jalan','Saliran','Parit','Laluan Pejalan Kaki','Pagar','Tanda Jalan','Lain-lain'];
-const SEKSYEN_OPTS = ['--Sila Pilih--','Elektrik','Awam / Sivil','Mekanikal','Landskap','Pembersihan','Keselamatan','Lain-lain'];
+const SEKSYEN_OPTS = ['--Sila Pilih--','MAJ - AUDIO VISUAL','BAN - BANGUNAN','ELE - ELEKTRIK','INF CIV - INFRASTRUKTUR','LAN - LANSKAP','MEC - MEKANIKAL','PROJEK - PROJEK','TEL - TELEKOMUNIKASI'];
 const ELEMEN_OPTS = ['--Sila Pilih--','Pendawaian','Paip','HVAC','Pintu / Tingkap','Bumbung','Dinding / Lantai','Perabot','Lif','Eskalator'];
 const MASALAH_OPTS = ['--Sila Pilih--','Rosak','Bocor','Tidak Berfungsi','Kotor / Perlu Pembersihan','Perlu Penggantian','Perlu Pemasangan Baharu','Bahaya / Merbahaya'];
 
@@ -142,6 +141,241 @@ function AduanFasilitiContent() {
     setMasalah('--Sila Pilih--'); setKetKerosakan('');
     setError(''); setSubmitted(false);
   };
+
+  const currentBangunan = jenisBangunan === 'dalam' ? dbBangunan : lbBangunan;
+  const isJasmine = typeof currentBangunan === 'string' && currentBangunan.startsWith('Jasmine');
+  const isBlokAkademik = currentBangunan === 'Blok Akademik';
+  const isDewanMakan = currentBangunan === 'Dewan Makan';
+  const showBlok = isJasmine || isBlokAkademik;
+  const showAras = showBlok || isDewanMakan;
+
+  let activeBlokOpts = ['--Sila Pilih--'];
+  if (currentBangunan === 'Jasmine 5') {
+    activeBlokOpts = ['--Sila Pilih--', 'Blok A', 'Blok B', 'Blok C', 'Blok D'];
+  } else if (isJasmine) {
+    activeBlokOpts = ['--Sila Pilih--', 'Blok A', 'Blok B', 'Blok C', 'Blok D', 'Blok E'];
+  } else if (isBlokAkademik) {
+    activeBlokOpts = ['--Sila Pilih--', 'Blok Akademik', 'Pos Pengawal Blok Akadamik', 'Sub Station 1'];
+  }
+
+  let activeArasOpts = ARAS_OPTS;
+  if (isBlokAkademik) {
+    if (dbBlok === 'Pos Pengawal Blok Akadamik') {
+      activeArasOpts = ['--Sila Pilih--', 'Aras 1', 'Aras 2'];
+    } else {
+      activeArasOpts = ['--Sila Pilih--', 'Aras 1', 'Aras 2', 'Aras 3'];
+    }
+  } else if (isDewanMakan) {
+    activeArasOpts = ['--Sila Pilih--', 'Aras 1', 'Aras 2', 'Aras 3'];
+  }
+
+  let activeRuangOpts = RUANG_OPTS;
+  if (isJasmine) {
+    activeRuangOpts = ['--Sila Pilih--', 'Balkoni', 'Bilik Air', 'Bilik Tidur Pelajar', 'Koridor Awam', 'Rumah Pelajar', 'Tangga', 'Yard'];
+  } else if (isBlokAkademik && dbBlok === 'Pos Pengawal Blok Akadamik') {
+    if (dbAras === 'Aras 1') {
+      activeRuangOpts = ['--Sila Pilih--', 'Bilik Stor', 'Koridor Awam'];
+    } else if (dbAras === 'Aras 2') {
+      activeRuangOpts = ['--Sila Pilih--', 'Ruang Pengawal', 'Tandas'];
+    }
+  } else if (isBlokAkademik && (dbBlok === 'Blok Akademik' || dbBlok === '--Sila Pilih--')) {
+    if (dbAras === 'Aras 1') {
+      activeRuangOpts = ['--Sila Pilih--', 'Ante-Room', 'Bilik Anjung Prof.', 'Bilik Dokumen (ISO)', 'Bilik Elektrik', 'Bilik Fail', 'Bilik Gerakan Peperiksaan', 'Bilik ICT', 'Bilik Janitor', 'Bilik Juru Teknik', 'Bilik Kebal', 'Bilik Kerja Akaun', 'Bilik Kerja Akauntan Kanan', 'Bilik Kuliah', 'Bilik Mesyuarat', 'Bilik PABX', 'Bilik Pegawai', 'Bilik Pemandu', 'Bilik Pensyarah', 'Bilik Perbincangan', 'Bilik PHD', 'Bilik Prof.', 'Bilik Rundingan', 'Bilik Server', 'Bilik Setiausaha', 'Bilik Wudhu', 'HR', 'Info. Mgmt. (I.M) Lounge', 'Kafeteria', 'Kaunter', 'Ketua Pusat Pengajian', 'Ketua Pustakawan', 'Ketua Unit Kualiti', 'Koleksi Akses Terhad', 'Koordinator Program', 'Koridor Awam', 'Laluan Lif', 'Makmal Komputer', 'Pameran Umum', 'Pantri', 'Surau', 'Tandas', 'Tangga', 'Tempat Sampah', 'Utiliti'];
+    } else if (dbAras === 'Aras 2') {
+      activeRuangOpts = ['--Sila Pilih--', 'Ante-Room', 'Bibliography Laboratory', 'Bilik Fotostat', 'Bilik Juruteknik', 'Bilik Kuliah', 'Bilik Mesyuarat Umum', 'Bilik Pasca Siswazah', 'Bilik Pensyarah', 'Bilik Perbincangan', 'Bilik Rehat', 'Bilik Rundingan', 'Bilik Seminar', 'Bilik Suntingan', 'HR', 'Koridor Awam', 'Laluan Lif', 'Makmal Komputer', 'Tandas', 'Tangga'];
+    } else if (dbAras === 'Aras 3') {
+      activeRuangOpts = ['--Sila Pilih--', 'Anjung FiTA', 'Ante-Room', 'Bilik AV', 'Bilik Juruteknik', 'Bilik Kawalan', 'Bilik Kuliah', 'Bilik Kuliah FiTA', 'Bilik Lukisan', 'Bilik Lupus', 'Bilik Mesyuarat Mini', 'Bilik Persalinan', 'Dewan Seminar FPM', 'Dewan Seminar FiTA', 'Elektrik', 'HR', 'Koridor Awam', 'Laluan Lif', 'Makmal Komputer FiTA', 'Miniplex FiTA', 'Riser', 'Tandas', 'Tangga', 'Wardrobe', 'Studio Digital', 'Studio Gerak', 'Stor', 'Stor Dewan', 'Stor Pelupusan'];
+    }
+  } else if (currentBangunan === 'Surau') {
+    activeRuangOpts = ['--Sila Pilih--', 'Bilik Wudhu', 'Koridor Awam', 'Surau', 'Tandas'];
+  } else if (isDewanMakan) {
+    if (dbAras === 'Aras 1') {
+      activeRuangOpts = ['--Sila Pilih--', 'Bilik Cucian', 'Bilik VIP', 'Chiller Room', 'Dapur', 'Dewan Makan', 'Dumbwaiter', 'Koridor Awam', 'Pejabat Am', 'Refuse Chamber', 'Stor', 'Tandas', 'Tangga', 'Utiliti'];
+    } else if (dbAras === 'Aras 2') {
+      activeRuangOpts = ['--Sila Pilih--', 'Ante-Room', 'Bilik Cucian', 'Bilik Penyediaan Makanan', 'Bilik Rehat', 'Dewan Makan', 'Dumbwaiter', 'Refuse Chamber', 'Tandas', 'Tangga', 'VOID'];
+    } else if (dbAras === 'Aras 3') {
+      activeRuangOpts = ['--Sila Pilih--', 'Koridor Awam', 'Tangga', 'Tangki Air'];
+    }
+  } else if (currentBangunan === 'Pos Pengawal Kolej') {
+    activeRuangOpts = ['--Sila Pilih--', 'Koridor Awam', 'Ruang Pengawal', 'Tandas'];
+  } else if (currentBangunan === 'Perhentian Bas') {
+    activeRuangOpts = ['--Sila Pilih--', 'Perhentian bas'];
+  }
+
+  let activeElemenOpts = ELEMEN_OPTS;
+  if (seksyen === 'MAJ - AUDIO VISUAL') {
+    activeElemenOpts = ['--Sila Pilih--', 'SISTEM VISUAL', 'SISTEM AUDIO', 'SISTEM PENCAHAYAAN PENTAS'];
+  } else if (seksyen === 'BAN - BANGUNAN') {
+    activeElemenOpts = ['--Sila Pilih--', 'KEROSAKAN BANGUNAN', 'KEROSAKAN PINTU', 'PERALATAN TANDAS & PLUMBING', 'PEST CONTROL', 'KEBERSIHAN DALAM BANGUNAN', 'SANITACT BIN'];
+  } else if (seksyen === 'ELE - ELEKTRIK') {
+    activeElemenOpts = ['--Sila Pilih--', 'BEKALAN ELEKTRIK', 'PEPASANGAN ELEKTRIK', 'LAMPU DALAM BANGUNAN', 'LAMPU LUAR BANGUNAN', 'CCTV'];
+  } else if (seksyen === 'INF CIV - INFRASTRUKTUR') {
+    activeElemenOpts = ['--Sila Pilih--', 'INFRASTRUKTUR', 'PEST CONTROL', 'SANITACT BIN'];
+  } else if (seksyen === 'LAN - LANSKAP') {
+    activeElemenOpts = ['--Sila Pilih--', 'PEST CONTROL', 'PERKHIDMATAN LANSKAP', 'PUNGUTAN SAMPAH', 'POKOK BUNGA BERPASU'];
+  } else if (seksyen === 'MEC - MEKANIKAL') {
+    activeElemenOpts = ['--Sila Pilih--', 'LIFT', 'MESIN AIR SEJUK/PANAS', 'PENYAMAN UDARA', 'PENCEGAH KEBAKARAN', 'ROLLER SHUTTER/GATE AUTOMATIK', 'PEMADAM API', 'MESIN PERAKAM WAKTU', 'LIQUID PETROLEUM GAS', 'BEKALAN AIR', 'KUMBAHAN'];
+  } else if (seksyen === 'PROJEK - PROJEK') {
+    activeElemenOpts = ['--Sila Pilih--', 'ETIKA PEKERJA KONTRAKTOR', 'PENGURUSAN PROJEK', 'PERSEKITARAN TAPAK BINA'];
+  } else if (seksyen === 'TEL - TELEKOMUNIKASI') {
+    activeElemenOpts = ['--Sila Pilih--', 'WALKIE_TALKIE', 'TELEFON', 'CCTV', 'DOOR ACCESS', 'PENDAWAIAN', 'BARRIER PARKING'];
+  }
+
+  let activeMasalahOpts = MASALAH_OPTS;
+  if (elemen === 'PEST CONTROL') {
+    activeMasalahOpts = [
+      '--Sila Pilih--', 'GANGGUAN ANJING/MUSANG', 'GANGGUAN BURUNG', 'GANGGUAN LEBAH', 'GANGGUAN LIPAS',
+      'GANGGUAN MONYET', 'GANGGUAN SEMUT', 'GANGGUAN ULAR', 'KUCING/TIKUS MATI',
+      'LAIN-LAIN ADUAN PEST CONTROL', 'RUANG BERBAU BUSUK', 'SERANGAN ANAI-ANAI', 'SERANGAN BUBUK'
+    ];
+  } else if (elemen === 'SANITACT BIN') {
+    activeMasalahOpts = [
+      '--Sila Pilih--', 'LAIN-LAIN ADUAN SANITARY BIN', 'SANITACT BERBAU',
+      'SANITACT TIDAK DIPUNGUT', 'SANITACT TIDAK TERURUS'
+    ];
+  } else if (elemen === 'CCTV') {
+    activeMasalahOpts = [
+      '--Sila Pilih--', 'CCTV TIADA BERGAMBAR', 'CCTV TIDAK MEREKOD DATA', 'LAIN-LAIN ADUAN KEROSAKAN CCTV'
+    ];
+  } else if (seksyen === 'MAJ - AUDIO VISUAL') {
+    if (elemen === 'SISTEM VISUAL') {
+      activeMasalahOpts = ['--Sila Pilih--', 'KUALITI TON WARNA VISUAL MULTIMEDIA BERUBAH', 'LAIN-LAIN KEROSAKKAN SISTEM AUDIO VISUAL', 'PAPARAN VISUAL MULTIMEDIA TIDAK SEKATA', 'SKRIN KOYAK', 'SKRIN MULTIMEDIA TIADA ISYARAT VISUAL', 'SKRIN TERJATUH', 'SKRIN TIDAK BOLEH DINAIKKAN/DITURUNKAN'];
+    } else if (elemen === 'SISTEM AUDIO') {
+      activeMasalahOpts = ['--Sila Pilih--', 'LAIN-LAIN KEROSAKAN SISTEM AUDIO', 'SISTEM AUDIO ROSAK'];
+    } else if (elemen === 'SISTEM PENCAHAYAAN PENTAS') {
+      activeMasalahOpts = ['--Sila Pilih--', 'DMX SPLITTER TIDAK BERFUNGSI / ROSAK', 'LAIN-LAIN KEROSAKKAN SISTEM PENCAHAYAAN PENTAS', 'LAMPU PENTAS ROSAK', 'LAMPU PENTAS TIDAK MENYALA', 'LIGHTING CONSOLE ROSAK'];
+    }
+  } else if (seksyen === 'BAN - BANGUNAN') {
+    if (elemen === 'KEROSAKAN BANGUNAN') {
+      activeMasalahOpts = [
+        '--Sila Pilih--', 'BINGKAI TINGKAP REPUT', 'BLIND/LANGSIR ROSAK', 'BUMBUNG BOCOR', 'BUMBUNG TERCABUT',
+        'CAT SILING KOTOR', 'DINDING KOTOR/BERCONTENG', 'DINDING RETAK', 'JUBIN TERTANGGAL/TERKOPEK',
+        'KACA TINGKAP PECAH', 'KAYU LANTAI PARKET DIMAKAN ANAI-ANAI', 'LAIN-LAIN KEROSAKAN BANGUNAN',
+        'LAMINAT DINDING ROSAK/MENGELUPAS', 'LANTAI BERLUBANG/PECAH', 'RAILING BESI TANGGA REPUT',
+        'SELAK TUAS TINGKAP PATAH/ROSAK', 'SILING (KESAN RESAPAN AIR)', 'SILING BERLUBANG', 'SILING BOCOR',
+        'SILING ROSAK/PECAH', 'SILING RUNTUH', 'SILING TIDAK DIPASANG', 'SIMEN SKRID TANGGA PECAH',
+        'TINGKAP KETAT', 'TINTED FIRL ROSAK/TERCABUT'
+      ];
+    } else if (elemen === 'KEROSAKAN PINTU') {
+      activeMasalahOpts = [
+        '--Sila Pilih--', 'ANAK KUNCI PATAH', 'DOOR CLOSER ROSAK/TAK BERFUNGSI', 'HANDLE PINTU PATAH/ROSAK',
+        'JENANG/BINGKAI PINTU ROSAK', 'KUNCI PINTU ROSAK', 'KUNCI/TOMBOL BERKARAT', 'LAIN-LAIN KEROSAKAN PINTU',
+        'PINTU DIMAKAN ANAI-ANAI', 'PINTU KETAT', 'PINTU PECAH', 'PINTU TERJATUH', 'PINTU TERKUNCI', 'SELAK PINTU ROSAK'
+      ];
+    } else if (elemen === 'PERALATAN TANDAS & PLUMBING') {
+      activeMasalahOpts = [
+        '--Sila Pilih--', 'BASIN BASUH TANGAN BOCOR', 'BASIN BASUH TANGAN PECAH', 'BASIN BASUH TANGAN TERSUMBAT',
+        'BESI PENYANGKUT PAKAIAN TERCABUT', 'BOTTLE TRAP ROSAK/BOCOR', 'CERMIN TANDAS PECAH/ROSAK',
+        'FLUSH VALVE ROSAK', 'FLUSHING HANDLE TAK BERFUNGSI/ROSAK', 'KEPALA PAIP BOCOR', 'KEPALA PAIP LONGGAR',
+        'LAIN-LAIN KEROSAKAN PERALATAN PLUMBING', 'MANGKUK TANDAS PECAH/ROSAK', 'PAIP TANDAS BOCOR',
+        'PELAPIK TANDAS DUDUK TIADA', 'PENDAKAP PAIP PATAH/TERCABUT', 'SALURAN PERANGKAP LANTAI TERSUMBAT',
+        'SALURAN TANDAS TERSUMBAT/TERSEKAT', 'SHOWER HEAD ROSAK', 'TANGKI PENYIMBAH PECAH',
+        'TANGKI TANDAS BOCOR/MELIMPAH', 'TIADA BEKALAN AIR DI TANDAS', 'TIADA SABUN', 'TIADA TISU TANDAS'
+      ];
+    } else if (elemen === 'KEBERSIHAN DALAM BANGUNAN') {
+      activeMasalahOpts = [
+        '--Sila Pilih--', 'BANGUNAN BERBAU', 'BANGUNAN KOTOR', 'KARPET BERBAU/KOTOR',
+        'LAIN-LAIN ADUAN KEBERSIHAN BANGUNAN', 'LANTAI KOTOR', 'PAPAN PUTIH TIDAK DIBERSIHKAN',
+        'PERABOT/PERALATAN BERHABUK', 'SAMPAH TIDAK DIPUNGUT', 'SILING/DINDING BERSAWANG',
+        'TANDAS BERBAU BUSUK', 'TANDAS KOTOR'
+      ];
+    }
+  } else if (seksyen === 'ELE - ELEKTRIK') {
+    if (elemen === 'BEKALAN ELEKTRIK') {
+      activeMasalahOpts = [
+        '--Sila Pilih--', 'BEKALAN ELEKTRIK TERPUTUS SATU ARAS', 'BEKALAN ELEKTRIK TERPUTUS SATU BANGUNAN',
+        'BEKALAN ELEKTRIK TERPUTUS SATU BILIK', 'BEKALAN ELEKTRIK TERPUTUS SATU KAMPUS', 'LAIN-LAIN ADUAN BEKALAN ELEKTRIK'
+      ];
+    } else if (elemen === 'PEPASANGAN ELEKTRIK') {
+      activeMasalahOpts = [
+        '--Sila Pilih--', 'KIPAS ANGIN ROSAK', 'KIPAS ANGIN TERTANGGAL', 'KOTAK PAPAN AGIHAN (DB) PECAH',
+        'LAIN-LAIN ADUAN PEPASANGAN ELEKTRIK', 'PINTU PAPAN AGIHAN (DB) TERTANGGAL', 'SOKET SUIS PECAH',
+        'SOKET SUIS TERBAKAR', 'SOKET SUIS TERTANGGAL', 'SOKET SUIS TIADA BEKALAN', 'SUIS PECAH',
+        'SUIS TERTANGGAL', 'WAYAR/KABEL/TRUNKING ELEKTRIK TERJUNTAI', 'WAYAR/KABEL/TRUNKING ELEKTRIK TERPUTUS',
+        'WAYAR/KABEL/TRUNKING TERBAKAR'
+      ];
+    } else if (elemen === 'LAMPU DALAM BANGUNAN') {
+      activeMasalahOpts = [
+        '--Sila Pilih--', 'LAIN-LAIN ADUAN LAMPU DALAM BANGUNAN', 'LAMPU BERKELIP-KELIP',
+        'LAMPU MALAP', 'LAMPU TERTANGGAL', 'LAMPU TIDAK DIPASANG', 'LAMPU TIDAK MENYALA'
+      ];
+    } else if (elemen === 'LAMPU LUAR BANGUNAN') {
+      activeMasalahOpts = [
+        '--Sila Pilih--', 'LAIN-LAIN ADUAN LAMPU LUAR BANGUNAN', 'LAMPU BERKELIP',
+        'LAMPU JALAN TIDAK BERNYALA', 'LAMPU MALAP', 'LAMPU TANDA KELUAR (EXIT SIGN) ROSAK',
+        'PENUTUP LAMPU JALAN TERBUKA', 'TIANG BESI TERDAPAT ARUS ELEKTRIK',
+        'TIANG LAMPU JALAN PATAH/BENGKOK', 'WAYAR LAMPU JALAN TERKELUAR'
+      ];
+    }
+  } else if (seksyen === 'INF CIV - INFRASTRUKTUR') {
+    if (elemen === 'INFRASTRUKTUR') {
+      activeMasalahOpts = [
+        '--Sila Pilih--', 'PEMBAHAGI JALAN ROSAK/PECAH', 'BAHU JALAN / KERB ROSAK ATAU TANGGAL',
+        'BATU INTERLOCKING MENDAP', 'CAT JALAN / PARKIR PUDAR', 'DINDING / TEMBOK PENAHAN PECAH',
+        'GRATING LONGKANG PUTUS', 'JALAN/PARKIR BERLUBANG', 'JALAN/PARKIR MENDAP',
+        'LAIN-LAIN ADUAN KEROSAKAN INFRASTRUKTUR', 'LONGKANG PECAH', 'PAGAR / PINTU PAGAR ROSAK',
+        'PAGOLA ROSAK', 'PEMBENTUNG PAIP PECAH', 'PENUTUP LONGKANG HILAN/ROSAK',
+        'SAMBUNGAN SUSUR TANGGA PUTUS', 'SUSUR ANAK TANGGA ROSAK', 'TANAH / CERUN RUNTUH', 'WAKAF ROSAK'
+      ];
+    }
+  } else if (seksyen === 'LAN - LANSKAP') {
+    if (elemen === 'PERKHIDMATAN LANSKAP') {
+      activeMasalahOpts = [
+        '--Sila Pilih--', 'AIR PANCUT TIDAK BERFUNGSI', 'AIR TERJUN TIDAK BERFUNGSI',
+        'BUNGKUSAN SAMPAH DAUN TIDAK DIPUNGUT', 'DAHAN POKOK MELEMPAI KE STRUKTUR',
+        'DAHAN POKOK PATAH', 'JALAN BERPASIR/BERMINYAK', 'JALANRAYA/PARKING KENDERAAN TIDAK DISAPU',
+        'KEMUDAHAN AWAM (PERHENTIAN BAS, KERUSI & MEJA TAMAN, WAKAF, PAPANTADA DAN BBQ PIT)',
+        'KOLAM/TASIK TIDAK DIBERSIHKAN', 'LAIN-LAIN ADUAN LANSKAP', 'LALUAN PEJALAN KAKI, DATARAN TIDAK DIBERSIHKAN',
+        'LONGKANG TIDAK DIBERSIHKAN', 'PAGAR TIDAK DIBERSIHKAN', 'POKOK MATI / LAYU', 'POKOK TUMBANG',
+        'RUMPUT PANJANG/TIDAK DIPOTONG', 'SAMPAH LUAR BANGUNAN BERSEPAH',
+        'SCUPPER DRAIN TERSUMBAT/SAMPAH TIDAK DIBERSIHKAN', 'TONG SAMPAH KAWASAN LUAR BANGUNAN MELIMPAH'
+      ];
+    } else if (elemen === 'PUNGUTAN SAMPAH') {
+      activeMasalahOpts = [
+        '--Sila Pilih--', 'DRAIN SUMP RUMAH SAMPAH KOTOR/TIDAK DICUCI/TERSUMBAT',
+        'KAWASAN TIDAK DISELENGGARA', 'LAIN-LAIN ADUAN SAMPAH LUAR BANGUNAN',
+        'RUMAH SAMPAH TIDAK DICUCI/DIBERSIHKAN', 'SAMPAH DI RUMAH SAMPAH TIDAK DIKUTIP',
+        'SAMPAH SISA BINAAN/PALLET/POLYSTYREN YANG TERBIAR MELEBIHI DARI 1 MINGGU', 'SAMPAH TIDAK DIPUNGUT'
+      ];
+    } else if (elemen === 'POKOK BUNGA BERPASU') {
+      activeMasalahOpts = [
+        '--Sila Pilih--', 'AIR SIRAMAN MELIMPAH', 'DAHAN MELEMPAI KE STRUKTUR/JALANRAYA',
+        'DAHAN PATAH DI LAIN-LAIN TEMPAT/KAWASAN', 'DAHAN POKOK PATAH MENGHALANG JALAN UTAMA',
+        'DAHANPATAH TERKENA BANGUNAN/STRUKTUR', 'LAIN-LAIN ADUAN POKOK BUNGA BERPASU',
+        'PASU PECAH', 'POKOK BUNGA TIDAK DISELENGGARA', 'POKOK MATI/LAYU',
+        'POKOK TIDAK DISELENGGARA', 'POKOK TUMBANG DI LAIN-LAIN TEMPAT/KAWASAN',
+        'POKOK TUMBANG MENGHALANG JALAN UTAMA', 'POKOK TUMBANG TERKENA BANGUNAN/STRUKTUR'
+      ];
+    }
+  } else if (seksyen === 'MEC - MEKANIKAL') {
+    if (elemen === 'LIFT') {
+      activeMasalahOpts = [
+        '--Sila Pilih--', 'BUTTON LIF ROSAK', 'KIPAS LIF TIDAK BERFUNGSI',
+        'LAIN-LAIN ADUAN KEROSAKAN LIF', 'LAMPU LIF TIDAK MENYALA',
+        'LIF TERGENDALA/PENUMPANG TERPERANGKAP', 'LIF TIDAK BERFUNGSI'
+      ];
+    } else if (elemen === 'MESIN AIR SEJUK/PANAS') {
+      activeMasalahOpts = [
+        '--Sila Pilih--', 'FRONT COVER MESIN AIR SEJUK TERTANGGAL',
+        'LAIN-LAIN ADUAN KEROSAKAN MESIN AIR SEJUK', 'MESIN AIR SEJUK TERSUMBAT',
+        'MESIN AIR SEJUK/PANAS TAK BERFUNGSI', 'PAIP BEKALAN MESIN AIR SEJUK PATAH',
+        'PENAPIS BEKALAN MESIN AIR KOTOR'
+      ];
+    } else if (elemen === 'PENYAMAN UDARA') {
+      activeMasalahOpts = [
+        '--Sila Pilih--', 'AIR MENITIK DARI PENYAMAN UDARA', 'BUNYI BISING PADA PENYAMAN UDARA',
+        'LAIN-LAIN ADUAN KEROSAKAN PENYAMAN UDARA', 'PENYAMAN UDARA BERBAU BUSUK',
+        'PENYAMAN UDARA ROSAK', 'PENYAMAN UDARA TIDAK BERFUNGSI', 'PENYAMAN UDARA TIDAK SEJUK',
+        'STARTER PENYAMAN UDARA ROSAK'
+      ];
+    } else if (elemen === 'PENCEGAH KEBAKARAN') {
+      activeMasalahOpts = [
+        '--Sila Pilih--', 'KABINET PANEL PENGGERA KAWALAN ROSAK', 'LAIN-LAIN ADUAN KEROSAKAN PENCEGAH KEBAKARAN',
+        'LOCENG KECEMASAN PENCEGAH KEBAKARAN BERBUNYI', 'PANEL PENGGERA KEBAKARAN TIADA BEKALAN KUASA',
+        'PILI BOMBA BOCOR', 'TANGKI ARI PENCEGAH KEBAKARAN (MERAH) BOCOR/OVERFLOW'
+      ];
+    }
+  }
 
   if (status === 'loading') {
     return (
@@ -326,33 +560,57 @@ function AduanFasilitiContent() {
 
                       <div className="aduan-field">
                         <label className="aduan-label">Bangunan <span className="aduan-required">*</span></label>
-                        <select className="aduan-input aduan-select" value={jenisBangunan === 'dalam' ? dbBangunan : lbBangunan} onChange={e => jenisBangunan === 'dalam' ? setDbBangunan(e.target.value) : setLbBangunan(e.target.value)}>
+                        <select className="aduan-input aduan-select" value={jenisBangunan === 'dalam' ? dbBangunan : lbBangunan} onChange={e => {
+                          if (jenisBangunan === 'dalam') {
+                            setDbBangunan(e.target.value);
+                            setDbBlok('--Sila Pilih--');
+                            setDbAras('--Sila Pilih--');
+                            setDbRuang('--Sila Pilih--');
+                          } else {
+                            setLbBangunan(e.target.value);
+                            setLbBlok('--Sila Pilih--');
+                          }
+                        }}>
                           {BANGUNAN_OPTS.map(o => <option key={o} value={o}>{o}</option>)}
                         </select>
                       </div>
 
-                      <div className="aduan-field">
-                        <label className="aduan-label">Blok <span className="aduan-required">*</span></label>
-                        <select className="aduan-input aduan-select" value={jenisBangunan === 'dalam' ? dbBlok : lbBlok} onChange={e => jenisBangunan === 'dalam' ? setDbBlok(e.target.value) : setLbBlok(e.target.value)}>
-                          {BLOK_OPTS.map(o => <option key={o} value={o}>{o}</option>)}
-                        </select>
-                      </div>
+                      {showBlok && (
+                        <div className="aduan-field">
+                          <label className="aduan-label">Blok <span className="aduan-required">*</span></label>
+                          <select className="aduan-input aduan-select" value={jenisBangunan === 'dalam' ? dbBlok : lbBlok} onChange={e => {
+                            if (jenisBangunan === 'dalam') {
+                              setDbBlok(e.target.value);
+                              setDbAras('--Sila Pilih--');
+                              setDbRuang('--Sila Pilih--');
+                            } else {
+                              setLbBlok(e.target.value);
+                            }
+                          }}>
+                            {activeBlokOpts.map(o => <option key={o} value={o}>{o}</option>)}
+                          </select>
+                        </div>
+                      )}
 
-                      {jenisBangunan === 'dalam' && (
-                        <>
-                          <div className="aduan-field">
-                            <label className="aduan-label">Aras</label>
-                            <select className="aduan-input aduan-select" value={dbAras} onChange={e => setDbAras(e.target.value)}>
-                              {ARAS_OPTS.map(o => <option key={o} value={o}>{o}</option>)}
-                            </select>
-                          </div>
-                          <div className="aduan-field">
-                            <label className="aduan-label">Ruang</label>
-                            <select className="aduan-input aduan-select" value={dbRuang} onChange={e => setDbRuang(e.target.value)}>
-                              {RUANG_OPTS.map(o => <option key={o} value={o}>{o}</option>)}
-                            </select>
-                          </div>
-                        </>
+                      {jenisBangunan === 'dalam' && showAras && dbBlok !== 'Sub Station 1' && (
+                        <div className="aduan-field">
+                          <label className="aduan-label">Aras</label>
+                          <select className="aduan-input aduan-select" value={dbAras} onChange={e => {
+                            setDbAras(e.target.value);
+                            setDbRuang('--Sila Pilih--');
+                          }}>
+                            {activeArasOpts.map(o => <option key={o} value={o}>{o}</option>)}
+                          </select>
+                        </div>
+                      )}
+
+                      {jenisBangunan === 'dalam' && dbBlok !== 'Sub Station 1' && (
+                        <div className="aduan-field">
+                          <label className="aduan-label">Ruang</label>
+                          <select className="aduan-input aduan-select" value={dbRuang} onChange={e => setDbRuang(e.target.value)}>
+                            {activeRuangOpts.map(o => <option key={o} value={o}>{o}</option>)}
+                          </select>
+                        </div>
                       )}
 
                       {jenisBangunan === 'luar' && (
@@ -384,22 +642,29 @@ function AduanFasilitiContent() {
                       
                       <div className="aduan-field">
                         <label className="aduan-label">Seksyen <span className="aduan-required">*</span></label>
-                        <select className="aduan-input aduan-select" value={seksyen} onChange={e => setSeksyen(e.target.value)}>
+                        <select className="aduan-input aduan-select" value={seksyen} onChange={e => {
+                          setSeksyen(e.target.value);
+                          setElemen('--Sila Pilih--');
+                          setMasalah('--Sila Pilih--');
+                        }}>
                           {SEKSYEN_OPTS.map(o => <option key={o} value={o}>{o}</option>)}
                         </select>
                       </div>
 
                       <div className="aduan-field">
                         <label className="aduan-label">Elemen <span className="aduan-required">*</span></label>
-                        <select className="aduan-input aduan-select" value={elemen} onChange={e => setElemen(e.target.value)}>
-                          {ELEMEN_OPTS.map(o => <option key={o} value={o}>{o}</option>)}
+                        <select className="aduan-input aduan-select" value={elemen} onChange={e => {
+                          setElemen(e.target.value);
+                          setMasalah('--Sila Pilih--');
+                        }}>
+                          {activeElemenOpts.map(o => <option key={o} value={o}>{o}</option>)}
                         </select>
                       </div>
 
                       <div className="aduan-field">
                         <label className="aduan-label">Masalah <span className="aduan-required">*</span></label>
                         <select className="aduan-input aduan-select" value={masalah} onChange={e => setMasalah(e.target.value)}>
-                          {MASALAH_OPTS.map(o => <option key={o} value={o}>{o}</option>)}
+                          {activeMasalahOpts.map(o => <option key={o} value={o}>{o}</option>)}
                         </select>
                       </div>
 

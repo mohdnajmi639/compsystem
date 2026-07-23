@@ -918,6 +918,7 @@ a:hover { color:var(--accent-hover); }
   display: flex;
   flex-direction: column;
   gap: 6px;
+  min-width: 0;
 }
 .aduan-label {
   font-size: 0.72rem;
@@ -954,6 +955,8 @@ a:hover { color:var(--accent-hover); }
 
 /* Inputs */
 .aduan-input {
+  width: 100%;
+  max-width: 100%;
   padding: 9px 12px;
   border: 1.5px solid #d1d5db;
   border-radius: 0;

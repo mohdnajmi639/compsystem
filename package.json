@@ -14,19 +14,17 @@
     "cloudinary": "^2.10.0",
     "framer-motion": "^12.42.2",
     "lucide-react": "^1.11.0",
-    "mongoose": "^7.6.3",
-    "next": "^13.5.6",
+    "mongoose": "^8.5.0",
+    "next": "^14.2.29",
     "next-auth": "^4.24.14",
-    "react": "^18.2.0",
+    "react": "^18.3.1",
     "react-chartjs-2": "^5.3.1",
-    "react-dom": "^18.2.0",
-    "react-tsparticles": "^2.12.2",
-    "sharp": "^0.35.3",
-    "tsparticles": "^4.3.2",
-    "tsparticles-slim": "^2.12.0"
+    "react-dom": "^18.3.1",
+    "sharp": "^0.33.5"
   },
   "devDependencies": {
-    "eslint": "^9",
-    "eslint-config-next": "16.2.4"
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^14.2.29"
   }
 }
+

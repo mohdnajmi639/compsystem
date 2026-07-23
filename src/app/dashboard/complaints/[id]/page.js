@@ -81,8 +81,6 @@ export default function ComplaintDetailPage() {
   const [loading, setLoading] = useState(true);
   const [response, setResponse] = useState('');
   const [staffList, setStaffList] = useState([]);
-  const [showAssign, setShowAssign] = useState(false);
-  const [assignTo, setAssignTo] = useState('');
   const [showResolveModal, setShowResolveModal] = useState(false);
   const [resolveMessage, setResolveMessage] = useState('');
   const [feedbackRating, setFeedbackRating] = useState(0);
@@ -115,8 +113,6 @@ export default function ComplaintDetailPage() {
   };
 
   const handleStatusChange = async (newStatus) => { await updateComplaint({ status: newStatus }); };
-  const handleAssign = async () => { if (assignTo) { await updateComplaint({ assignedTo: assignTo }); setShowAssign(false); } };
-
   const handleResolveSubmit = async (e) => {
     e.preventDefault();
     if (!resolveMessage.trim()) {
@@ -175,7 +171,7 @@ export default function ComplaintDetailPage() {
                     <button 
                       onClick={() => {
                         if (!complaint.assignedTo) {
-                          showToast('Sila tugaskan staf terlebih dahulu sebelum memulakan proses.', 'error');
+                          showToast('Sila ambil aduan ini terlebih dahulu sebelum memulakan proses.', 'error');
                           return;
                         }
                         handleStatusChange('In Progress');
@@ -191,9 +187,6 @@ export default function ComplaintDetailPage() {
               )}
               {role === 'staff' && !complaint.assignedTo && complaint.status === 'Pending' && (
                 <button onClick={() => updateComplaint({ assignedTo: session.user.id })} className="btn btn-secondary btn-sm" style={{ background: '#3b82f6', color: '#fff', border: 'none' }}>Ambil Aduan</button>
-              )}
-              {(role === 'admin' || (role === 'staff' && !complaint.assignedTo)) && (
-                <button onClick={() => setShowAssign(true)} className="btn btn-secondary btn-sm">Tugaskan Staf</button>
               )}
             </div>
           </div>
@@ -366,27 +359,6 @@ export default function ComplaintDetailPage() {
           </div>
         </div>
 
-        {/* Assign Modal */}
-        {showAssign && (
-          <div className="modal-overlay" onClick={() => setShowAssign(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div className="card" onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: '420px', padding: 0 }}>
-              <div style={{ padding: '20px 24px', borderBottom: '1px solid #e5e7eb', background: '#f9fafb' }}>
-                <h2 style={{ fontSize: '1.1rem', color: '#111827', margin: 0, fontWeight: 700 }}>Tugaskan kepada Staf</h2>
-              </div>
-              <div style={{ padding: '24px' }}>
-                <label style={{ display: 'block', fontSize: '0.8rem', color: '#374151', fontWeight: 600, marginBottom: '8px' }}>Pilih Staf</label>
-                <select className="form-select" value={assignTo} onChange={e => setAssignTo(e.target.value)} style={{ marginBottom: '24px' }}>
-                  <option value="">Pilih ahli staf...</option>
-                  {staffList.map(s => <option key={s._id} value={s._id}>{s.name} - {formatDepartment(s.department)}</option>)}
-                </select>
-                <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
-                  <button onClick={() => setShowAssign(false)} className="btn btn-secondary btn-sm">Batal</button>
-                  <button onClick={handleAssign} className="btn btn-primary btn-sm">Simpan Tugasan</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Resolve Modal */}
         {showResolveModal && (

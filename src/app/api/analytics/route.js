@@ -61,17 +61,16 @@ export async function GET() {
 
     // Average feedback rating
     const feedbackData = await Complaint.aggregate([
-      { $match: { 'feedback.rating': { $exists: true, $ne: null } } },
-      { $group: { _id: null, avgRating: { $avg: '$feedback.rating' } } },
+      { $match: { feedbackRating: { $exists: true, $ne: null } } },
+      { $group: { _id: null, avgRating: { $avg: '$feedbackRating' } } },
     ]);
 
     const avgRating = feedbackData.length > 0 ? feedbackData[0].avgRating.toFixed(1) : 'N/A';
 
-    // Recent complaints
+    // Recent complaints (all complaints for the table/PDF)
     const recentComplaints = await Complaint.find()
       .populate('submittedBy', 'name email')
-      .sort({ createdAt: -1 })
-      .limit(5);
+      .sort({ createdAt: -1 });
 
     return NextResponse.json({
       overview: {

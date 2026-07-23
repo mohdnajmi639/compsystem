@@ -119,3 +119,32 @@ export function TrendChart({ data }) {
     </div>
   );
 }
+
+export function PriorityChart({ data }) {
+  if (!data?.length) return <p style={{color:'#9ca3af', fontSize:'0.85rem'}}>Tiada data</p>;
+  
+  const priorityColors = {
+    'Low': '#10b981',
+    'Medium': '#3b82f6',
+    'High': '#f59e0b',
+    'Urgent': '#ef4444'
+  };
+
+  return (
+    <div className="chart-container">
+      <Bar 
+        data={{ 
+          labels: data.map(d => d._id), 
+          datasets: [{ 
+            label: 'Jumlah', 
+            data: data.map(d => d.count), 
+            backgroundColor: data.map(d => priorityColors[d._id] || '#7c3aed'),
+            borderRadius: 0,
+            barPercentage: 0.6,
+          }] 
+        }} 
+        options={commonOpts} 
+      />
+    </div>
+  );
+}

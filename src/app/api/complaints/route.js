@@ -22,8 +22,8 @@ export async function GET(request) {
 
     let query = {};
 
-    // Students can only see their own complaints
-    if (session.user.role === 'student') {
+    // Students and public users can only see their own complaints
+    if (session.user.role === 'student' || session.user.role === 'public') {
       query.submittedBy = session.user.id;
     }
 

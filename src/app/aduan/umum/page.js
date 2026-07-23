@@ -38,7 +38,8 @@ function AduanUmumForm() {
 
     const allowed = ['image/jpeg', 'image/jpg', 'image/png'];
     if (!allowed.includes(file.type)) {
-      const msg = 'Format tidak dibenarkan. Sila pilih fail Imej (jpg, png) sahaja.';
+      const msg =
+        'Format tidak dibenarkan. Sila pilih fail Imej (jpg, png) sahaja.';
       setError(msg);
       setFileErrorModal(msg);
       setTimeout(() => setFileErrorModal(null), 3500);
@@ -73,7 +74,7 @@ function AduanUmumForm() {
         const data = await res.json();
         setAttachments((prev) => ({
           ...prev,
-          [rowId]: { name: file.name, url: data.url }
+          [rowId]: { name: file.name, url: data.url },
         }));
       } catch (err) {
         setError(err.message || 'Ralat berlaku ketika memuat naik fail.');
@@ -103,7 +104,7 @@ function AduanUmumForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const uploadingCount = rows.filter(r => uploadingRowId === r.id).length;
+    const uploadingCount = rows.filter((r) => uploadingRowId === r.id).length;
     if (uploadingCount > 0) {
       setError('Sila tunggu sehingga semua fail selesai dimuat naik.');
       return;
@@ -126,7 +127,8 @@ function AduanUmumForm() {
       // Determine targetDepartment for auto-assignment:
       // - If user selected a specific jabatan → use that department name
       // - If user selected 'tidak_pasti' → send 'tidak_pasti'; backend leaves it unassigned so all staff can see it
-      const targetDepartment = form.hantarKepada === 'jabatan' ? form.jabatanDipilih : 'tidak_pasti';
+      const targetDepartment =
+        form.hantarKepada === 'jabatan' ? form.jabatanDipilih : 'tidak_pasti';
       const res = await fetch('/api/complaints', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -163,7 +165,14 @@ function AduanUmumForm() {
 
   if (status === 'loading') {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div
+        style={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
         <div className="spinner" />
       </div>
     );
@@ -178,12 +187,19 @@ function AduanUmumForm() {
             <div className="aduan-success-icon">✓</div>
             <h2 className="aduan-success-title">Aduan Berjaya Dihantar!</h2>
             <p className="aduan-success-text">
-              Aduan anda telah diterima dan akan diproses dalam masa 3–5 hari bekerja.
-              Anda boleh menyemak status aduan di halaman Semakan.
+              Aduan anda telah diterima dan akan diproses dalam masa 3–5 hari
+              bekerja. Anda boleh menyemak status aduan di halaman Semakan.
             </p>
             <div className="aduan-success-actions">
-              <Link href="/" className="aduan-success-btn-primary">Kembali ke Laman Utama</Link>
-              <button onClick={() => setSubmitted(false) || handleReset()} className="aduan-success-btn-outline">Hantar Aduan Baharu</button>
+              <Link href="/" className="aduan-success-btn-primary">
+                Kembali ke Laman Utama
+              </Link>
+              <button
+                onClick={() => setSubmitted(false) || handleReset()}
+                className="aduan-success-btn-outline"
+              >
+                Hantar Aduan Baharu
+              </button>
             </div>
           </div>
         </main>
@@ -229,7 +245,9 @@ function AduanUmumForm() {
               <span className="aduan-breadcrumb-active">Aduan Umum</span>
             </div>
             <h1 className="aduan-page-title">Aduan Umum</h1>
-            <p className="aduan-page-desc">Sebarang aduan umum, pertanyaan, cadangan dan penghargaan</p>
+            <p className="aduan-page-desc">
+              Sebarang aduan umum, pertanyaan, cadangan dan penghargaan
+            </p>
           </div>
         </div>
 
@@ -238,7 +256,6 @@ function AduanUmumForm() {
           {error && <div className="aduan-form-error">{error}</div>}
 
           <form onSubmit={handleSubmit}>
-
             {/* ── Bahagian 1: Profil Pengguna ── */}
             <div className="aduan-section">
               <div className="aduan-section-title">
@@ -249,7 +266,9 @@ function AduanUmumForm() {
                 <div className="aduan-field-grid aduan-field-grid-2">
                   <div className="aduan-field">
                     <label className="aduan-label">Kategori Pengguna</label>
-                    <div className="aduan-value-box">{session?.user?.role === 'public' ? 'Umum' : 'Pelajar'}</div>
+                    <div className="aduan-value-box">
+                      {session?.user?.role === 'public' ? 'Umum' : 'Pelajar'}
+                    </div>
                   </div>
                   <div className="aduan-field">
                     <label className="aduan-label">Nama Penuh</label>
@@ -268,14 +287,21 @@ function AduanUmumForm() {
                 Maklumat Aduan
               </div>
               <div className="aduan-section-body">
-                <div className="aduan-field-grid aduan-field-grid-2" style={{ alignItems: 'start' }}>
+                <div
+                  className="aduan-field-grid aduan-field-grid-2"
+                  style={{ alignItems: 'start' }}
+                >
                   <div className="aduan-field">
-                    <label className="aduan-label">KATEGORI ADUAN <span className="aduan-required">*</span></label>
+                    <label className="aduan-label">
+                      KATEGORI ADUAN <span className="aduan-required">*</span>
+                    </label>
                     <select
                       className="aduan-input aduan-select"
                       required
                       value={form.subCategory}
-                      onChange={e => setForm({ ...form, subCategory: e.target.value })}
+                      onChange={(e) =>
+                        setForm({ ...form, subCategory: e.target.value })
+                      }
                     >
                       <option value="">-- PILIH KATEGORI ADUAN --</option>
                       <option value="ADUAN AM">ADUAN AM</option>
@@ -287,33 +313,79 @@ function AduanUmumForm() {
                   <div className="aduan-field">
                     <label className="aduan-label">Tarikh</label>
                     <div className="aduan-value-box">
-                      {new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/ /g, '-')}
+                      {new Date()
+                        .toLocaleDateString('en-GB', {
+                          day: '2-digit',
+                          month: 'short',
+                          year: 'numeric',
+                        })
+                        .replace(/ /g, '-')}
                     </div>
                   </div>
                 </div>
 
                 <div className="aduan-field" style={{ marginTop: '16px' }}>
-                  <label className="aduan-label">Hantar Kepada <span className="aduan-required">*</span></label>
-                  <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.9rem' }}>
+                  <label className="aduan-label">
+                    Hantar Kepada <span className="aduan-required">*</span>
+                  </label>
+                  <div
+                    style={{
+                      display: 'flex',
+                      gap: '24px',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <label
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        cursor: 'pointer',
+                        fontSize: '0.9rem',
+                      }}
+                    >
                       <input
                         type="radio"
                         name="hantar_kepada"
                         value="jabatan"
                         checked={form.hantarKepada === 'jabatan'}
-                        onChange={() => setForm({ ...form, hantarKepada: 'jabatan' })}
-                        style={{ accentColor: '#2563eb', width: '16px', height: '16px' }}
+                        onChange={() =>
+                          setForm({ ...form, hantarKepada: 'jabatan' })
+                        }
+                        style={{
+                          accentColor: '#2563eb',
+                          width: '16px',
+                          height: '16px',
+                        }}
                       />
                       Jabatan / Fakulti / Kampus Cawangan Berkenaan
                     </label>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.9rem' }}>
+                    <label
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        cursor: 'pointer',
+                        fontSize: '0.9rem',
+                      }}
+                    >
                       <input
                         type="radio"
                         name="hantar_kepada"
                         value="tidak_pasti"
                         checked={form.hantarKepada === 'tidak_pasti'}
-                        onChange={() => setForm({ ...form, hantarKepada: 'tidak_pasti', jabatanDipilih: '' })}
-                        style={{ accentColor: '#2563eb', width: '16px', height: '16px' }}
+                        onChange={() =>
+                          setForm({
+                            ...form,
+                            hantarKepada: 'tidak_pasti',
+                            jabatanDipilih: '',
+                          })
+                        }
+                        style={{
+                          accentColor: '#2563eb',
+                          width: '16px',
+                          height: '16px',
+                        }}
                       />
                       Tidak Pasti
                     </label>
@@ -322,16 +394,27 @@ function AduanUmumForm() {
 
                 {form.hantarKepada === 'jabatan' && (
                   <div className="aduan-field" style={{ marginTop: '16px' }}>
-                    <label className="aduan-label">Jabatan Dipilih <span className="aduan-required">*</span></label>
+                    <label className="aduan-label">
+                      Jabatan Dipilih <span className="aduan-required">*</span>
+                    </label>
                     <select
                       className="aduan-input aduan-select"
                       required
                       value={form.jabatanDipilih}
-                      onChange={e => setForm({ ...form, jabatanDipilih: e.target.value })}
+                      onChange={(e) =>
+                        setForm({ ...form, jabatanDipilih: e.target.value })
+                      }
                     >
-                      <option value="">-- Pilih Cawangan / Kampus / Fakulti Jabatan / Pusat Tanggungjawab --</option>
-                      <option value="Hal Ehwal Pelajar (HEP)">Hal Ehwal Pelajar (HEP)</option>
-                      <option value="ICT">Teknologi Maklumat dan Komunikasi (ICT)</option>
+                      <option value="">
+                        -- Pilih Cawangan / Kampus / Fakulti Jabatan / Pusat
+                        Tanggungjawab --
+                      </option>
+                      <option value="Hal Ehwal Pelajar (HEP)">
+                        Hal Ehwal Pelajar (HEP)
+                      </option>
+                      <option value="ICT">
+                        Teknologi Maklumat dan Komunikasi (ICT)
+                      </option>
                       <option value="Fasiliti">Bahagian Fasiliti</option>
                     </select>
                   </div>
@@ -347,12 +430,16 @@ function AduanUmumForm() {
               </div>
               <div className="aduan-section-body">
                 <div className="aduan-field">
-                  <label className="aduan-label">Tajuk Aduan <span className="aduan-required">*</span></label>
+                  <label className="aduan-label">
+                    Tajuk Aduan <span className="aduan-required">*</span>
+                  </label>
                   <input
                     className="aduan-input"
                     required
                     value={form.title}
-                    onChange={e => setForm({ ...form, title: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, title: e.target.value })
+                    }
                     placeholder="Nyatakan tajuk aduan anda secara ringkas"
                   />
                 </div>
@@ -361,14 +448,18 @@ function AduanUmumForm() {
                     Keterangan Aduan <span className="aduan-required">*</span>
                   </label>
                   <p className="aduan-field-hint">
-                    Perhatikan dengan jelas isu, atau masalah yang menjadi sebab aduan dibuat. Terangkan dengan sepenuh-penuhnya apa yang berlaku, bila dan bagaimana ia berlaku.
+                    Perhatikan dengan jelas isu, atau masalah yang menjadi sebab
+                    aduan dibuat. Terangkan dengan sepenuh-penuhnya apa yang
+                    berlaku, bila dan bagaimana ia berlaku.
                   </p>
                   <textarea
                     className="aduan-textarea"
                     required
                     rows={7}
                     value={form.description}
-                    onChange={e => setForm({ ...form, description: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, description: e.target.value })
+                    }
                     placeholder="Huraikan aduan anda dengan terperinci..."
                   />
                 </div>
@@ -383,15 +474,40 @@ function AduanUmumForm() {
               </div>
               <div className="aduan-section-body" style={{ gap: '16px' }}>
                 <p className="aduan-field-hint" style={{ marginBottom: 4 }}>
-                  Sertakan dokumen seperti surat, sertifikasi, kronologi atau mana-mana bukti lain yang menyokong aduan anda.
-                  <br /><em>Format diterima: JPG, PNG (Maks. 5MB setiap fail)</em>
+                  Sertakan dokumen seperti surat, sertifikasi, kronologi atau
+                  mana-mana bukti lain yang menyokong aduan anda.
+                  <br />
+                  <em>Format diterima: JPG, PNG (Maks. 5MB setiap fail)</em>
                 </p>
 
                 {/* List of File Input Rows */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '12px',
+                    width: '100%',
+                  }}
+                >
                   {rows.map((row, idx) => (
-                    <div key={row.id} style={{ display: 'flex', gap: '12px', alignItems: 'center', width: '100%', flexWrap: 'wrap' }}>
-                      <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#374151', minWidth: '90px' }}>
+                    <div
+                      key={row.id}
+                      style={{
+                        display: 'flex',
+                        gap: '12px',
+                        alignItems: 'center',
+                        width: '100%',
+                        flexWrap: 'wrap',
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: '0.8rem',
+                          fontWeight: 700,
+                          color: '#374151',
+                          minWidth: '90px',
+                        }}
+                      >
                         FAIL {idx + 1}
                       </span>
                       <input
@@ -403,16 +519,31 @@ function AduanUmumForm() {
                         disabled={uploadingRowId === row.id}
                       />
                       {uploadingRowId === row.id && (
-                        <span style={{ fontSize: '0.8rem', color: '#6b7280' }}>Memuat naik...</span>
+                        <span style={{ fontSize: '0.8rem', color: '#6b7280' }}>
+                          Memuat naik...
+                        </span>
                       )}
                       {attachments[row.id] && (
-                        <span style={{ fontSize: '0.8rem', color: '#16a34a', fontWeight: 600 }}>✓ Berjaya</span>
+                        <span
+                          style={{
+                            fontSize: '0.8rem',
+                            color: '#16a34a',
+                            fontWeight: 600,
+                          }}
+                        >
+                          ✓ Berjaya
+                        </span>
                       )}
                       {rows.length > 1 && (
                         <button
                           type="button"
                           className="aduan-reset-btn"
-                          style={{ padding: '9px 16px', fontSize: '0.8rem', margin: 0, height: '40px' }}
+                          style={{
+                            padding: '9px 16px',
+                            fontSize: '0.8rem',
+                            margin: 0,
+                            height: '40px',
+                          }}
                           onClick={() => handleRemoveRow(row.id)}
                         >
                           Hapus
@@ -435,7 +566,12 @@ function AduanUmumForm() {
                 {/* Selected Files Summary List */}
                 {Object.keys(attachments).length > 0 && (
                   <div style={{ marginTop: '8px', width: '100%' }}>
-                    <label className="aduan-label" style={{ marginBottom: '8px', display: 'block' }}>Senarai Fail Terpilih</label>
+                    <label
+                      className="aduan-label"
+                      style={{ marginBottom: '8px', display: 'block' }}
+                    >
+                      Senarai Fail Terpilih
+                    </label>
                     <div className="aduan-file-list" style={{ width: '100%' }}>
                       {Object.entries(attachments).map(([rowId, fileInfo]) => (
                         <span key={rowId} className="aduan-file-chip">
@@ -464,16 +600,16 @@ function AduanUmumForm() {
               >
                 Padam Semula
               </button>
-
             </div>
-
           </form>
 
           {/* Disclaimer */}
           <div className="aduan-disclaimer">
-            <strong>Penafian dan Notis Privasi:</strong>{' '}
-            Sistem ini disediakan untuk pengurusan aduan rasmi UiTM. Semua data yang dikemukakan adalah sulit dan hanya untuk kegunaan dalaman universiti.
-            Sistem ini dipantau secara berterusan dan sebarang penyalahgunaan boleh dikenakan tindakan undang-undang atau tatatertib.
+            <strong>Penafian dan Notis Privasi:</strong> Sistem ini disediakan
+            untuk pengurusan aduan rasmi UiTM. Semua data yang dikemukakan
+            adalah sulit dan hanya untuk kegunaan dalaman universiti. Sistem ini
+            dipantau secara berterusan dan sebarang penyalahgunaan boleh
+            dikenakan tindakan undang-undang atau tatatertib.
           </div>
         </div>
       </main>
@@ -488,20 +624,34 @@ function AduanNav({ session }) {
     <nav className="lp-nav">
       <div className="lp-nav-inner">
         <Link href="/" className="lp-logo" id="aduan-nav-logo">
-          <img src="/images/logo aduan2.png" alt="Aduan Logo" style={{height: 32, width: 'auto'}} />
+          <img
+            src="/images/logo aduan2.png"
+            alt="Aduan Logo"
+            style={{ height: 32, width: 'auto' }}
+          />
         </Link>
         <div className="lp-nav-links">
-          <Link href="/" className="lp-nav-link" id="anav-anjung">Anjung</Link>
+          <Link href="/" className="lp-nav-link" id="anav-anjung">
+            Anjung
+          </Link>
           <NavDropdownAduan />
           <NavDropdownSemak />
-          <Link href="/panduan" className="lp-nav-link" id="anav-panduan">Panduan</Link>
-          <Link href="/faq" className="lp-nav-link" id="anav-faq">Soalan Lazim</Link>
+          <Link href="/panduan" className="lp-nav-link" id="anav-panduan">
+            Panduan
+          </Link>
+          <Link href="/faq" className="lp-nav-link" id="anav-faq">
+            Soalan Lazim
+          </Link>
         </div>
         <div className="lp-nav-end">
           {session ? (
             <HomeUserMenu session={session} />
           ) : (
-            <Link href="/login?callbackUrl=/aduan/umum" className="lp-login-btn" id="anav-login">
+            <Link
+              href="/login?callbackUrl=/aduan/umum"
+              className="lp-login-btn"
+              id="anav-login"
+            >
               Log Masuk
             </Link>
           )}
@@ -516,10 +666,13 @@ function AduanFooter() {
     <footer className="lp-footer">
       <div className="lp-footer-inner">
         <p className="lp-footer-text">
-          <strong>Penafian dan Notis Privasi:</strong>{' '}
-          Sistem ini disediakan untuk pengurusan aduan rasmi UiTM. Semua data yang dikemukakan adalah sulit dan hanya untuk kegunaan dalaman universiti.
+          <strong>Penafian dan Notis Privasi:</strong> Sistem ini disediakan
+          untuk pengurusan aduan rasmi UiTM. Semua data yang dikemukakan adalah
+          sulit dan hanya untuk kegunaan dalaman universiti.
         </p>
-        <p className="lp-footer-copy">© Pejabat Komunikasi Strategik, UiTM 2026</p>
+        <p className="lp-footer-copy">
+          © Pejabat Komunikasi Strategik, UiTM 2026
+        </p>
       </div>
     </footer>
   );
@@ -527,7 +680,20 @@ function AduanFooter() {
 
 export default function AduanUmumPage() {
   return (
-    <Suspense fallback={<div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="spinner" /></div>}>
+    <Suspense
+      fallback={
+        <div
+          style={{
+            minHeight: '100vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <div className="spinner" />
+        </div>
+      }
+    >
       <AduanUmumForm />
     </Suspense>
   );

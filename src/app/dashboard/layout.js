@@ -18,7 +18,15 @@ export default function DashboardLayout({ children }) {
 
   if (status === 'loading' || !session || session.user.role === 'student') {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f4f5f7' }}>
+      <div
+        style={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: '#f4f5f7',
+        }}
+      >
         <div className="spinner" style={{ borderTopColor: '#7c3aed' }} />
       </div>
     );
@@ -26,10 +34,7 @@ export default function DashboardLayout({ children }) {
 
   return (
     <div className="db-layout lp-auth-root">
-      <div className="db-main">
-        {children}
-      </div>
+      <div className="db-main">{children}</div>
     </div>
   );
 }
-

@@ -46,13 +46,13 @@ export async function PUT(request) {
     if (notificationIds && notificationIds.length > 0) {
       await Notification.updateMany(
         { _id: { $in: notificationIds }, userId: session.user.id },
-        { read: true }
+        { read: true },
       );
     } else {
       // Mark all as read
       await Notification.updateMany(
         { userId: session.user.id, read: false },
-        { read: true }
+        { read: true },
       );
     }
 

@@ -20,14 +20,19 @@ export const authOptions = {
           throw new Error('No user found with this email');
         }
 
-        const isValid = await bcrypt.compare(credentials.password, user.password);
+        const isValid = await bcrypt.compare(
+          credentials.password,
+          user.password,
+        );
 
         if (!isValid) {
           throw new Error('Invalid password');
         }
 
         if (user.role === 'staff' && !user.isApproved) {
-          throw new Error('Akaun anda sedang menunggu kelulusan pentadbir (Admin).');
+          throw new Error(
+            'Akaun anda sedang menunggu kelulusan pentadbir (Admin).',
+          );
         }
 
         return {
@@ -57,14 +62,19 @@ export const authOptions = {
       if (token.id) {
         try {
           await connectDB();
-          const dbUser = await User.findById(token.id).select('name role department');
+          const dbUser = await User.findById(token.id).select(
+            'name role department',
+          );
           if (dbUser) {
             token.name = dbUser.name;
             token.role = dbUser.role;
             token.department = dbUser.department;
           }
         } catch (error) {
-          console.error('Error fetching latest user data in jwt callback:', error);
+          console.error(
+            'Error fetching latest user data in jwt callback:',
+            error,
+          );
         }
       }
 

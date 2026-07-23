@@ -25,7 +25,10 @@ export async function GET(request, { params }) {
       .populate('categoryId', 'name');
 
     if (!complaint) {
-      return NextResponse.json({ error: 'Complaint not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Complaint not found' },
+        { status: 404 },
+      );
     }
 
     // Fetch responses from the separate collection
@@ -61,7 +64,10 @@ export async function PUT(request, { params }) {
     const complaint = await Complaint.findById(id);
 
     if (!complaint) {
-      return NextResponse.json({ error: 'Complaint not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Complaint not found' },
+        { status: 404 },
+      );
     }
 
     // Update status

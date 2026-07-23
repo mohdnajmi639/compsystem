@@ -21,7 +21,7 @@ function LoginForm() {
     setLoading(true);
     setError('');
     const res = await signIn('credentials', { ...form, redirect: false });
-    
+
     if (res?.error) {
       setError('E-mel atau kata laluan tidak sah. Sila cuba semula.');
       setLoading(false);
@@ -30,7 +30,8 @@ function LoginForm() {
       if (session?.user?.role === 'admin' || session?.user?.role === 'staff') {
         window.location.href = callbackUrl || '/dashboard';
       } else {
-        window.location.href = (callbackUrl && callbackUrl !== '/dashboard') ? callbackUrl : '/';
+        window.location.href =
+          callbackUrl && callbackUrl !== '/dashboard' ? callbackUrl : '/';
       }
     }
   };
@@ -43,18 +44,33 @@ function LoginForm() {
       <nav className="lp-nav">
         <div className="lp-nav-inner">
           <Link href="/" className="lp-logo" id="auth-logo">
-            <img src="/images/logo aduan2.png" alt="Aduan Logo" style={{height: 32, width: 'auto'}} />
+            <img
+              src="/images/logo aduan2.png"
+              alt="Aduan Logo"
+              style={{ height: 32, width: 'auto' }}
+            />
           </Link>
           <div className="lp-nav-links">
-            <Link href="/" className="lp-nav-link" id="nav-anjung">Anjung</Link>
+            <Link href="/" className="lp-nav-link" id="nav-anjung">
+              Anjung
+            </Link>
             <NavDropdownAduan />
             <NavDropdownSemak />
-            <Link href="/panduan" className="lp-nav-link" id="nav-panduan">Panduan</Link>
-            <Link href="/faq" className="lp-nav-link" id="nav-faq">Soalan Lazim</Link>
+            <Link href="/panduan" className="lp-nav-link" id="nav-panduan">
+              Panduan
+            </Link>
+            <Link href="/faq" className="lp-nav-link" id="nav-faq">
+              Soalan Lazim
+            </Link>
           </div>
           <div className="lp-nav-end">
-
-            <Link href={registerUrl} className="lp-login-btn" id="register-nav-btn">Daftar</Link>
+            <Link
+              href={registerUrl}
+              className="lp-login-btn"
+              id="register-nav-btn"
+            >
+              Daftar
+            </Link>
           </div>
         </div>
       </nav>
@@ -63,9 +79,15 @@ function LoginForm() {
       <div className="lp-auth-body">
         <div className="lp-auth-card">
           <div className="lp-auth-header">
-            <img src="/images/logo aduan2.png" alt="Aduan Logo" style={{height: 48, width: 'auto', marginBottom: 16}} />
+            <img
+              src="/images/logo aduan2.png"
+              alt="Aduan Logo"
+              style={{ height: 48, width: 'auto', marginBottom: 16 }}
+            />
             <h1 className="lp-auth-title">Log Masuk</h1>
-            <p className="lp-auth-subtitle">Sila log masuk dengan akaun pelajar anda</p>
+            <p className="lp-auth-subtitle">
+              Sila log masuk dengan akaun pelajar anda
+            </p>
           </div>
 
           {error && <div className="lp-auth-error">{error}</div>}
@@ -79,7 +101,7 @@ function LoginForm() {
                 type="email"
                 required
                 value={form.email}
-                onChange={e => setForm({...form, email: e.target.value})}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
                 placeholder="example@student.uitm.edu.my"
               />
             </div>
@@ -91,7 +113,7 @@ function LoginForm() {
                 type="password"
                 required
                 value={form.password}
-                onChange={e => setForm({...form, password: e.target.value})}
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
                 placeholder="••••••••"
               />
             </div>
@@ -105,11 +127,17 @@ function LoginForm() {
             </button>
           </form>
 
-          <div className="lp-auth-divider"><span>atau</span></div>
+          <div className="lp-auth-divider">
+            <span>atau</span>
+          </div>
 
           <div className="lp-auth-register-box">
             <p className="lp-auth-register-text">Belum mempunyai akaun?</p>
-            <Link href={registerUrl} className="lp-auth-register-btn" id="go-register-btn">
+            <Link
+              href={registerUrl}
+              className="lp-auth-register-btn"
+              id="go-register-btn"
+            >
               Daftar Akaun Baharu
             </Link>
           </div>
@@ -126,10 +154,13 @@ function LoginForm() {
       <footer className="lp-footer">
         <div className="lp-footer-inner">
           <p className="lp-footer-text">
-            <strong>Penafian dan Notis Privasi:</strong>{' '}
-            Sistem ini disediakan untuk pengurusan aduan rasmi UiTM. Semua data yang dikemukakan adalah sulit dan hanya untuk kegunaan dalaman universiti.
+            <strong>Penafian dan Notis Privasi:</strong> Sistem ini disediakan
+            untuk pengurusan aduan rasmi UiTM. Semua data yang dikemukakan
+            adalah sulit dan hanya untuk kegunaan dalaman universiti.
           </p>
-          <p className="lp-footer-copy">© Pejabat Komunikasi Strategik, UiTM 2026</p>
+          <p className="lp-footer-copy">
+            © Pejabat Komunikasi Strategik, UiTM 2026
+          </p>
         </div>
       </footer>
     </div>
@@ -138,7 +169,13 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="loading"><div className="spinner" /></div>}>
+    <Suspense
+      fallback={
+        <div className="loading">
+          <div className="spinner" />
+        </div>
+      }
+    >
       <LoginForm />
     </Suspense>
   );

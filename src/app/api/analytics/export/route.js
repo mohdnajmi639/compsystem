@@ -32,12 +32,18 @@ export async function GET(request) {
       'Emel Pengadu',
       'Jabatan/Fakulti',
       'Staf Bertugas',
-      'Penilaian Maklum Balas'
+      'Penilaian Maklum Balas',
     ];
 
-    const rows = complaints.map(c => [
+    const rows = complaints.map((c) => [
       `A${(c._id || '').toString().slice(-12).toUpperCase()}`,
-      new Date(c.createdAt).toLocaleDateString('ms-MY', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }),
+      new Date(c.createdAt).toLocaleDateString('ms-MY', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+      }),
       `"${(c.title || '').replace(/"/g, '""')}"`,
       `"${c.category || ''}"`,
       c.priority || 'Medium',
@@ -46,12 +52,12 @@ export async function GET(request) {
       `"${c.submittedBy?.email || ''}"`,
       `"${c.submittedBy?.department || 'Umum'}"`,
       `"${c.assignedTo?.name || 'Belum Ditugaskan'}"`,
-      c.feedbackRating || 'N/A'
+      c.feedbackRating || 'N/A',
     ]);
 
     const csvContent = [
       headers.join(','),
-      ...rows.map(row => row.join(','))
+      ...rows.map((row) => row.join(',')),
     ].join('\n');
 
     // Return as downloadable file

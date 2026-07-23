@@ -20,8 +20,13 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const query = session.user.role === 'admin' ? {} : { role: { $in: ['student', 'staff'] } };
-    const users = await User.find(query).select('-password').sort({ createdAt: -1 });
+    const query =
+      session.user.role === 'admin'
+        ? {}
+        : { role: { $in: ['student', 'staff'] } };
+    const users = await User.find(query)
+      .select('-password')
+      .sort({ createdAt: -1 });
 
     return NextResponse.json(users);
   } catch (error) {
@@ -34,12 +39,16 @@ export async function POST(request) {
   try {
     await connectDB();
     const body = await request.json();
-    const { name, email, password, role, studentId, department, program } = body;
+    const { name, email, password, role, studentId, department, program } =
+      body;
 
     // Check if user exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return NextResponse.json({ error: 'User already exists' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'User already exists' },
+        { status: 400 },
+      );
     }
 
     // Hash password

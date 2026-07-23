@@ -28,7 +28,10 @@ export async function PATCH(request, { params }) {
       // Check if email already exists for another user
       const existingUser = await User.findOne({ email, _id: { $ne: id } });
       if (existingUser) {
-        return NextResponse.json({ error: 'Emel ini telah digunakan oleh pengguna lain' }, { status: 400 });
+        return NextResponse.json(
+          { error: 'Emel ini telah digunakan oleh pengguna lain' },
+          { status: 400 },
+        );
       }
     }
 
@@ -42,11 +45,14 @@ export async function PATCH(request, { params }) {
     const user = await User.findByIdAndUpdate(
       id,
       { $set: updateFields },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     ).select('-password');
 
     if (!user) {
-      return NextResponse.json({ error: `Pengguna tidak dijumpai (ID: ${id})` }, { status: 404 });
+      return NextResponse.json(
+        { error: `Pengguna tidak dijumpai (ID: ${id})` },
+        { status: 404 },
+      );
     }
 
     return NextResponse.json(user);
@@ -70,16 +76,25 @@ export async function DELETE(request, { params }) {
 
     // Prevent deleting oneself
     if (id === session.user.id) {
-      return NextResponse.json({ error: 'Tidak boleh memadam akaun anda sendiri' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Tidak boleh memadam akaun anda sendiri' },
+        { status: 400 },
+      );
     }
 
     const deletedUser = await User.findByIdAndDelete(id);
 
     if (!deletedUser) {
-      return NextResponse.json({ error: `Pengguna tidak dijumpai (ID: ${id})` }, { status: 404 });
+      return NextResponse.json(
+        { error: `Pengguna tidak dijumpai (ID: ${id})` },
+        { status: 404 },
+      );
     }
 
-    return NextResponse.json({ success: true, message: 'Akaun berjaya dipadam' });
+    return NextResponse.json({
+      success: true,
+      message: 'Akaun berjaya dipadam',
+    });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

@@ -14,48 +14,87 @@ export default async function PanduanPage() {
 
   return (
     <div className="lp-auth-root">
-
       {/* ── NAVBAR ── */}
       <nav className="lp-nav">
         <div className="lp-nav-inner">
           <Link href="/" className="lp-logo" id="panduan-site-logo">
-            <img src="/images/logo aduan2.png" alt="Aduan Logo" style={{height: 32, width: 'auto'}} />
+            <img
+              src="/images/logo aduan2.png"
+              alt="Aduan Logo"
+              style={{ height: 32, width: 'auto' }}
+            />
           </Link>
 
           <div className="lp-nav-links">
-            <Link href="/" className="lp-nav-link" id="panduan-nav-anjung">Anjung</Link>
+            <Link href="/" className="lp-nav-link" id="panduan-nav-anjung">
+              Anjung
+            </Link>
             <NavDropdownAduan />
-            {session?.user?.role !== 'admin' && session?.user?.role !== 'staff' && (
-              <NavDropdownSemak />
-            )}
-            <Link href="/panduan" className="lp-nav-link lp-nav-active" id="panduan-nav-panduan">Panduan</Link>
-            <Link href="/faq" className="lp-nav-link" id="panduan-nav-faq">Soalan Lazim</Link>
+            {session?.user?.role !== 'admin' &&
+              session?.user?.role !== 'staff' && <NavDropdownSemak />}
+            <Link
+              href="/panduan"
+              className="lp-nav-link lp-nav-active"
+              id="panduan-nav-panduan"
+            >
+              Panduan
+            </Link>
+            <Link href="/faq" className="lp-nav-link" id="panduan-nav-faq">
+              Soalan Lazim
+            </Link>
           </div>
 
           <div className="lp-nav-end">
             {session ? (
               <HomeUserMenu session={session} />
             ) : (
-              <Link href="/login" className="lp-login-btn" id="panduan-login-button">Log Masuk</Link>
+              <Link
+                href="/login"
+                className="lp-login-btn"
+                id="panduan-login-button"
+              >
+                Log Masuk
+              </Link>
             )}
           </div>
         </div>
       </nav>
 
       {/* ── PANDUAN CONTENT ── */}
-      <main className="glass-panel" style={{ flex: 1, padding: '48px 24px', maxWidth: '1100px', margin: '48px auto', width: '90%' }}>
-        <h1 style={{ fontSize: '1.5rem', fontWeight: '500', color: '#111827', marginBottom: '16px' }}>
+      <main
+        className="glass-panel"
+        style={{
+          flex: 1,
+          padding: '48px 24px',
+          maxWidth: '1100px',
+          margin: '48px auto',
+          width: '90%',
+        }}
+      >
+        <h1
+          style={{
+            fontSize: '1.5rem',
+            fontWeight: '500',
+            color: '#111827',
+            marginBottom: '16px',
+          }}
+        >
           Senarai Dokumen Rujukan
         </h1>
         <ol style={{ paddingLeft: '24px', color: '#374151' }}>
           <li style={{ paddingLeft: '8px' }}>
-            <a 
-              href="/documents/pekeliling_am_bil_2_2022.pdf" 
-              target="_blank" 
+            <a
+              href="/documents/pekeliling_am_bil_2_2022.pdf"
+              target="_blank"
               rel="noopener noreferrer"
-              style={{ color: '#2563eb', textDecoration: 'underline', fontSize: '1rem' }}
+              style={{
+                color: '#2563eb',
+                textDecoration: 'underline',
+                fontSize: '1rem',
+              }}
             >
-              Pekeliling Am Bilangan 2 Tahun 2022 - Penambahbaikan Pengurusan Aduan Awam
+              Pekeliling Am Bilangan 2 Tahun 2022 - Penambahbaikan Pengurusan
+              Aduan Awam
             </a>
           </li>
         </ol>
@@ -65,13 +104,17 @@ export default async function PanduanPage() {
       <footer className="lp-footer">
         <div className="lp-footer-inner">
           <p className="lp-footer-text">
-            <strong>Penafian dan Notis Privasi:</strong>{' '}
-            Sistem ini disediakan untuk pengurusan aduan rasmi UiTM. Semua data yang dikemukakan adalah sulit dan hanya untuk kegunaan dalaman universiti. Sistem ini dipantau secara berterusan dan sebarang penyalahgunaan boleh dikenakan tindakan undang-undang atau tatatertib.
+            <strong>Penafian dan Notis Privasi:</strong> Sistem ini disediakan
+            untuk pengurusan aduan rasmi UiTM. Semua data yang dikemukakan
+            adalah sulit dan hanya untuk kegunaan dalaman universiti. Sistem ini
+            dipantau secara berterusan dan sebarang penyalahgunaan boleh
+            dikenakan tindakan undang-undang atau tatatertib.
           </p>
-          <p className="lp-footer-copy">© Pejabat Komunikasi Strategik, UiTM 2026</p>
+          <p className="lp-footer-copy">
+            © Pejabat Komunikasi Strategik, UiTM 2026
+          </p>
         </div>
       </footer>
-
     </div>
   );
 }

@@ -2,7 +2,7 @@ import { v2 as cloudinary } from 'cloudinary';
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key:    process.env.CLOUDINARY_API_KEY,
+  api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
@@ -30,7 +30,9 @@ export default async function handler(req, res) {
       unique_filename: true,
     });
 
-    return res.status(200).json({ url: result.secure_url, name: name || 'attachment' });
+    return res
+      .status(200)
+      .json({ url: result.secure_url, name: name || 'attachment' });
   } catch (error) {
     console.error('Upload API Error:', error);
     return res.status(500).json({ error: error.message });

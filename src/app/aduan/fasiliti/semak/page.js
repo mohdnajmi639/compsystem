@@ -19,41 +19,41 @@ function fmtDate(iso) {
 function statusColor(s) {
   if (!s) return '#6b7280';
   const lower = s.toLowerCase();
-  if (lower === 'resolved')    return '#7c3aed';
+  if (lower === 'resolved') return '#7c3aed';
   if (lower === 'in progress') return '#d97706';
-  if (lower === 'pending')     return '#2563eb';
-  if (lower === 'rejected')    return '#dc2626';
+  if (lower === 'pending') return '#2563eb';
+  if (lower === 'rejected') return '#dc2626';
   return '#6b7280';
 }
 
 function statusBg(s) {
   if (!s) return '#f3f4f6';
   const lower = s.toLowerCase();
-  if (lower === 'resolved')    return '#f5f3ff';
+  if (lower === 'resolved') return '#f5f3ff';
   if (lower === 'in progress') return '#fffbeb';
-  if (lower === 'pending')     return '#eff6ff';
-  if (lower === 'rejected')    return '#fef2f2';
+  if (lower === 'pending') return '#eff6ff';
+  if (lower === 'rejected') return '#fef2f2';
   return '#f3f4f6';
 }
 
 function statusLabel(s) {
   const map = {
-    Resolved:      'Selesai',
+    Resolved: 'Selesai',
     'In Progress': 'Dalam Proses',
-    Pending:       'Menunggu',
-    Rejected:      'Ditolak',
+    Pending: 'Menunggu',
+    Rejected: 'Ditolak',
   };
   return map[s] || s || '—';
 }
 
 const COLUMNS = [
-  { key: 'bil',          label: 'Bil' },
-  { key: 'dateReport',   label: 'Tarikh Hantar' },
-  { key: 'title',        label: 'Tajuk Aduan' },
-  { key: 'location',     label: 'Lokasi' },
-  { key: 'status',       label: 'Status' },
+  { key: 'bil', label: 'Bil' },
+  { key: 'dateReport', label: 'Tarikh Hantar' },
+  { key: 'title', label: 'Tajuk Aduan' },
+  { key: 'location', label: 'Lokasi' },
+  { key: 'status', label: 'Status' },
   { key: 'completeDate', label: 'Tarikh Selesai' },
-  { key: 'action',       label: 'Tindakan' },
+  { key: 'action', label: 'Tindakan' },
 ];
 
 function SemakFasilitiContent() {
@@ -61,20 +61,27 @@ function SemakFasilitiContent() {
   const { data: session, status } = useSession();
 
   const [complaints, setComplaints] = useState([]);
-  const [loading, setLoading]       = useState(true);
-  const [error, setError]           = useState('');
-  const [search, setSearch]         = useState('');
-  const [perPage, setPerPage]       = useState(10);
-  const [page, setPage]             = useState(1);
-  const [sortDir, setSortDir]       = useState('asc');
-  const [selected, setSelected]     = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [search, setSearch] = useState('');
+  const [perPage, setPerPage] = useState(10);
+  const [page, setPage] = useState(1);
+  const [sortDir, setSortDir] = useState('asc');
+  const [selected, setSelected] = useState(null);
   const [feedbackForm, setFeedbackForm] = useState({ rating: 0, comment: '' });
   const [submittingFeedback, setSubmittingFeedback] = useState(false);
-  const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+  const [toast, setToast] = useState({
+    show: false,
+    message: '',
+    type: 'success',
+  });
 
   const showToast = (msg, type = 'success') => {
     setToast({ show: true, message: msg, type });
-    setTimeout(() => setToast({ show: false, message: '', type: 'success' }), 3500);
+    setTimeout(
+      () => setToast({ show: false, message: '', type: 'success' }),
+      3500,
+    );
   };
 
   useEffect(() => {
@@ -87,8 +94,8 @@ function SemakFasilitiContent() {
     if (status !== 'authenticated') return;
     setLoading(true);
     fetch('/api/complaints?category=Facility')
-      .then(r => r.json())
-      .then(data => {
+      .then((r) => r.json())
+      .then((data) => {
         setComplaints(Array.isArray(data) ? data : []);
         setLoading(false);
       })
@@ -109,13 +116,16 @@ function SemakFasilitiContent() {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          feedback: { rating: feedbackForm.rating, comment: feedbackForm.comment }
-        })
+          feedback: {
+            rating: feedbackForm.rating,
+            comment: feedbackForm.comment,
+          },
+        }),
       });
       if (!res.ok) throw new Error('Gagal menghantar maklum balas.');
       const data = await res.json();
       setSelected(data);
-      setComplaints(prev => prev.map(c => c._id === data._id ? data : c));
+      setComplaints((prev) => prev.map((c) => (c._id === data._id ? data : c)));
     } catch (err) {
       showToast(err.message, 'error');
     }
@@ -124,77 +134,152 @@ function SemakFasilitiContent() {
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
-    return complaints.filter(c =>
-      !q ||
-      (c.title || '').toLowerCase().includes(q) ||
-      (c._id || '').toLowerCase().includes(q) ||
-      (c.status || '').toLowerCase().includes(q) ||
-      (c.description || '').toLowerCase().includes(q)
+    return complaints.filter(
+      (c) =>
+        !q ||
+        (c.title || '').toLowerCase().includes(q) ||
+        (c._id || '').toLowerCase().includes(q) ||
+        (c.status || '').toLowerCase().includes(q) ||
+        (c.description || '').toLowerCase().includes(q),
     );
   }, [complaints, search]);
 
-  const sorted = useMemo(() => (
-    [...filtered].sort((a, b) => {
-      const va = new Date(a.createdAt || 0).getTime();
-      const vb = new Date(b.createdAt || 0).getTime();
-      return sortDir === 'desc' ? vb - va : va - vb;
-    })
-  ), [filtered, sortDir]);
+  const sorted = useMemo(
+    () =>
+      [...filtered].sort((a, b) => {
+        const va = new Date(a.createdAt || 0).getTime();
+        const vb = new Date(b.createdAt || 0).getTime();
+        return sortDir === 'desc' ? vb - va : va - vb;
+      }),
+    [filtered, sortDir],
+  );
 
   const totalPages = Math.max(1, Math.ceil(sorted.length / perPage));
-  const pageRows   = sorted.slice((page - 1) * perPage, page * perPage);
+  const pageRows = sorted.slice((page - 1) * perPage, page * perPage);
 
   const renderDescription = (desc) => {
     if (!desc) return null;
     if (desc.includes('|')) {
-      const parts = desc.split('|').map(p => p.trim()).filter(p => p && !p.includes('--Sila Pilih--'));
+      const parts = desc
+        .split('|')
+        .map((p) => p.trim())
+        .filter((p) => p && !p.includes('--Sila Pilih--'));
       return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
+        <div
+          style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}
+        >
           {parts.map((p, idx) => {
             const splitIdx = p.indexOf(':');
-            if (splitIdx === -1) return <div key={idx} style={{ color: '#4b5563', lineHeight: 1.5, fontWeight: 700 }}>{p}</div>;
+            if (splitIdx === -1)
+              return (
+                <div
+                  key={idx}
+                  style={{ color: '#4b5563', lineHeight: 1.5, fontWeight: 700 }}
+                >
+                  {p}
+                </div>
+              );
             const key = p.substring(0, splitIdx).trim();
             const val = p.substring(splitIdx + 1).trim();
-            if (!val || val === '--Sila Pilih--' || val === 'undefined') return null;
+            if (!val || val === '--Sila Pilih--' || val === 'undefined')
+              return null;
             return (
-              <div key={idx} style={{ display: 'flex', gap: 12, borderBottom: '1px solid #f3f4f6', paddingBottom: 4 }}>
-                <span style={{ minWidth: 120, fontWeight: 600, color: '#374151' }}>{key}</span>
-                <span style={{ color: '#4b5563', flex: 1, whiteSpace: 'pre-wrap' }}>{val}</span>
+              <div
+                key={idx}
+                style={{
+                  display: 'flex',
+                  gap: 12,
+                  borderBottom: '1px solid #f3f4f6',
+                  paddingBottom: 4,
+                }}
+              >
+                <span
+                  style={{ minWidth: 120, fontWeight: 600, color: '#374151' }}
+                >
+                  {key}
+                </span>
+                <span
+                  style={{ color: '#4b5563', flex: 1, whiteSpace: 'pre-wrap' }}
+                >
+                  {val}
+                </span>
               </div>
             );
           })}
         </div>
       );
     }
-    return <span style={{ color: '#4b5563', flex: 1, whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{desc}</span>;
+    return (
+      <span
+        style={{
+          color: '#4b5563',
+          flex: 1,
+          whiteSpace: 'pre-wrap',
+          lineHeight: 1.6,
+        }}
+      >
+        {desc}
+      </span>
+    );
   };
 
   function extractLocation(desc = '') {
     if (!desc) return '—';
     const isLB = desc.includes('[LUAR BANGUNAN]');
     const bangunanMatch = desc.match(/Bangunan:\s*([^|]+)/);
-    const bangunan = bangunanMatch && !bangunanMatch[1].includes('--Sila Pilih--') ? bangunanMatch[1].trim() : '';
-    
+    const bangunan =
+      bangunanMatch && !bangunanMatch[1].includes('--Sila Pilih--')
+        ? bangunanMatch[1].trim()
+        : '';
+
     if (isLB) {
       const infraMatch = desc.match(/Kat\. Infra:\s*([^|]+)/);
       const subInfraMatch = desc.match(/Sub Infra:\s*([^|]+)/);
-      const infra = infraMatch && !infraMatch[1].includes('--Sila Pilih--') ? infraMatch[1].trim() : '';
-      const subInfra = subInfraMatch && !subInfraMatch[1].includes('--Sila Pilih--') ? subInfraMatch[1].trim() : '';
-      return [bangunan, infra, subInfra].filter(Boolean).join(' - ') || 'Luar Bangunan';
+      const infra =
+        infraMatch && !infraMatch[1].includes('--Sila Pilih--')
+          ? infraMatch[1].trim()
+          : '';
+      const subInfra =
+        subInfraMatch && !subInfraMatch[1].includes('--Sila Pilih--')
+          ? subInfraMatch[1].trim()
+          : '';
+      return (
+        [bangunan, infra, subInfra].filter(Boolean).join(' - ') ||
+        'Luar Bangunan'
+      );
     } else {
       const blokMatch = desc.match(/Blok:\s*([^|]+)/);
       const arasMatch = desc.match(/Aras:\s*([^|]+)/);
       const ruangMatch = desc.match(/Ruang:\s*([^|]+)/);
-      const blok = blokMatch && !blokMatch[1].includes('--Sila Pilih--') ? blokMatch[1].trim() : '';
-      const aras = arasMatch && !arasMatch[1].includes('--Sila Pilih--') ? arasMatch[1].trim() : '';
-      const ruang = ruangMatch && !ruangMatch[1].includes('--Sila Pilih--') ? ruangMatch[1].trim() : '';
-      return [bangunan, blok, aras, ruang].filter(Boolean).join(' - ') || 'Dalam Bangunan';
+      const blok =
+        blokMatch && !blokMatch[1].includes('--Sila Pilih--')
+          ? blokMatch[1].trim()
+          : '';
+      const aras =
+        arasMatch && !arasMatch[1].includes('--Sila Pilih--')
+          ? arasMatch[1].trim()
+          : '';
+      const ruang =
+        ruangMatch && !ruangMatch[1].includes('--Sila Pilih--')
+          ? ruangMatch[1].trim()
+          : '';
+      return (
+        [bangunan, blok, aras, ruang].filter(Boolean).join(' - ') ||
+        'Dalam Bangunan'
+      );
     }
   }
 
   if (status === 'loading') {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div
+        style={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
         <div className="spinner" />
       </div>
     );
@@ -213,10 +298,15 @@ function SemakFasilitiContent() {
               <span className="aduan-breadcrumb-sep">›</span>
               <span>Semakan</span>
               <span className="aduan-breadcrumb-sep">›</span>
-              <span className="aduan-breadcrumb-active">Semak Aduan Fasiliti</span>
+              <span className="aduan-breadcrumb-active">
+                Semak Aduan Fasiliti
+              </span>
             </div>
             <h1 className="aduan-page-title">Semak Aduan Fasiliti</h1>
-            <p className="aduan-page-desc">Semak status aduan elektrik, sivil &amp; fasiliti yang telah dikemukakan</p>
+            <p className="aduan-page-desc">
+              Semak status aduan elektrik, sivil &amp; fasiliti yang telah
+              dikemukakan
+            </p>
           </div>
         </div>
 
@@ -229,35 +319,83 @@ function SemakFasilitiContent() {
               Senarai Aduan Fasiliti — {session?.user?.name || 'Pengguna'}
             </div>
             <div className="aduan-section-body" style={{ gap: 12 }}>
-
               {/* Controls */}
-              <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  gap: 16,
+                  flexWrap: 'wrap',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <select
-                    style={{ padding: '7px 10px', border: '1.5px solid #d1d5db', borderRadius: 0, fontSize: '0.85rem', color: '#111827', background: '#ffffff', outline: 'none' }}
+                    style={{
+                      padding: '7px 10px',
+                      border: '1.5px solid #d1d5db',
+                      borderRadius: 0,
+                      fontSize: '0.85rem',
+                      color: '#111827',
+                      background: '#ffffff',
+                      outline: 'none',
+                    }}
                     value={perPage}
-                    onChange={e => { setPerPage(Number(e.target.value)); setPage(1); }}
+                    onChange={(e) => {
+                      setPerPage(Number(e.target.value));
+                      setPage(1);
+                    }}
                     id="semak-fas-per-page"
                   >
-                    {[5, 10, 25, 50].map(n => <option key={n} value={n}>{n}</option>)}
+                    {[5, 10, 25, 50].map((n) => (
+                      <option key={n} value={n}>
+                        {n}
+                      </option>
+                    ))}
                   </select>
-                  <span style={{ fontSize: '0.82rem', color: '#6b7280' }}>rekod per halaman</span>
+                  <span style={{ fontSize: '0.82rem', color: '#6b7280' }}>
+                    rekod per halaman
+                  </span>
                 </div>
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                   <button
-                    onClick={() => setSortDir(d => d === 'desc' ? 'asc' : 'desc')}
+                    onClick={() =>
+                      setSortDir((d) => (d === 'desc' ? 'asc' : 'desc'))
+                    }
                     id="semak-fas-sort"
-                    style={{ padding: '7px 14px', fontSize: '0.8rem', border: '1.5px solid #d1d5db', borderRadius: 0, background: '#ffffff', color: '#111827', cursor: 'pointer' }}
+                    style={{
+                      padding: '7px 14px',
+                      fontSize: '0.8rem',
+                      border: '1.5px solid #d1d5db',
+                      borderRadius: 0,
+                      background: '#ffffff',
+                      color: '#111827',
+                      cursor: 'pointer',
+                    }}
                   >
                     Tarikh {sortDir === 'desc' ? '↓' : '↑'}
                   </button>
-                  <span style={{ fontSize: '0.82rem', color: '#6b7280' }}>Cari:</span>
+                  <span style={{ fontSize: '0.82rem', color: '#6b7280' }}>
+                    Cari:
+                  </span>
                   <input
-                    style={{ padding: '7px 12px', border: '1.5px solid #d1d5db', borderRadius: 0, fontSize: '0.85rem', color: '#111827', background: '#ffffff', outline: 'none', minWidth: 180 }}
+                    style={{
+                      padding: '7px 12px',
+                      border: '1.5px solid #d1d5db',
+                      borderRadius: 0,
+                      fontSize: '0.85rem',
+                      color: '#111827',
+                      background: '#ffffff',
+                      outline: 'none',
+                      minWidth: 180,
+                    }}
                     type="text"
                     placeholder="Cari aduan..."
                     value={search}
-                    onChange={e => { setSearch(e.target.value); setPage(1); }}
+                    onChange={(e) => {
+                      setSearch(e.target.value);
+                      setPage(1);
+                    }}
                     id="semak-fas-search"
                   />
                 </div>
@@ -268,12 +406,21 @@ function SemakFasilitiContent() {
                 <table className="glass-table" id="semak-fas-table">
                   <thead>
                     <tr>
-                      {COLUMNS.map(col => (
-                        <th key={col.key} style={{
-                          padding: '10px 12px', textAlign: 'left', fontWeight: 700,
-                          fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.04em',
-                          color: '#111827', borderBottom: '2px solid #e5e7eb', whiteSpace: 'nowrap',
-                        }}>
+                      {COLUMNS.map((col) => (
+                        <th
+                          key={col.key}
+                          style={{
+                            padding: '10px 12px',
+                            textAlign: 'left',
+                            fontWeight: 700,
+                            fontSize: '0.75rem',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.04em',
+                            color: '#111827',
+                            borderBottom: '2px solid #e5e7eb',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
                           {col.label}
                         </th>
                       ))}
@@ -282,118 +429,253 @@ function SemakFasilitiContent() {
                   <tbody>
                     {loading ? (
                       <tr>
-                        <td colSpan={COLUMNS.length} style={{ padding: 32, textAlign: 'center' }}>
-                          <div className="spinner" style={{ margin: '0 auto' }} />
+                        <td
+                          colSpan={COLUMNS.length}
+                          style={{ padding: 32, textAlign: 'center' }}
+                        >
+                          <div
+                            className="spinner"
+                            style={{ margin: '0 auto' }}
+                          />
                         </td>
                       </tr>
                     ) : pageRows.length === 0 ? (
                       <tr>
-                        <td colSpan={COLUMNS.length} style={{ padding: 32, textAlign: 'center', color: '#6b7280', fontSize: '0.88rem' }}>
-                          {search ? 'Tiada rekod sepadan.' : 'Tiada aduan fasiliti ditemui.'}
+                        <td
+                          colSpan={COLUMNS.length}
+                          style={{
+                            padding: 32,
+                            textAlign: 'center',
+                            color: '#6b7280',
+                            fontSize: '0.88rem',
+                          }}
+                        >
+                          {search
+                            ? 'Tiada rekod sepadan.'
+                            : 'Tiada aduan fasiliti ditemui.'}
                         </td>
                       </tr>
-                    ) : pageRows.map((c, idx) => {
-                      const globalIdx = sortDir === 'desc' ? sorted.length - ((page - 1) * perPage + idx) : (page - 1) * perPage + idx + 1;
-                      const isResolved = c.status === 'Resolved';
-                      return (
-                        <tr key={c._id}>
-                          <td style={{ padding: '9px 12px', textAlign: 'center', color: '#6b7280' }}>{globalIdx}</td>
-                          <td style={{ padding: '9px 12px', whiteSpace: 'nowrap', color: '#111827' }}>{fmtDate(c.createdAt)}</td>
-                          <td style={{ padding: '9px 12px', maxWidth: 220 }}>
-                            <div style={{ fontWeight: 600, fontSize: '0.85rem', color: '#111827' }}>{c.title}</div>
-                          </td>
-                          <td style={{ padding: '9px 12px', fontSize: '0.8rem', color: '#111827' }}>
-                            {extractLocation(c.description)}
-                          </td>
-                          <td style={{ padding: '9px 12px', whiteSpace: 'nowrap' }}>
-                            <span style={{
-                              color: statusColor(c.status), fontWeight: 700,
-                              background: statusBg(c.status),
-                              padding: '3px 9px', borderRadius: 0, fontSize: '0.75rem',
-                            }}>
-                              {statusLabel(c.status).toUpperCase()}
-                            </span>
-                          </td>
-                          <td style={{ padding: '9px 12px', whiteSpace: 'nowrap', color: '#111827' }}>
-                            {isResolved ? fmtDate(c.updatedAt) : '—'}
-                          </td>
-                          <td style={{ padding: '9px 12px', textAlign: 'center' }}>
-                            <button
-                              onClick={async () => {
-                                try {
-                                  const res = await fetch(`/api/complaints/${c._id}`);
-                                  if (res.ok) {
-                                    const fullComplaint = await res.json();
-                                    setSelected(fullComplaint);
-                                    setFeedbackForm({ rating: 0, comment: '' });
-                                  }
-                                } catch (e) {
-                                  showToast('Gagal mengambil butiran aduan', 'error');
-                                }
+                    ) : (
+                      pageRows.map((c, idx) => {
+                        const globalIdx =
+                          sortDir === 'desc'
+                            ? sorted.length - ((page - 1) * perPage + idx)
+                            : (page - 1) * perPage + idx + 1;
+                        const isResolved = c.status === 'Resolved';
+                        return (
+                          <tr key={c._id}>
+                            <td
+                              style={{
+                                padding: '9px 12px',
+                                textAlign: 'center',
+                                color: '#6b7280',
                               }}
-                              id={`semak-fas-detail-${c._id}`}
-                              className="glass-btn glass-btn-primary"
-                              style={{ padding: '5px 12px', fontSize: '0.75rem' }}
                             >
-                              {(isResolved && !c.feedbackRating) ? 'Sahkan' : 'Lihat'}
-                            </button>
-                          </td>
-                        </tr>
-                      );
-                    })}
+                              {globalIdx}
+                            </td>
+                            <td
+                              style={{
+                                padding: '9px 12px',
+                                whiteSpace: 'nowrap',
+                                color: '#111827',
+                              }}
+                            >
+                              {fmtDate(c.createdAt)}
+                            </td>
+                            <td style={{ padding: '9px 12px', maxWidth: 220 }}>
+                              <div
+                                style={{
+                                  fontWeight: 600,
+                                  fontSize: '0.85rem',
+                                  color: '#111827',
+                                }}
+                              >
+                                {c.title}
+                              </div>
+                            </td>
+                            <td
+                              style={{
+                                padding: '9px 12px',
+                                fontSize: '0.8rem',
+                                color: '#111827',
+                              }}
+                            >
+                              {extractLocation(c.description)}
+                            </td>
+                            <td
+                              style={{
+                                padding: '9px 12px',
+                                whiteSpace: 'nowrap',
+                              }}
+                            >
+                              <span
+                                style={{
+                                  color: statusColor(c.status),
+                                  fontWeight: 700,
+                                  background: statusBg(c.status),
+                                  padding: '3px 9px',
+                                  borderRadius: 0,
+                                  fontSize: '0.75rem',
+                                }}
+                              >
+                                {statusLabel(c.status).toUpperCase()}
+                              </span>
+                            </td>
+                            <td
+                              style={{
+                                padding: '9px 12px',
+                                whiteSpace: 'nowrap',
+                                color: '#111827',
+                              }}
+                            >
+                              {isResolved ? fmtDate(c.updatedAt) : '—'}
+                            </td>
+                            <td
+                              style={{
+                                padding: '9px 12px',
+                                textAlign: 'center',
+                              }}
+                            >
+                              <button
+                                onClick={async () => {
+                                  try {
+                                    const res = await fetch(
+                                      `/api/complaints/${c._id}`,
+                                    );
+                                    if (res.ok) {
+                                      const fullComplaint = await res.json();
+                                      setSelected(fullComplaint);
+                                      setFeedbackForm({
+                                        rating: 0,
+                                        comment: '',
+                                      });
+                                    }
+                                  } catch (e) {
+                                    showToast(
+                                      'Gagal mengambil butiran aduan',
+                                      'error',
+                                    );
+                                  }
+                                }}
+                                id={`semak-fas-detail-${c._id}`}
+                                className="glass-btn glass-btn-primary"
+                                style={{
+                                  padding: '5px 12px',
+                                  fontSize: '0.75rem',
+                                }}
+                              >
+                                {isResolved && !c.feedbackRating
+                                  ? 'Sahkan'
+                                  : 'Lihat'}
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
                   </tbody>
                 </table>
               </div>
 
               {/* Pagination */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, paddingTop: 4 }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                  gap: 8,
+                  paddingTop: 4,
+                }}
+              >
                 <span style={{ fontSize: '0.82rem', color: '#6b7280' }}>
                   {sorted.length === 0
                     ? 'Tiada rekod'
-                    : `Menunjukkan ${(page - 1) * perPage + 1} hingga ${Math.min(page * perPage, sorted.length)} daripada ${sorted.length} rekod`
-                  }
+                    : `Menunjukkan ${(page - 1) * perPage + 1} hingga ${Math.min(page * perPage, sorted.length)} daripada ${sorted.length} rekod`}
                 </span>
                 <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                   <button
-                    onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} id="semak-fas-prev"
-                    style={{ padding: '5px 12px', border: '1px solid #d1d5db', borderRadius: 0, background: '#ffffff', color: '#111827', cursor: page === 1 ? 'not-allowed' : 'pointer', opacity: page === 1 ? 0.5 : 1, fontSize: '0.85rem' }}
-                  >‹</button>
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={page === 1}
+                    id="semak-fas-prev"
+                    style={{
+                      padding: '5px 12px',
+                      border: '1px solid #d1d5db',
+                      borderRadius: 0,
+                      background: '#ffffff',
+                      color: '#111827',
+                      cursor: page === 1 ? 'not-allowed' : 'pointer',
+                      opacity: page === 1 ? 0.5 : 1,
+                      fontSize: '0.85rem',
+                    }}
+                  >
+                    ‹
+                  </button>
                   {Array.from({ length: totalPages }, (_, i) => i + 1)
-                    .filter(p => p === 1 || p === totalPages || Math.abs(p - page) <= 1)
+                    .filter(
+                      (p) =>
+                        p === 1 || p === totalPages || Math.abs(p - page) <= 1,
+                    )
                     .reduce((acc, p, i, arr) => {
                       if (i > 0 && p - arr[i - 1] > 1) acc.push('...');
                       acc.push(p);
                       return acc;
                     }, [])
                     .map((p, i) =>
-                      p === '...'
-                        ? <span key={`e-${i}`} style={{ padding: '5px 8px', color: '#6b7280' }}>…</span>
-                        : (
-                          <button
-                            key={p} onClick={() => setPage(p)} id={`semak-fas-page-${p}`}
-                            style={{
-                              padding: '5px 10px', border: '1px solid', borderRadius: 0,
-                              background: page === p ? '#7c3aed' : '#fff',
-                              borderColor: page === p ? '#7c3aed' : '#d1d5db',
-                              color: page === p ? '#ffffff' : '#111827',
-                              cursor: 'pointer', fontWeight: page === p ? 700 : 400, fontSize: '0.85rem',
-                            }}
-                          >{p}</button>
-                        )
-                    )
-                  }
+                      p === '...' ? (
+                        <span
+                          key={`e-${i}`}
+                          style={{ padding: '5px 8px', color: '#6b7280' }}
+                        >
+                          …
+                        </span>
+                      ) : (
+                        <button
+                          key={p}
+                          onClick={() => setPage(p)}
+                          id={`semak-fas-page-${p}`}
+                          style={{
+                            padding: '5px 10px',
+                            border: '1px solid',
+                            borderRadius: 0,
+                            background: page === p ? '#7c3aed' : '#fff',
+                            borderColor: page === p ? '#7c3aed' : '#d1d5db',
+                            color: page === p ? '#ffffff' : '#111827',
+                            cursor: 'pointer',
+                            fontWeight: page === p ? 700 : 400,
+                            fontSize: '0.85rem',
+                          }}
+                        >
+                          {p}
+                        </button>
+                      ),
+                    )}
                   <button
-                    onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} id="semak-fas-next"
-                    style={{ padding: '5px 12px', border: '1px solid #d1d5db', borderRadius: 0, background: '#ffffff', color: '#111827', cursor: page === totalPages ? 'not-allowed' : 'pointer', opacity: page === totalPages ? 0.5 : 1, fontSize: '0.85rem' }}
-                  >›</button>
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={page === totalPages}
+                    id="semak-fas-next"
+                    style={{
+                      padding: '5px 12px',
+                      border: '1px solid #d1d5db',
+                      borderRadius: 0,
+                      background: '#ffffff',
+                      color: '#111827',
+                      cursor: page === totalPages ? 'not-allowed' : 'pointer',
+                      opacity: page === totalPages ? 0.5 : 1,
+                      fontSize: '0.85rem',
+                    }}
+                  >
+                    ›
+                  </button>
                 </div>
               </div>
             </div>
           </div>
 
           <div className="aduan-disclaimer">
-            <strong>Penafian dan Notis Privasi:</strong>{' '}
-            Sistem ini disediakan untuk pengurusan aduan rasmi UiTM. Semua data yang dikemukakan adalah sulit dan hanya untuk kegunaan dalaman universiti.
+            <strong>Penafian dan Notis Privasi:</strong> Sistem ini disediakan
+            untuk pengurusan aduan rasmi UiTM. Semua data yang dikemukakan
+            adalah sulit dan hanya untuk kegunaan dalaman universiti.
           </div>
         </div>
       </main>
@@ -404,55 +686,189 @@ function SemakFasilitiContent() {
       {selected && (
         <div
           onClick={() => setSelected(null)}
-          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+          }}
         >
           <div
-            onClick={e => e.stopPropagation()}
-            style={{ background: '#ffffff', borderRadius: 0, padding: '32px', maxWidth: 800, width: '90%', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', maxHeight: '85vh', overflowY: 'auto' }}
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: '#ffffff',
+              borderRadius: 0,
+              padding: '32px',
+              maxWidth: 800,
+              width: '90%',
+              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+              maxHeight: '85vh',
+              overflowY: 'auto',
+            }}
           >
             {/* Header: Title and Status */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, marginBottom: 24, borderBottom: '1px solid #e5e7eb', paddingBottom: 20 }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'flex-start',
+                gap: 16,
+                marginBottom: 24,
+                borderBottom: '1px solid #e5e7eb',
+                paddingBottom: 20,
+              }}
+            >
               <div>
-                <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#111827', margin: '0 0 8px 0' }}>{selected.title}</h3>
-                <div style={{ display: 'flex', gap: 16, fontSize: '0.85rem', color: '#6b7280', flexWrap: 'wrap' }}>
-                  <span><strong style={{color: '#374151'}}>Tarikh Hantar:</strong> {fmtDate(selected.createdAt)}</span>
-                  {selected._id && <span><strong style={{color: '#374151'}}>ID Tiket:</strong> A{selected._id.slice(-12).toUpperCase()}</span>}
-                  <span><strong style={{color: '#374151'}}>Staf Bertugas:</strong> {selected.assignedTo?.name || 'Belum Ditugaskan'}</span>
+                <h3
+                  style={{
+                    fontSize: '1.4rem',
+                    fontWeight: 800,
+                    color: '#111827',
+                    margin: '0 0 8px 0',
+                  }}
+                >
+                  {selected.title}
+                </h3>
+                <div
+                  style={{
+                    display: 'flex',
+                    gap: 16,
+                    fontSize: '0.85rem',
+                    color: '#6b7280',
+                    flexWrap: 'wrap',
+                  }}
+                >
+                  <span>
+                    <strong style={{ color: '#374151' }}>Tarikh Hantar:</strong>{' '}
+                    {fmtDate(selected.createdAt)}
+                  </span>
+                  {selected._id && (
+                    <span>
+                      <strong style={{ color: '#374151' }}>ID Tiket:</strong> A
+                      {selected._id.slice(-12).toUpperCase()}
+                    </span>
+                  )}
+                  <span>
+                    <strong style={{ color: '#374151' }}>Staf Bertugas:</strong>{' '}
+                    {selected.assignedTo?.name || 'Belum Ditugaskan'}
+                  </span>
                 </div>
               </div>
-              <span style={{
-                color: statusColor(selected.status), fontWeight: 700,
-                background: statusBg(selected.status),
-                padding: '6px 14px', borderRadius: 0, fontSize: '0.85rem', whiteSpace: 'nowrap', border: `1px solid ${statusColor(selected.status)}40`
-              }}>
+              <span
+                style={{
+                  color: statusColor(selected.status),
+                  fontWeight: 700,
+                  background: statusBg(selected.status),
+                  padding: '6px 14px',
+                  borderRadius: 0,
+                  fontSize: '0.85rem',
+                  whiteSpace: 'nowrap',
+                  border: `1px solid ${statusColor(selected.status)}40`,
+                }}
+              >
                 {statusLabel(selected.status).toUpperCase()}
               </span>
             </div>
 
             {/* Description */}
             <div style={{ marginBottom: 24 }}>
-              <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#374151', margin: '0 0 8px 0' }}>Maklumat Aduan Fasiliti</h4>
-              <div style={{ background: '#f9fafb', border: '1px solid #f3f4f6', borderRadius: 0, padding: '16px', fontSize: '0.95rem', color: '#4b5563', whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>
-                {selected.description ? renderDescription(selected.description) : 'Tiada maklumat disediakan.'}
+              <h4
+                style={{
+                  fontSize: '0.95rem',
+                  fontWeight: 700,
+                  color: '#374151',
+                  margin: '0 0 8px 0',
+                }}
+              >
+                Maklumat Aduan Fasiliti
+              </h4>
+              <div
+                style={{
+                  background: '#f9fafb',
+                  border: '1px solid #f3f4f6',
+                  borderRadius: 0,
+                  padding: '16px',
+                  fontSize: '0.95rem',
+                  color: '#4b5563',
+                  whiteSpace: 'pre-wrap',
+                  lineHeight: 1.6,
+                }}
+              >
+                {selected.description
+                  ? renderDescription(selected.description)
+                  : 'Tiada maklumat disediakan.'}
               </div>
             </div>
 
             {/* Attachments */}
             {selected.attachments && selected.attachments.length > 0 && (
               <div style={{ marginBottom: 24 }}>
-                <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#374151', margin: '0 0 8px 0' }}>Lampiran</h4>
+                <h4
+                  style={{
+                    fontSize: '0.95rem',
+                    fontWeight: 700,
+                    color: '#374151',
+                    margin: '0 0 8px 0',
+                  }}
+                >
+                  Lampiran
+                </h4>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
                   {selected.attachments.map((url, i) => {
-                    const isImage = /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(url);
+                    const isImage = /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(
+                      url,
+                    );
                     if (isImage) {
                       return (
-                        <a key={i} href={url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', border: '1px solid #e5e7eb', borderRadius: 0, overflow: 'hidden' }}>
-                          <img src={url} alt={`Lampiran ${i+1}`} style={{ display: 'block', maxHeight: '160px', maxWidth: '100%', objectFit: 'contain', background: '#f9fafb' }} />
+                        <a
+                          key={i}
+                          href={url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            display: 'inline-block',
+                            border: '1px solid #e5e7eb',
+                            borderRadius: 0,
+                            overflow: 'hidden',
+                          }}
+                        >
+                          <img
+                            src={url}
+                            alt={`Lampiran ${i + 1}`}
+                            style={{
+                              display: 'block',
+                              maxHeight: '160px',
+                              maxWidth: '100%',
+                              objectFit: 'contain',
+                              background: '#f9fafb',
+                            }}
+                          />
                         </a>
                       );
                     }
                     return (
-                      <a key={i} href={url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none', color: '#4f46e5', fontWeight: 600, background: '#e0e7ff', padding: '8px 14px', borderRadius: 0, fontSize: '0.85rem', height: 'fit-content' }}>
+                      <a
+                        key={i}
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 8,
+                          textDecoration: 'none',
+                          color: '#4f46e5',
+                          fontWeight: 600,
+                          background: '#e0e7ff',
+                          padding: '8px 14px',
+                          borderRadius: 0,
+                          fontSize: '0.85rem',
+                          height: 'fit-content',
+                        }}
+                      >
                         📎 {url.split('/').pop()}
                       </a>
                     );
@@ -464,54 +880,171 @@ function SemakFasilitiContent() {
             {/* Staff Responses (Maklum Balas) */}
             {selected.responses && selected.responses.length > 0 && (
               <div style={{ marginBottom: 24 }}>
-                <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#374151', margin: '0 0 12px 0' }}>Maklum Balas & Tindakan Staf</h4>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <h4
+                  style={{
+                    fontSize: '0.95rem',
+                    fontWeight: 700,
+                    color: '#374151',
+                    margin: '0 0 12px 0',
+                  }}
+                >
+                  Maklum Balas & Tindakan Staf
+                </h4>
+                <div
+                  style={{ display: 'flex', flexDirection: 'column', gap: 12 }}
+                >
                   {selected.responses.map((r, i) => (
-                    <div key={i} style={{
-                      background: '#f0fdf4', borderLeft: '4px solid #16a34a', borderRadius: 0, padding: '12px 16px',
-                    }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <strong style={{ fontSize: '0.85rem', color: '#166534' }}>{r.author?.name || r.respondedBy?.name || 'Staf / Pentadbir'}</strong>
+                    <div
+                      key={i}
+                      style={{
+                        background: '#f0fdf4',
+                        borderLeft: '4px solid #16a34a',
+                        borderRadius: 0,
+                        padding: '12px 16px',
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          marginBottom: 6,
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                          }}
+                        >
+                          <strong
+                            style={{ fontSize: '0.85rem', color: '#166534' }}
+                          >
+                            {r.author?.name ||
+                              r.respondedBy?.name ||
+                              'Staf / Pentadbir'}
+                          </strong>
                           {r.status && (
-                            <span style={{ fontSize: '0.65rem', fontWeight: 700, background: r.status === 'Resolved' ? '#dcfce7' : '#dbeafe', color: r.status === 'Resolved' ? '#166534' : '#1e40af', padding: '2px 6px', borderRadius: 0, textTransform: 'uppercase', border: `1px solid ${r.status === 'Resolved' ? '#bbf7d0' : '#bfdbfe'}` }}>
-                              {r.status === 'Resolved' ? 'Selesai' : 'Dalam Proses'}
+                            <span
+                              style={{
+                                fontSize: '0.65rem',
+                                fontWeight: 700,
+                                background:
+                                  r.status === 'Resolved'
+                                    ? '#dcfce7'
+                                    : '#dbeafe',
+                                color:
+                                  r.status === 'Resolved'
+                                    ? '#166534'
+                                    : '#1e40af',
+                                padding: '2px 6px',
+                                borderRadius: 0,
+                                textTransform: 'uppercase',
+                                border: `1px solid ${r.status === 'Resolved' ? '#bbf7d0' : '#bfdbfe'}`,
+                              }}
+                            >
+                              {r.status === 'Resolved'
+                                ? 'Selesai'
+                                : 'Dalam Proses'}
                             </span>
                           )}
                         </div>
-                        <span style={{ fontSize: '0.75rem', color: '#15803d' }}>{fmtDate(r.createdAt)}</span>
+                        <span style={{ fontSize: '0.75rem', color: '#15803d' }}>
+                          {fmtDate(r.createdAt)}
+                        </span>
                       </div>
-                      <div style={{ fontSize: '0.95rem', color: '#166534', whiteSpace: 'pre-wrap', lineHeight: 1.5 }}>{r.message}</div>
+                      <div
+                        style={{
+                          fontSize: '0.95rem',
+                          color: '#166534',
+                          whiteSpace: 'pre-wrap',
+                          lineHeight: 1.5,
+                        }}
+                      >
+                        {r.message}
+                      </div>
                     </div>
                   ))}
                 </div>
               </div>
             )}
-            
+
             {/* Feedback Section */}
             {selected.status === 'Resolved' && (
-              <div style={{ marginBottom: 24, padding: 20, border: '1px solid #e5e7eb', background: '#ffffff', borderRadius: 0, boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
-                <h4 style={{ margin: '0 0 12px 0', fontSize: '0.95rem', fontWeight: 700, color: '#1f2937' }}>Pengesahan & Penilaian Anda</h4>
-                
+              <div
+                style={{
+                  marginBottom: 24,
+                  padding: 20,
+                  border: '1px solid #e5e7eb',
+                  background: '#ffffff',
+                  borderRadius: 0,
+                  boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                }}
+              >
+                <h4
+                  style={{
+                    margin: '0 0 12px 0',
+                    fontSize: '0.95rem',
+                    fontWeight: 700,
+                    color: '#1f2937',
+                  }}
+                >
+                  Pengesahan & Penilaian Anda
+                </h4>
+
                 {selected.feedbackRating ? (
                   <div style={{ fontSize: '0.9rem' }}>
                     <div style={{ display: 'flex', gap: 4, marginBottom: 8 }}>
-                      {[1, 2, 3, 4, 5].map(star => (
-                        <span key={star} style={{ color: star <= selected.feedbackRating ? '#f59e0b' : '#d1d5db', fontSize: '1.4rem' }}>★</span>
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <span
+                          key={star}
+                          style={{
+                            color:
+                              star <= selected.feedbackRating
+                                ? '#f59e0b'
+                                : '#d1d5db',
+                            fontSize: '1.4rem',
+                          }}
+                        >
+                          ★
+                        </span>
                       ))}
                     </div>
                     {selected.feedbackComment && (
-                      <div style={{ color: '#4b5563', whiteSpace: 'pre-wrap', background: '#f9fafb', padding: '12px', borderRadius: 0, border: '1px solid #f3f4f6', marginTop: '8px' }}>"{selected.feedbackComment}"</div>
+                      <div
+                        style={{
+                          color: '#4b5563',
+                          whiteSpace: 'pre-wrap',
+                          background: '#f9fafb',
+                          padding: '12px',
+                          borderRadius: 0,
+                          border: '1px solid #f3f4f6',
+                          marginTop: '8px',
+                        }}
+                      >
+                        "{selected.feedbackComment}"
+                      </div>
                     )}
                   </div>
                 ) : (
                   <div>
                     <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-                      {[1, 2, 3, 4, 5].map(star => (
+                      {[1, 2, 3, 4, 5].map((star) => (
                         <span
                           key={star}
-                          onClick={() => setFeedbackForm({ ...feedbackForm, rating: star })}
-                          style={{ color: star <= feedbackForm.rating ? '#f59e0b' : '#e5e7eb', fontSize: '1.8rem', cursor: 'pointer', transition: 'color 0.2s' }}
+                          onClick={() =>
+                            setFeedbackForm({ ...feedbackForm, rating: star })
+                          }
+                          style={{
+                            color:
+                              star <= feedbackForm.rating
+                                ? '#f59e0b'
+                                : '#e5e7eb',
+                            fontSize: '1.8rem',
+                            cursor: 'pointer',
+                            transition: 'color 0.2s',
+                          }}
                         >
                           ★
                         </span>
@@ -519,18 +1052,44 @@ function SemakFasilitiContent() {
                     </div>
                     <textarea
                       value={feedbackForm.comment}
-                      onChange={e => setFeedbackForm({ ...feedbackForm, comment: e.target.value })}
+                      onChange={(e) =>
+                        setFeedbackForm({
+                          ...feedbackForm,
+                          comment: e.target.value,
+                        })
+                      }
                       placeholder="Sila kongsikan maklum balas anda terhadap penyelesaian ini (pilihan)..."
-                      style={{ width: '100%', padding: '12px', borderRadius: 0, border: '1px solid #d1d5db', fontSize: '0.9rem', minHeight: 80, marginBottom: 16, outline: 'none' }}
-                      onFocus={e => e.target.style.borderColor = '#4f46e5'}
-                      onBlur={e => e.target.style.borderColor = '#d1d5db'}
+                      style={{
+                        width: '100%',
+                        padding: '12px',
+                        borderRadius: 0,
+                        border: '1px solid #d1d5db',
+                        fontSize: '0.9rem',
+                        minHeight: 80,
+                        marginBottom: 16,
+                        outline: 'none',
+                      }}
+                      onFocus={(e) => (e.target.style.borderColor = '#4f46e5')}
+                      onBlur={(e) => (e.target.style.borderColor = '#d1d5db')}
                     />
                     <button
                       onClick={handleFeedbackSubmit}
                       disabled={submittingFeedback}
-                      style={{ padding: '10px 20px', background: '#16a34a', color: '#fff', border: 'none', borderRadius: 0, fontWeight: 600, cursor: 'pointer', fontSize: '0.9rem', width: '100%' }}
+                      style={{
+                        padding: '10px 20px',
+                        background: '#16a34a',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: 0,
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        fontSize: '0.9rem',
+                        width: '100%',
+                      }}
                     >
-                      {submittingFeedback ? 'Menghantar...' : 'Hantar Penilaian'}
+                      {submittingFeedback
+                        ? 'Menghantar...'
+                        : 'Hantar Penilaian'}
                     </button>
                   </div>
                 )}
@@ -538,11 +1097,28 @@ function SemakFasilitiContent() {
             )}
 
             {/* Footer / Actions */}
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 20, borderTop: '1px solid #e5e7eb', paddingTop: 20 }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                marginTop: 20,
+                borderTop: '1px solid #e5e7eb',
+                paddingTop: 20,
+              }}
+            >
               <button
                 onClick={() => setSelected(null)}
                 id="semak-fas-modal-close"
-                style={{ padding: '10px 24px', background: '#4b5563', color: '#fff', border: 'none', borderRadius: 0, fontWeight: 600, cursor: 'pointer', fontSize: '0.9rem' }}
+                style={{
+                  padding: '10px 24px',
+                  background: '#4b5563',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 0,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  fontSize: '0.9rem',
+                }}
               >
                 Tutup
               </button>
@@ -553,19 +1129,54 @@ function SemakFasilitiContent() {
 
       {/* Toast Notification */}
       {toast.show && (
-        <div style={{
-          position: 'fixed', bottom: 24, right: 24, zIndex: 9999,
-          background: toast.type === 'error' ? '#ef4444' : '#10b981',
-          color: '#fff', padding: '14px 24px', borderRadius: 0,
-          boxShadow: '0 10px 25px -5px rgba(0,0,0,0.2)',
-          fontWeight: 600, fontSize: '0.95rem',
-          display: 'flex', alignItems: 'center', gap: 10,
-          animation: 'slideInRight 0.3s ease-out',
-        }}>
+        <div
+          style={{
+            position: 'fixed',
+            bottom: 24,
+            right: 24,
+            zIndex: 9999,
+            background: toast.type === 'error' ? '#ef4444' : '#10b981',
+            color: '#fff',
+            padding: '14px 24px',
+            borderRadius: 0,
+            boxShadow: '0 10px 25px -5px rgba(0,0,0,0.2)',
+            fontWeight: 600,
+            fontSize: '0.95rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            animation: 'slideInRight 0.3s ease-out',
+          }}
+        >
           {toast.type === 'error' ? (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
           ) : (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
           )}
           {toast.message}
         </div>
@@ -585,20 +1196,34 @@ function AduanNav({ session }) {
     <nav className="lp-nav">
       <div className="lp-nav-inner">
         <Link href="/" className="lp-logo" id="aduan-nav-logo">
-          <img src="/images/logo aduan2.png" alt="Aduan Logo" style={{height: 32, width: 'auto'}} />
+          <img
+            src="/images/logo aduan2.png"
+            alt="Aduan Logo"
+            style={{ height: 32, width: 'auto' }}
+          />
         </Link>
         <div className="lp-nav-links">
-          <Link href="/" className="lp-nav-link" id="anav-anjung">Anjung</Link>
+          <Link href="/" className="lp-nav-link" id="anav-anjung">
+            Anjung
+          </Link>
           <NavDropdownAduan />
           <NavDropdownSemak />
-          <Link href="/panduan" className="lp-nav-link" id="anav-panduan">Panduan</Link>
-          <Link href="/faq" className="lp-nav-link" id="anav-faq">Soalan Lazim</Link>
+          <Link href="/panduan" className="lp-nav-link" id="anav-panduan">
+            Panduan
+          </Link>
+          <Link href="/faq" className="lp-nav-link" id="anav-faq">
+            Soalan Lazim
+          </Link>
         </div>
         <div className="lp-nav-end">
           {session ? (
             <HomeUserMenu session={session} />
           ) : (
-            <Link href="/login?callbackUrl=/aduan/fasiliti/semak" className="lp-login-btn" id="anav-login">
+            <Link
+              href="/login?callbackUrl=/aduan/fasiliti/semak"
+              className="lp-login-btn"
+              id="anav-login"
+            >
               Log Masuk
             </Link>
           )}
@@ -613,10 +1238,13 @@ function AduanFooter() {
     <footer className="lp-footer">
       <div className="lp-footer-inner">
         <p className="lp-footer-text">
-          <strong>Penafian dan Notis Privasi:</strong>{' '}
-          Sistem ini disediakan untuk pengurusan aduan rasmi UiTM. Semua data yang dikemukakan adalah sulit dan hanya untuk kegunaan dalaman universiti.
+          <strong>Penafian dan Notis Privasi:</strong> Sistem ini disediakan
+          untuk pengurusan aduan rasmi UiTM. Semua data yang dikemukakan adalah
+          sulit dan hanya untuk kegunaan dalaman universiti.
         </p>
-        <p className="lp-footer-copy">© Pejabat Komunikasi Strategik, UiTM 2026</p>
+        <p className="lp-footer-copy">
+          © Pejabat Komunikasi Strategik, UiTM 2026
+        </p>
       </div>
     </footer>
   );
@@ -624,7 +1252,20 @@ function AduanFooter() {
 
 export default function SemakAduanFasilitiPage() {
   return (
-    <Suspense fallback={<div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="spinner" /></div>}>
+    <Suspense
+      fallback={
+        <div
+          style={{
+            minHeight: '100vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <div className="spinner" />
+        </div>
+      }
+    >
       <SemakFasilitiContent />
     </Suspense>
   );

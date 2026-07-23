@@ -31,10 +31,7 @@ export async function GET(request) {
     //  1. Complaints explicitly assigned to them
     //  2. Unassigned complaints (assignedTo: null) — "tidak pasti" or pending assignment
     if (session.user.role === 'staff') {
-      query.$or = [
-        { assignedTo: session.user.id },
-        { assignedTo: null },
-      ];
+      query.$or = [{ assignedTo: session.user.id }, { assignedTo: null }];
     }
 
     // Apply filters
@@ -64,7 +61,14 @@ export async function POST(request) {
     }
 
     const body = await request.json();
-    const { title, description, category, priority, attachments, targetDepartment } = body;
+    const {
+      title,
+      description,
+      category,
+      priority,
+      attachments,
+      targetDepartment,
+    } = body;
 
     // ── Create the complaint (unassigned first) ──
     const complaint = await Complaint.create({
@@ -82,11 +86,15 @@ export async function POST(request) {
     // ── Auto-assign to staff based on targetDepartment ──
     // If targetDepartment is provided and is not 'tidak_pasti', find a matching staff member.
     if (targetDepartment && targetDepartment !== 'tidak_pasti') {
-      const matchingStaff = await User.find({ role: 'staff', department: targetDepartment });
+      const matchingStaff = await User.find({
+        role: 'staff',
+        department: targetDepartment,
+      });
 
       if (matchingStaff.length > 0) {
         // Pick a random staff member from the matching pool
-        const assignedStaff = matchingStaff[Math.floor(Math.random() * matchingStaff.length)];
+        const assignedStaff =
+          matchingStaff[Math.floor(Math.random() * matchingStaff.length)];
 
         // Update the complaint with the assigned staff
         complaint.assignedTo = assignedStaff._id;

@@ -23,7 +23,18 @@ const formatDepartment = (dept) => {
 
 const roleBadge = (role, isApproved) => {
   if (role === 'staff' && isApproved === false) {
-    return <span className={`badge badge-urgent`} style={{ background: '#fef2f2', color: '#dc2626', border: '1px solid #fca5a5' }}>Menunggu Kelulusan</span>;
+    return (
+      <span
+        className={`badge badge-urgent`}
+        style={{
+          background: '#fef2f2',
+          color: '#dc2626',
+          border: '1px solid #fca5a5',
+        }}
+      >
+        Menunggu Kelulusan
+      </span>
+    );
   }
   const map = {
     admin: 'badge-urgent',
@@ -43,27 +54,43 @@ export default function UsersPage() {
   const [editTarget, setEditTarget] = useState(null); // user being edited
   const [deleteTarget, setDeleteTarget] = useState(null); // user being deleted
   const [deleteCountdown, setDeleteCountdown] = useState(0); // 5-second wait
-  const [editForm, setEditForm] = useState({ name: '', email: '', role: '', department: '' });
+  const [editForm, setEditForm] = useState({
+    name: '',
+    email: '',
+    role: '',
+    department: '',
+  });
   const [toast, setToast] = useState(null); // { msg, type }
   const [search, setSearch] = useState('');
 
   useEffect(() => {
     fetch('/api/users')
       .then((r) => r.json())
-      .then((d) => { setUsers(Array.isArray(d) ? d : []); setLoading(false); })
+      .then((d) => {
+        setUsers(Array.isArray(d) ? d : []);
+        setLoading(false);
+      })
       .catch(() => setLoading(false));
   }, []);
 
   useEffect(() => {
     if (deleteCountdown > 0) {
-      const timer = setTimeout(() => setDeleteCountdown(deleteCountdown - 1), 1000);
+      const timer = setTimeout(
+        () => setDeleteCountdown(deleteCountdown - 1),
+        1000,
+      );
       return () => clearTimeout(timer);
     }
   }, [deleteCountdown]);
 
   const openEdit = (user) => {
     setEditTarget(user);
-    setEditForm({ name: user.name || '', email: user.email || '', role: user.role, department: user.department || '' });
+    setEditForm({
+      name: user.name || '',
+      email: user.email || '',
+      role: user.role,
+      department: user.department || '',
+    });
   };
 
   const closeEdit = () => {
@@ -88,8 +115,16 @@ export default function UsersPage() {
     // Optimistic update — apply change immediately to the table
     setUsers((prev) =>
       prev.map((u) =>
-        u._id === currentTargetId ? { ...u, name: currentForm.name, email: currentForm.email, role: currentForm.role, department: currentForm.department } : u
-      )
+        u._id === currentTargetId
+          ? {
+              ...u,
+              name: currentForm.name,
+              email: currentForm.email,
+              role: currentForm.role,
+              department: currentForm.department,
+            }
+          : u,
+      ),
     );
     closeEdit();
 
@@ -102,7 +137,9 @@ export default function UsersPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Ralat berlaku');
       // Sync with actual server data
-      setUsers((prev) => prev.map((u) => (u._id === currentTargetId ? data : u)));
+      setUsers((prev) =>
+        prev.map((u) => (u._id === currentTargetId ? data : u)),
+      );
       showToast(`Maklumat ${currentForm.name} berjaya dikemaskini`);
     } catch (err) {
       // Revert on failure
@@ -120,7 +157,9 @@ export default function UsersPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Ralat berlaku');
-      setUsers((prev) => prev.map((u) => (u._id === userToApprove._id ? data : u)));
+      setUsers((prev) =>
+        prev.map((u) => (u._id === userToApprove._id ? data : u)),
+      );
       showToast(`Akaun ${userToApprove.name} berjaya diluluskan`);
     } catch (err) {
       showToast(err.message, 'error');
@@ -155,7 +194,7 @@ export default function UsersPage() {
     (u) =>
       u.name?.toLowerCase().includes(search.toLowerCase()) ||
       u.email?.toLowerCase().includes(search.toLowerCase()) ||
-      u.department?.toLowerCase().includes(search.toLowerCase())
+      u.department?.toLowerCase().includes(search.toLowerCase()),
   );
 
   return (
@@ -188,12 +227,18 @@ export default function UsersPage() {
       {editTarget && (
         <div
           style={{
-            position: 'fixed', inset: 0, zIndex: 1000,
+            position: 'fixed',
+            inset: 0,
+            zIndex: 1000,
             background: 'rgba(0,0,0,0.45)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
             padding: '20px',
           }}
-          onClick={(e) => { if (e.target === e.currentTarget) closeEdit(); }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) closeEdit();
+          }}
         >
           <div
             style={{
@@ -207,29 +252,56 @@ export default function UsersPage() {
             }}
           >
             {/* Modal Header */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '24px' }}>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '14px',
+                marginBottom: '24px',
+              }}
+            >
               <div
                 style={{
-                  width: '46px', height: '46px', borderRadius: '50%',
+                  width: '46px',
+                  height: '46px',
+                  borderRadius: '50%',
                   background: 'linear-gradient(135deg,#6366f1,#8b5cf6)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: '#fff', fontWeight: 800, fontSize: '1.1rem', flexShrink: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#fff',
+                  fontWeight: 800,
+                  fontSize: '1.1rem',
+                  flexShrink: 0,
                 }}
               >
                 {editTarget.name?.charAt(0).toUpperCase()}
               </div>
               <div>
-                <div style={{ fontWeight: 700, fontSize: '1.05rem', color: '#111827' }}>
+                <div
+                  style={{
+                    fontWeight: 700,
+                    fontSize: '1.05rem',
+                    color: '#111827',
+                  }}
+                >
                   {editTarget.name}
                 </div>
-                <div style={{ fontSize: '0.83rem', color: '#6b7280' }}>{editTarget.email}</div>
+                <div style={{ fontSize: '0.83rem', color: '#6b7280' }}>
+                  {editTarget.email}
+                </div>
               </div>
               <button
                 onClick={closeEdit}
                 style={{
-                  marginLeft: 'auto', background: 'none', border: 'none',
-                  cursor: 'pointer', fontSize: '1.4rem', color: '#9ca3af',
-                  lineHeight: 1, padding: '4px',
+                  marginLeft: 'auto',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: '1.4rem',
+                  color: '#9ca3af',
+                  lineHeight: 1,
+                  padding: '4px',
                 }}
               >
                 ×
@@ -238,62 +310,114 @@ export default function UsersPage() {
 
             {/* Name */}
             <div style={{ marginBottom: '18px' }}>
-              <label style={{ display: 'block', fontSize: '0.83rem', fontWeight: 700, color: '#374151', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.83rem',
+                  fontWeight: 700,
+                  color: '#374151',
+                  marginBottom: '6px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                }}
+              >
                 Nama Penuh
               </label>
               <input
                 className="form-input"
                 type="text"
                 value={editForm.name}
-                onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, name: e.target.value })
+                }
                 style={{ width: '100%', padding: '10px 14px' }}
               />
             </div>
 
             {/* Email */}
             <div style={{ marginBottom: '18px' }}>
-              <label style={{ display: 'block', fontSize: '0.83rem', fontWeight: 700, color: '#374151', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.83rem',
+                  fontWeight: 700,
+                  color: '#374151',
+                  marginBottom: '6px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                }}
+              >
                 Emel
               </label>
               <input
                 className="form-input"
                 type="email"
                 value={editForm.email}
-                onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, email: e.target.value })
+                }
                 style={{ width: '100%', padding: '10px 14px' }}
               />
             </div>
 
             {/* Role */}
             <div style={{ marginBottom: '18px' }}>
-              <label style={{ display: 'block', fontSize: '0.83rem', fontWeight: 700, color: '#374151', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.83rem',
+                  fontWeight: 700,
+                  color: '#374151',
+                  marginBottom: '6px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                }}
+              >
                 Peranan (Role)
               </label>
               <select
                 className="form-select"
                 value={editForm.role}
-                onChange={(e) => setEditForm({ ...editForm, role: e.target.value })}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, role: e.target.value })
+                }
                 style={{ width: '100%' }}
               >
                 {ROLES.map((r) => (
-                  <option key={r} value={r}>{r.charAt(0).toUpperCase() + r.slice(1)}</option>
+                  <option key={r} value={r}>
+                    {r.charAt(0).toUpperCase() + r.slice(1)}
+                  </option>
                 ))}
               </select>
             </div>
 
             {/* Department */}
             <div style={{ marginBottom: '28px' }}>
-              <label style={{ display: 'block', fontSize: '0.83rem', fontWeight: 700, color: '#374151', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.83rem',
+                  fontWeight: 700,
+                  color: '#374151',
+                  marginBottom: '6px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                }}
+              >
                 Jabatan (Department)
               </label>
               <select
                 className="form-select"
                 value={editForm.department}
-                onChange={(e) => setEditForm({ ...editForm, department: e.target.value })}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, department: e.target.value })
+                }
                 style={{ width: '100%' }}
               >
                 {DEPARTMENTS.map((d) => (
-                  <option key={d} value={d}>{formatDepartment(d)}</option>
+                  <option key={d} value={d}>
+                    {formatDepartment(d)}
+                  </option>
                 ))}
               </select>
             </div>
@@ -303,9 +427,14 @@ export default function UsersPage() {
               <button
                 onClick={closeEdit}
                 style={{
-                  flex: 1, padding: '12px', borderRadius: 0,
-                  border: '1.5px solid #e5e7eb', background: '#fff',
-                  color: '#374151', fontWeight: 600, cursor: 'pointer',
+                  flex: 1,
+                  padding: '12px',
+                  borderRadius: 0,
+                  border: '1.5px solid #e5e7eb',
+                  background: '#fff',
+                  color: '#374151',
+                  fontWeight: 600,
+                  cursor: 'pointer',
                   fontSize: '0.95rem',
                 }}
               >
@@ -314,9 +443,14 @@ export default function UsersPage() {
               <button
                 onClick={handleSave}
                 style={{
-                  flex: 2, padding: '12px', borderRadius: 0,
+                  flex: 2,
+                  padding: '12px',
+                  borderRadius: 0,
                   background: 'linear-gradient(135deg,#6366f1,#8b5cf6)',
-                  border: 'none', color: '#fff', fontWeight: 700, cursor: 'pointer',
+                  border: 'none',
+                  color: '#fff',
+                  fontWeight: 700,
+                  cursor: 'pointer',
                   fontSize: '0.95rem',
                 }}
               >
@@ -331,12 +465,18 @@ export default function UsersPage() {
       {deleteTarget && (
         <div
           style={{
-            position: 'fixed', inset: 0, zIndex: 1000,
+            position: 'fixed',
+            inset: 0,
+            zIndex: 1000,
             background: 'rgba(0,0,0,0.45)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
             padding: '20px',
           }}
-          onClick={(e) => { if (e.target === e.currentTarget) setDeleteTarget(null); }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setDeleteTarget(null);
+          }}
         >
           <div
             style={{
@@ -353,28 +493,58 @@ export default function UsersPage() {
             <div style={{ marginBottom: '20px' }}>
               <div
                 style={{
-                  width: '64px', height: '64px', borderRadius: '50%',
-                  background: '#fef2f2', border: '2px solid #fee2e2',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  margin: '0 auto', color: '#dc2626', fontSize: '2rem',
+                  width: '64px',
+                  height: '64px',
+                  borderRadius: '50%',
+                  background: '#fef2f2',
+                  border: '2px solid #fee2e2',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  margin: '0 auto',
+                  color: '#dc2626',
+                  fontSize: '2rem',
                 }}
               >
                 !
               </div>
             </div>
-            <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#111827', marginBottom: '12px' }}>
+            <h3
+              style={{
+                fontSize: '1.2rem',
+                fontWeight: 800,
+                color: '#111827',
+                marginBottom: '12px',
+              }}
+            >
               Adakah anda pasti?
             </h3>
-            <p style={{ fontSize: '0.95rem', color: '#4b5563', marginBottom: '24px', lineHeight: 1.5 }}>
-              Anda pasti mahu memadam akaun <strong>{deleteTarget.name}</strong>? Tindakan ini tidak boleh dipulihkan.
+            <p
+              style={{
+                fontSize: '0.95rem',
+                color: '#4b5563',
+                marginBottom: '24px',
+                lineHeight: 1.5,
+              }}
+            >
+              Anda pasti mahu memadam akaun <strong>{deleteTarget.name}</strong>
+              ? Tindakan ini tidak boleh dipulihkan.
             </p>
             <div style={{ display: 'flex', gap: '12px' }}>
               <button
-                onClick={() => { setDeleteTarget(null); setDeleteCountdown(0); }}
+                onClick={() => {
+                  setDeleteTarget(null);
+                  setDeleteCountdown(0);
+                }}
                 style={{
-                  flex: 1, padding: '12px', borderRadius: 0,
-                  border: '1.5px solid #e5e7eb', background: '#fff',
-                  color: '#374151', fontWeight: 600, cursor: 'pointer',
+                  flex: 1,
+                  padding: '12px',
+                  borderRadius: 0,
+                  border: '1.5px solid #e5e7eb',
+                  background: '#fff',
+                  color: '#374151',
+                  fontWeight: 600,
+                  cursor: 'pointer',
                   fontSize: '0.95rem',
                 }}
               >
@@ -384,14 +554,21 @@ export default function UsersPage() {
                 onClick={handleDelete}
                 disabled={deleteCountdown > 0}
                 style={{
-                  flex: 1, padding: '12px', borderRadius: 0,
+                  flex: 1,
+                  padding: '12px',
+                  borderRadius: 0,
                   background: deleteCountdown > 0 ? '#fca5a5' : '#dc2626',
-                  border: 'none', color: '#fff', fontWeight: 700, 
+                  border: 'none',
+                  color: '#fff',
+                  fontWeight: 700,
                   cursor: deleteCountdown > 0 ? 'not-allowed' : 'pointer',
-                  fontSize: '0.95rem', transition: 'background 0.2s',
+                  fontSize: '0.95rem',
+                  transition: 'background 0.2s',
                 }}
               >
-                {deleteCountdown > 0 ? `Tunggu ${deleteCountdown}s...` : 'Ya, Padam Akaun'}
+                {deleteCountdown > 0
+                  ? `Tunggu ${deleteCountdown}s...`
+                  : 'Ya, Padam Akaun'}
               </button>
             </div>
           </div>
@@ -400,12 +577,22 @@ export default function UsersPage() {
 
       {/* ── Page Content ──────────────────── */}
       <div className="page-content">
-        <h1 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#ffffff', marginBottom: '24px' }}>
+        <h1
+          style={{
+            fontSize: '1.8rem',
+            fontWeight: 800,
+            color: '#ffffff',
+            marginBottom: '24px',
+          }}
+        >
           Pengurusan Pengguna
         </h1>
 
         {/* Search bar */}
-        <div className="card" style={{ padding: '16px 20px', marginBottom: '16px' }}>
+        <div
+          className="card"
+          style={{ padding: '16px 20px', marginBottom: '16px' }}
+        >
           <input
             type="text"
             className="form-input"
@@ -417,11 +604,29 @@ export default function UsersPage() {
         </div>
 
         <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-          <div style={{ padding: '20px 24px', borderBottom: '1px solid #e5e7eb', background: '#f9fafb', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <h3 style={{ fontSize: '1rem', color: '#111827', margin: 0, fontWeight: 700 }}>
+          <div
+            style={{
+              padding: '20px 24px',
+              borderBottom: '1px solid #e5e7eb',
+              background: '#f9fafb',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+          >
+            <h3
+              style={{
+                fontSize: '1rem',
+                color: '#111827',
+                margin: 0,
+                fontWeight: 700,
+              }}
+            >
               Senarai Pengguna Sistem
             </h3>
-            <span style={{ fontSize: '0.82rem', color: '#6b7280', fontWeight: 600 }}>
+            <span
+              style={{ fontSize: '0.82rem', color: '#6b7280', fontWeight: 600 }}
+            >
               {filtered.length} pengguna
             </span>
           </div>
@@ -431,7 +636,9 @@ export default function UsersPage() {
               <div className="spinner" style={{ margin: '0 auto' }} />
             </div>
           ) : filtered.length === 0 ? (
-            <div style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>
+            <div
+              style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}
+            >
               Tiada pengguna dijumpai.
             </div>
           ) : (
@@ -444,51 +651,122 @@ export default function UsersPage() {
                     <th>Peranan</th>
                     <th>Jabatan</th>
                     <th style={{ textAlign: 'right' }}>Sertai Pada</th>
-                    {isAdmin && <th style={{ textAlign: 'center' }}>Tindakan</th>}
+                    {isAdmin && (
+                      <th style={{ textAlign: 'center' }}>Tindakan</th>
+                    )}
                   </tr>
                 </thead>
                 <tbody>
                   {filtered.map((u) => (
                     <tr key={u._id}>
                       <td>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '10px',
+                          }}
+                        >
                           <div
                             style={{
-                              width: '34px', height: '34px', borderRadius: '50%',
-                              background: 'linear-gradient(135deg,#6366f1,#8b5cf6)',
-                              display: 'flex', alignItems: 'center', justifyContent: 'center',
-                              color: '#fff', fontWeight: 800, fontSize: '0.85rem', flexShrink: 0,
+                              width: '34px',
+                              height: '34px',
+                              borderRadius: '50%',
+                              background:
+                                'linear-gradient(135deg,#6366f1,#8b5cf6)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              color: '#fff',
+                              fontWeight: 800,
+                              fontSize: '0.85rem',
+                              flexShrink: 0,
                             }}
                           >
                             {u.name?.charAt(0).toUpperCase()}
                           </div>
-                          <span style={{ fontWeight: 600, color: '#111827' }}>{u.name}</span>
+                          <span style={{ fontWeight: 600, color: '#111827' }}>
+                            {u.name}
+                          </span>
                         </div>
                       </td>
                       <td style={{ color: '#6b7280' }}>{u.email}</td>
                       <td>{roleBadge(u.role, u.isApproved)}</td>
-                      <td style={{ color: '#374151' }}>{formatDepartment(u.department) || '-'}</td>
-                      <td style={{ color: '#9ca3af', fontSize: '0.85rem', textAlign: 'right' }}>
+                      <td style={{ color: '#374151' }}>
+                        {formatDepartment(u.department) || '-'}
+                      </td>
+                      <td
+                        style={{
+                          color: '#9ca3af',
+                          fontSize: '0.85rem',
+                          textAlign: 'right',
+                        }}
+                      >
                         {new Date(u.createdAt).toLocaleDateString('ms-MY')}
                       </td>
                       {isAdmin && (
                         <td style={{ textAlign: 'center' }}>
-                          <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                          <div
+                            style={{
+                              display: 'flex',
+                              gap: '8px',
+                              justifyContent: 'center',
+                            }}
+                          >
                             {u.role === 'staff' && u.isApproved === false ? (
                               <>
                                 <button
                                   onClick={() => handleApprove(u)}
-                                  style={{ padding: '6px 12px', borderRadius: 0, border: '1.5px solid #16a34a', background: 'transparent', color: '#16a34a', fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer', transition: 'all 0.18s' }}
-                                  onMouseEnter={(e) => { e.currentTarget.style.background = '#16a34a'; e.currentTarget.style.color = '#fff'; }}
-                                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#16a34a'; }}
+                                  style={{
+                                    padding: '6px 12px',
+                                    borderRadius: 0,
+                                    border: '1.5px solid #16a34a',
+                                    background: 'transparent',
+                                    color: '#16a34a',
+                                    fontWeight: 700,
+                                    fontSize: '0.82rem',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.18s',
+                                  }}
+                                  onMouseEnter={(e) => {
+                                    e.currentTarget.style.background =
+                                      '#16a34a';
+                                    e.currentTarget.style.color = '#fff';
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    e.currentTarget.style.background =
+                                      'transparent';
+                                    e.currentTarget.style.color = '#16a34a';
+                                  }}
                                 >
                                   Luluskan
                                 </button>
                                 <button
-                                  onClick={() => { setDeleteTarget(u); setDeleteCountdown(5); }}
-                                  style={{ padding: '6px 12px', borderRadius: 0, border: '1.5px solid #ef4444', background: 'transparent', color: '#ef4444', fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer', transition: 'all 0.18s' }}
-                                  onMouseEnter={(e) => { e.currentTarget.style.background = '#ef4444'; e.currentTarget.style.color = '#fff'; }}
-                                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#ef4444'; }}
+                                  onClick={() => {
+                                    setDeleteTarget(u);
+                                    setDeleteCountdown(5);
+                                  }}
+                                  style={{
+                                    padding: '6px 12px',
+                                    borderRadius: 0,
+                                    border: '1.5px solid #ef4444',
+                                    background: 'transparent',
+                                    color: '#ef4444',
+                                    fontWeight: 700,
+                                    fontSize: '0.82rem',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.18s',
+                                  }}
+                                  onMouseEnter={(e) => {
+                                    e.currentTarget.style.background =
+                                      '#ef4444';
+                                    e.currentTarget.style.color = '#fff';
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    e.currentTarget.style.background =
+                                      'transparent';
+                                    e.currentTarget.style.color = '#ef4444';
+                                  }}
                                 >
                                   Tolak & Padam
                                 </button>
@@ -498,22 +776,55 @@ export default function UsersPage() {
                                 <button
                                   onClick={() => openEdit(u)}
                                   style={{
-                                    padding: '6px 12px', borderRadius: 0, border: '1.5px solid #6366f1', background: 'transparent',
-                                    color: '#6366f1', fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer', transition: 'all 0.18s'
+                                    padding: '6px 12px',
+                                    borderRadius: 0,
+                                    border: '1.5px solid #6366f1',
+                                    background: 'transparent',
+                                    color: '#6366f1',
+                                    fontWeight: 700,
+                                    fontSize: '0.82rem',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.18s',
                                   }}
-                                  onMouseEnter={(e) => { e.currentTarget.style.background = '#6366f1'; e.currentTarget.style.color = '#fff'; }}
-                                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#6366f1'; }}
+                                  onMouseEnter={(e) => {
+                                    e.currentTarget.style.background =
+                                      '#6366f1';
+                                    e.currentTarget.style.color = '#fff';
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    e.currentTarget.style.background =
+                                      'transparent';
+                                    e.currentTarget.style.color = '#6366f1';
+                                  }}
                                 >
                                   Edit
                                 </button>
                                 <button
-                                  onClick={() => { setDeleteTarget(u); setDeleteCountdown(5); }}
-                                  style={{
-                                    padding: '6px 12px', borderRadius: 0, border: '1.5px solid #ef4444', background: 'transparent',
-                                    color: '#ef4444', fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer', transition: 'all 0.18s'
+                                  onClick={() => {
+                                    setDeleteTarget(u);
+                                    setDeleteCountdown(5);
                                   }}
-                                  onMouseEnter={(e) => { e.currentTarget.style.background = '#ef4444'; e.currentTarget.style.color = '#fff'; }}
-                                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#ef4444'; }}
+                                  style={{
+                                    padding: '6px 12px',
+                                    borderRadius: 0,
+                                    border: '1.5px solid #ef4444',
+                                    background: 'transparent',
+                                    color: '#ef4444',
+                                    fontWeight: 700,
+                                    fontSize: '0.82rem',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.18s',
+                                  }}
+                                  onMouseEnter={(e) => {
+                                    e.currentTarget.style.background =
+                                      '#ef4444';
+                                    e.currentTarget.style.color = '#fff';
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    e.currentTarget.style.background =
+                                      'transparent';
+                                    e.currentTarget.style.color = '#ef4444';
+                                  }}
                                 >
                                   Padam
                                 </button>

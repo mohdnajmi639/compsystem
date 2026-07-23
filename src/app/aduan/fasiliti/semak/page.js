@@ -144,9 +144,52 @@ function SemakFasilitiContent() {
   const totalPages = Math.max(1, Math.ceil(sorted.length / perPage));
   const pageRows   = sorted.slice((page - 1) * perPage, page * perPage);
 
+  const renderDescription = (desc) => {
+    if (!desc) return null;
+    if (desc.includes('|')) {
+      const parts = desc.split('|').map(p => p.trim()).filter(p => p && !p.includes('--Sila Pilih--'));
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
+          {parts.map((p, idx) => {
+            const splitIdx = p.indexOf(':');
+            if (splitIdx === -1) return <div key={idx} style={{ color: '#4b5563', lineHeight: 1.5, fontWeight: 700 }}>{p}</div>;
+            const key = p.substring(0, splitIdx).trim();
+            const val = p.substring(splitIdx + 1).trim();
+            if (!val || val === '--Sila Pilih--' || val === 'undefined') return null;
+            return (
+              <div key={idx} style={{ display: 'flex', gap: 12, borderBottom: '1px solid #f3f4f6', paddingBottom: 4 }}>
+                <span style={{ minWidth: 120, fontWeight: 600, color: '#374151' }}>{key}</span>
+                <span style={{ color: '#4b5563', flex: 1, whiteSpace: 'pre-wrap' }}>{val}</span>
+              </div>
+            );
+          })}
+        </div>
+      );
+    }
+    return <span style={{ color: '#4b5563', flex: 1, whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{desc}</span>;
+  };
+
   function extractLocation(desc = '') {
-    const m = desc.match(/Kampus:\s*([^|]+)/);
-    return m ? m[1].trim() : '—';
+    if (!desc) return '—';
+    const isLB = desc.includes('[LUAR BANGUNAN]');
+    const bangunanMatch = desc.match(/Bangunan:\s*([^|]+)/);
+    const bangunan = bangunanMatch && !bangunanMatch[1].includes('--Sila Pilih--') ? bangunanMatch[1].trim() : '';
+    
+    if (isLB) {
+      const infraMatch = desc.match(/Kat\. Infra:\s*([^|]+)/);
+      const subInfraMatch = desc.match(/Sub Infra:\s*([^|]+)/);
+      const infra = infraMatch && !infraMatch[1].includes('--Sila Pilih--') ? infraMatch[1].trim() : '';
+      const subInfra = subInfraMatch && !subInfraMatch[1].includes('--Sila Pilih--') ? subInfraMatch[1].trim() : '';
+      return [bangunan, infra, subInfra].filter(Boolean).join(' - ') || 'Luar Bangunan';
+    } else {
+      const blokMatch = desc.match(/Blok:\s*([^|]+)/);
+      const arasMatch = desc.match(/Aras:\s*([^|]+)/);
+      const ruangMatch = desc.match(/Ruang:\s*([^|]+)/);
+      const blok = blokMatch && !blokMatch[1].includes('--Sila Pilih--') ? blokMatch[1].trim() : '';
+      const aras = arasMatch && !arasMatch[1].includes('--Sila Pilih--') ? arasMatch[1].trim() : '';
+      const ruang = ruangMatch && !ruangMatch[1].includes('--Sila Pilih--') ? ruangMatch[1].trim() : '';
+      return [bangunan, blok, aras, ruang].filter(Boolean).join(' - ') || 'Dalam Bangunan';
+    }
   }
 
   if (status === 'loading') {
@@ -374,9 +417,9 @@ function SemakFasilitiContent() {
                 </span>
               </div>
               {selected.description && (
-                <div style={{ display: 'flex', gap: 12, fontSize: '0.85rem', alignItems: 'flex-start' }}>
-                  <span style={{ minWidth: 120, fontWeight: 700, color: '#1f2937' }}>Keterangan</span>
-                  <span style={{ color: '#4b5563', flex: 1, whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{selected.description}</span>
+                <div style={{ display: 'flex', gap: 12, fontSize: '0.85rem', alignItems: 'flex-start', marginTop: 8 }}>
+                  <span style={{ minWidth: 120, fontWeight: 700, color: '#1f2937' }}>Maklumat Aduan</span>
+                  {renderDescription(selected.description)}
                 </div>
               )}
               {selected.attachments && selected.attachments.length > 0 && (

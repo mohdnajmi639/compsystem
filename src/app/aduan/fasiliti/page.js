@@ -14,8 +14,8 @@ const KAMPUS_OPTS = ['--Sila Pilih--','UiTM Shah Alam','UiTM Kampus Puncak Perda
 const BANGUNAN_OPTS = ['--Sila Pilih--','Blok Akademik','Jasmine 1','Jasmine 2','Jasmine 3','Jasmine 4','Jasmine 5','Surau','Dewan Makan','Pos Pengawal Kolej','Perhentian Bas'];
 const ARAS_OPTS = ['--Sila Pilih--','Aras 1','Aras 2','Aras 3','Aras 4','Aras 5'];
 const RUANG_OPTS = ['--Sila Pilih--','Bilik Darjah','Makmal','Pejabat','Tandas','Koridor','Parkir','Padang'];
-const KATEGORI_INFRA_OPTS = ['--Sila Pilih--','Elektrik','Awam / Sivil','Mekanikal','Landskap','Telekomunikasi','Pembetungan','Paving / Perkerasan'];
-const SUB_KATEGORI_INFRA_OPTS = ['--Sila Pilih--','Lampu Jalan','Saliran','Parit','Laluan Pejalan Kaki','Pagar','Tanda Jalan','Lain-lain'];
+const KATEGORI_INFRA_OPTS = ['--Sila Pilih--', 'Jalan', 'Laluan', 'Laluan Sikal', 'Lanskap', 'Longkang', 'Pagar', 'Parkir', 'Taman/Padang', 'Tangga'];
+const SUB_KATEGORI_INFRA_OPTS = ['--Sila Pilih--']; // Will be dynamically populated
 const SEKSYEN_OPTS = ['--Sila Pilih--','MAJ - AUDIO VISUAL','BAN - BANGUNAN','ELE - ELEKTRIK','INF CIV - INFRASTRUKTUR','LAN - LANSKAP','MEC - MEKANIKAL','PROJEK - PROJEK','TEL - TELEKOMUNIKASI'];
 const ELEMEN_OPTS = ['--Sila Pilih--','Pendawaian','Paip','HVAC','Pintu / Tingkap','Bumbung','Dinding / Lantai','Perabot','Lif','Eskalator'];
 const MASALAH_OPTS = ['--Sila Pilih--','Rosak','Bocor','Tidak Berfungsi','Kotor / Perlu Pembersihan','Perlu Penggantian','Perlu Pemasangan Baharu','Bahaya / Merbahaya'];
@@ -169,7 +169,7 @@ function AduanFasilitiContent() {
     activeArasOpts = ['--Sila Pilih--', 'Aras 1', 'Aras 2', 'Aras 3'];
   }
 
-  let activeRuangOpts = RUANG_OPTS;
+  let activeRuangOpts = ['--Sila Pilih--'];
   if (isJasmine) {
     activeRuangOpts = ['--Sila Pilih--', 'Balkoni', 'Bilik Air', 'Bilik Tidur Pelajar', 'Koridor Awam', 'Rumah Pelajar', 'Tangga', 'Yard'];
   } else if (isBlokAkademik && dbBlok === 'Pos Pengawal Blok Akadamik') {
@@ -202,7 +202,32 @@ function AduanFasilitiContent() {
     activeRuangOpts = ['--Sila Pilih--', 'Perhentian bas'];
   }
 
-  let activeElemenOpts = ELEMEN_OPTS;
+  let activeSubInfraOpts = ['--Sila Pilih--'];
+  if (lbKatInfra === 'Jalan') {
+    activeSubInfraOpts = ['--Sila Pilih--', 'Jalan Masuk', 'Jalan Utama'];
+  } else if (lbKatInfra === 'Laluan') {
+    activeSubInfraOpts = ['--Sila Pilih--', 'Bahu Jalan', 'Jalan Kecil / Lorong', 'Jambatan', 'Lorong Pejalan Kaki'];
+  } else if (lbKatInfra === 'Laluan Sikal') {
+    activeSubInfraOpts = ['--Sila Pilih--', 'Basikal', 'Motorsikal'];
+  } else if (lbKatInfra === 'Lanskap') {
+    activeSubInfraOpts = ['--Sila Pilih--', 'Hardscape', 'Kawasan Berumput', 'Kolam', 'Pokok Renek', 'Waterscape'];
+  } else if (lbKatInfra === 'Longkang') {
+    activeSubInfraOpts = ['--Sila Pilih--', 'Culvert', 'Roadside Drainage', 'Subsurface Drainage', 'Sump', 'Surface Drainage'];
+  } else if (lbKatInfra === 'Pagar') {
+    activeSubInfraOpts = ['--Sila Pilih--', 'Pagar', 'Pagar Utama'];
+  } else if (lbKatInfra === 'Parkir') {
+    activeSubInfraOpts = ['--Sila Pilih--', 'Bas', 'Kenderaan Berat', 'Kereta', 'Lori', 'Motorsikal'];
+  } else if (lbKatInfra === 'Taman/Padang') {
+    activeSubInfraOpts = [
+      '--Sila Pilih--', 'Badminton', 'Bola Baling', 'Bola Jaring', 'Bola Keranjang',
+      'Bola Tampar', 'Futsal', 'Padang Bola Sepak', 'Padang Hoki', 'Padang Kawad',
+      'Padang Memanah', 'Sepak Takraw', 'Taman Permainan Kanak-Kanak', 'Tenis'
+    ];
+  } else if (lbKatInfra === 'Tangga') {
+    activeSubInfraOpts = ['--Sila Pilih--', 'Tangga'];
+  }
+
+  let activeElemenOpts = ['--Sila Pilih--'];
   if (seksyen === 'MAJ - AUDIO VISUAL') {
     activeElemenOpts = ['--Sila Pilih--', 'SISTEM VISUAL', 'SISTEM AUDIO', 'SISTEM PENCAHAYAAN PENTAS'];
   } else if (seksyen === 'BAN - BANGUNAN') {
@@ -221,7 +246,7 @@ function AduanFasilitiContent() {
     activeElemenOpts = ['--Sila Pilih--', 'WALKIE_TALKIE', 'TELEFON', 'CCTV', 'DOOR ACCESS', 'PENDAWAIAN', 'BARRIER PARKING'];
   }
 
-  let activeMasalahOpts = MASALAH_OPTS;
+  let activeMasalahOpts = ['--Sila Pilih--'];
   if (elemen === 'PEST CONTROL') {
     activeMasalahOpts = [
       '--Sila Pilih--', 'GANGGUAN ANJING/MUSANG', 'GANGGUAN BURUNG', 'GANGGUAN LEBAH', 'GANGGUAN LIPAS',
@@ -373,6 +398,87 @@ function AduanFasilitiContent() {
         '--Sila Pilih--', 'KABINET PANEL PENGGERA KAWALAN ROSAK', 'LAIN-LAIN ADUAN KEROSAKAN PENCEGAH KEBAKARAN',
         'LOCENG KECEMASAN PENCEGAH KEBAKARAN BERBUNYI', 'PANEL PENGGERA KEBAKARAN TIADA BEKALAN KUASA',
         'PILI BOMBA BOCOR', 'TANGKI ARI PENCEGAH KEBAKARAN (MERAH) BOCOR/OVERFLOW'
+      ];
+    } else if (elemen === 'ROLLER SHUTTER/GATE AUTOMATIK' || elemen === 'ROLLE SHUTTER/GATE AUTOMATIK') {
+      activeMasalahOpts = [
+        '--Sila Pilih--', 'LAIN-LAIN KEROSAKAN ROLLER SHUTTER/GATE AUTOMATIK',
+        'PINTU PAGAR AUTOMATIK ROSAK', 'ROLLER SHUTTER TIDAK BERFUNGSI'
+      ];
+    } else if (elemen === 'PEMADAM API') {
+      activeMasalahOpts = [
+        '--Sila Pilih--', 'GATE VALVE HOSE REEL PEMADAM API HILANG', 'HOSE REEL PEMADAM API ROSAK',
+        'KABINET HOSE REEL ROSAK', 'LAIN-LAIN ADUAN KEROSAKAN PEMADAM API',
+        'NOZZLE PEMADAM API PATAH', 'PEMADAM API TIDAK BERFUNGSI', 'VALVE PEMANDAM API BOCOR'
+      ];
+    } else if (elemen === 'MESIN PERAKAM WAKTU') {
+      activeMasalahOpts = [
+        '--Sila Pilih--', 'CETAKAN MESIN PERAKAM TIDAK JELAS', 'KAD TERSEKAT DIDALAM MESIN PERAKAM',
+        'LAIN-LAIN ADUAN KEROSAKAN MESIN PERAKAM WAKTU', 'MASA PADA MESIN PERAKAM TIDAK TEPAT',
+        'MELODI MESIN PERAKAM TIDAK BERFUNGSI', 'MESIN PERAKAM TIDAK BERFUNGSI'
+      ];
+    } else if (elemen === 'LIQUID PETROLEUM GAS') {
+      activeMasalahOpts = [
+        '--Sila Pilih--', 'LAIN-LAIN ADUAN KEROSAKAN LIQUID PETROLEUM GAS',
+        'LIQUID PETROLEUM BERBAU GAS', 'PAIP LIQUID PETROLEUM GAS BOCOR'
+      ];
+    } else if (elemen === 'BEKALAN AIR') {
+      activeMasalahOpts = [
+        '--Sila Pilih--', 'LAIN-LAIN ADUAN KEROSAKAN BEKALAN AIR', 'PAIP BEKALAN AIR PECAH',
+        'PAIP BEKALAN BOCOR', 'PAM KOLAM RENANG ROSAK', 'TANGKI AIR MELIMPAH',
+        'TIADA BEKALAN AIR SATU BANGUNAN'
+      ];
+    } else if (elemen === 'KUMBAHAN') {
+      activeMasalahOpts = [
+        '--Sila Pilih--', 'AIR NAJIS OVERFLOW (MANHOLE)', 'LAIN-LAIN ADUAN KEROSAKAN KUMBAHAN',
+        'PEMBENTUNG PAIP PECAH'
+      ];
+    }
+  } else if (seksyen === 'PROJEK - PROJEK') {
+    if (elemen === 'ETIKA PEKERJA KONTRAKTOR') {
+      activeMasalahOpts = [
+        '--Sila Pilih--', 'BERSIKAP KURANG AJAR/BIADAP', 'KELAKUAN TIDAK SENONOH',
+        'LAIN-LAIN ADUAN ETIKA PEKERJA KONTRAKTOR', 'MELANGGAR PERATURAN KESELAMATAN',
+        'MEROKOK', 'PAKAIAN TIDAK SOPAN'
+      ];
+    } else if (elemen === 'PENGURUSAN PROJEK') {
+      activeMasalahOpts = [
+        '--Sila Pilih--', 'KEROSAKAN DI DALAM TANGGUNGAN KECACATAN',
+        'LAIN-LAIN ADUAN PENGURUSAN PROJEK', 'TIADA KOMUNIKASI DENGAN PELANGGAN',
+        'TIADA PENYELIA TAPAK'
+      ];
+    } else if (elemen === 'PERSEKITARAN TAPAK BINA') {
+      activeMasalahOpts = [
+        '--Sila Pilih--', 'BERBAU BUSUK DI TAPAK PEMBINAAN', 'KEADAAN BERSEPAH DI TAPAK PEMBINAAN',
+        'KEADAAN MERBAHAYA DI TAPAK PEMBINAAN', 'LAIN-LAIN ADUAN PERSEKITARAN KERJA TAPAK PEMBINAAN',
+        'LEBIHAN BINAAN TIDAK DIBERSIHKAN', 'PERSEKITARAAN TAPAK BINAAN BERBUNYI BISING'
+      ];
+    }
+  } else if (seksyen === 'TEL - TELEKOMUNIKASI') {
+    if (elemen === 'WALKIE_TALKIE') {
+      activeMasalahOpts = [
+        '--Sila Pilih--', 'LAIN-LAIN ADUAN KEROSAKAN WALKIE TALKIE',
+        'WALKIE_TALKIE BERBUNYI BISING', 'WALKIE_TALKIE TIADA BUNYI'
+      ];
+    } else if (elemen === 'TELEFON') {
+      activeMasalahOpts = [
+        '--Sila Pilih--', 'BUTANG TELEFON ROSAK', 'GANGGANG TELEFON ROSAK',
+        'LAIN-LAIN ADUAN KEROSAKAN TELEFON', 'LINE FAX TIDAK BERFUNGSI',
+        'SOKET TELEFON ROSAK', 'TELEFON TIADA DERINGAN', 'TELEFON TIDAK BERFUNGSI',
+        'TELEFON TIDAK BOLEH MENERIMA PANGGILAN', 'TELEFON TIDAK DAPAT MEMBUAT PANGGILAN'
+      ];
+    } else if (elemen === 'DOOR ACCESS') {
+      activeMasalahOpts = [
+        '--Sila Pilih--', 'DOOR ACCESS TIDAK BERFUNGSI', 'EM LOCK DOOR ACCESS TANGGAL',
+        'LAIN-LAIN ADUAN KEROSAKAN DOOR ACCESS', 'READER DOOR ACCESS PECAH / TERTANGGAL'
+      ];
+    } else if (elemen === 'PENDAWAIAN') {
+      activeMasalahOpts = [
+        '--Sila Pilih--', 'LAIN-LAIN KEROSAKAN PENDAWAIAN',
+        'TAMATAN KABEL TELEFON PADA SERVICE BOX LANTAI TIDAK SEMPURNA'
+      ];
+    } else if (elemen === 'BARRIER PARKING') {
+      activeMasalahOpts = [
+        '--Sila Pilih--', 'BARRIER PARKING TIDAK BERFUNGSI', 'LAIN-LAIN ADUAN KEROSAKAN BARRIER PARKING'
       ];
     }
   }
@@ -617,14 +723,17 @@ function AduanFasilitiContent() {
                         <>
                           <div className="aduan-field">
                             <label className="aduan-label">Kategori Infra <span className="aduan-required">*</span></label>
-                            <select className="aduan-input aduan-select" value={lbKatInfra} onChange={e => setLbKatInfra(e.target.value)}>
+                            <select className="aduan-input aduan-select" value={lbKatInfra} onChange={e => {
+                              setLbKatInfra(e.target.value);
+                              setLbSubInfra('--Sila Pilih--');
+                            }}>
                               {KATEGORI_INFRA_OPTS.map(o => <option key={o} value={o}>{o}</option>)}
                             </select>
                           </div>
                           <div className="aduan-field">
                             <label className="aduan-label">Sub Kategori Infra <span className="aduan-required">*</span></label>
                             <select className="aduan-input aduan-select" value={lbSubInfra} onChange={e => setLbSubInfra(e.target.value)}>
-                              {SUB_KATEGORI_INFRA_OPTS.map(o => <option key={o} value={o}>{o}</option>)}
+                              {activeSubInfraOpts.map(o => <option key={o} value={o}>{o}</option>)}
                             </select>
                           </div>
                         </>

@@ -434,7 +434,7 @@ function AduanFasilitiContent() {
     activeRuangOpts = [
       '--Sila Pilih--',
       'Bilik Wudhu',
-      'Koridor Awam',
+      'Ruang Solat',
       'Surau',
       'Tandas',
     ];

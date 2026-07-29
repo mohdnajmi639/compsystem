@@ -1,4 +1,4 @@
-# UniComplaint - University Complaint Management System
+# E Aduan UiTM - University Complaint Management System
 
 A full-stack complaint management system built with Next.js 13, MongoDB, and NextAuth.
 
